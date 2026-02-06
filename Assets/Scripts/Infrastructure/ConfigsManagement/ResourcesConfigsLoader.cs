@@ -12,7 +12,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
 
         private readonly Dictionary<Type, string> _configsPath = new()
         {
-
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader loader)

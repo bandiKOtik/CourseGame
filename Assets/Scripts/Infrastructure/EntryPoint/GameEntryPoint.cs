@@ -1,5 +1,9 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory;
+using Assets.Scripts.Utilities.LoadingScreen;
+using Assets.Scripts.Utilities.SceneManagement;
 using System.Collections;
 using UnityEngine;
 
@@ -7,25 +11,33 @@ namespace Assets.Scripts.Infrastructure.EntryPoint
 {
     internal class GameEntryPoint : MonoBehaviour
     {
-        private ProjectRegistrations _projectRegistrations;
+        private ProjectRegistrations _projectRegistrations = new();
 
         private void Awake()
         {
             SetupAppSettings();
 
-            DIContainer container = new DIContainer();
+            DIContainer projectContainer = new();
 
-            _projectRegistrations = new ProjectRegistrations();
+            _projectRegistrations.Register(projectContainer);
 
-            _projectRegistrations.Register(container);
+            projectContainer
+                .Resolve<ICoroutinesPerformer>()
+                .StartPerform(Initialize(projectContainer));
         }
 
         public IEnumerator Initialize(DIContainer container)
         {
-            //x ILoadingScreen here
-            //? ILoadingScreen here
+            ILoadingScreen loadScreen = container.Resolve<ILoadingScreen>();
+            SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
+            loadScreen.Show();
 
-            yield return null;
+            yield return container
+                .Resolve<ConfigsProviderService>().LoadAsync();
+
+            loadScreen.Hide();
+
+            yield return sceneSwitcher.ProcessSwitchTo(Scenes.MainMenu);
         }
 
         private void SetupAppSettings()

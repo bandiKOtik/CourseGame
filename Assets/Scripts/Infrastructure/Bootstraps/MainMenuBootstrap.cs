@@ -1,24 +1,38 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps;
 using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Utilities.AssetsManagement;
+using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.Factory;
+using Assets.Scripts.Utilities.SceneManagement;
 using System.Collections;
 using UnityEngine;
 
-namespace Assets.Scripts.Infrastructure.Bootstrap
+namespace Assets.Scripts.Infrastructure.Bootstraps
 {
-    public class Bootstrap : MonoBehaviour
+    public class MainMenuBootstrap : SceneBootstrap
     {
         private DIContainer _container;
+        private MainMenuContextRegistrations _contextRegistrations = new();
 
-        private void Awake()
+        public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
-            _container = new();
+            _container = container;
 
+            _contextRegistrations.Process(_container);
+        }
+
+        public override IEnumerator Initialize()
+        {
             ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
 
             coroutinesPerformer.StartPerform(LoadConfigs());
+
+            yield break;
+        }
+
+        public override void Run()
+        {
+            Debug.Log("Running main menu scene bootstrap");
         }
 
         private IEnumerator LoadConfigs()

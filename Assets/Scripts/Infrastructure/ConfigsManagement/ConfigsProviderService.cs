@@ -18,7 +18,8 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             _configs.Clear();
 
             foreach (IConfigsLoader loader in _loaders)
-                yield return loader.LoadAsync(loadedConfigs => _configs.AddRange(loadedConfigs));
+                yield return loader.LoadAsync(
+                    loadedConfigs => _configs.AddRange(loadedConfigs));
         }
 
         public T GetConfig<T>() where T : class

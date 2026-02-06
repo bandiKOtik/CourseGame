@@ -2,6 +2,8 @@
 using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
+using Assets.Scripts.Utilities.LoadingScreen;
+using Assets.Scripts.Utilities.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Utilities.Factory
@@ -12,12 +14,21 @@ namespace Assets.Scripts.Utilities.Factory
         {
             container.RegisterAsSingle<ICoroutinesPerformer>(CreateCoroutinesPerformer);
 
+            container.RegisterAsSingle<ILoadingScreen>(CreateLoadingScreenHandler);
+
             container.RegisterAsSingle(CreateConfigsProviderService);
 
             container.RegisterAsSingle(c => new ResourcesAssetsLoader());
+
+            container.RegisterAsSingle(CreateSceneLoaderService);
+
+            container.RegisterAsSingle(CreateSceneSwitcherService);
         }
 
-        public ConfigsProviderService CreateConfigsProviderService(DIContainer c)
+        private SceneLoaderService CreateSceneLoaderService(DIContainer c)
+            => new SceneLoaderService();
+
+        private ConfigsProviderService CreateConfigsProviderService(DIContainer c)
         {
             ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
 
@@ -26,7 +37,7 @@ namespace Assets.Scripts.Utilities.Factory
             return new ConfigsProviderService(resourcesConfigsLoader);
         }
 
-        public CoroutinesPerformer CreateCoroutinesPerformer(DIContainer c)
+        private CoroutinesPerformer CreateCoroutinesPerformer(DIContainer c)
         {
             ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
 
@@ -35,5 +46,21 @@ namespace Assets.Scripts.Utilities.Factory
 
             return Object.Instantiate(coroutinesPerformer);
         }
+
+        private LoadingScreenHandler CreateLoadingScreenHandler(DIContainer c)
+        {
+            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
+
+            LoadingScreenHandler loadingScreenHandler = resourcesAssetsLoader
+                .Load<LoadingScreenHandler>("Utilities/LoadingScreenCanvas");
+
+            return Object.Instantiate(loadingScreenHandler);
+        }
+
+        private SceneSwitcherService CreateSceneSwitcherService(DIContainer c)
+            => new SceneSwitcherService(
+                c,
+                c.Resolve<SceneLoaderService>(),
+                c.Resolve<ILoadingScreen>());
     }
 }
