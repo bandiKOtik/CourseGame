@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
+using Assets.Scripts.Runtime.Infrastructure;
+using Assets.Scripts.Runtime.InputManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
@@ -12,8 +14,12 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        private GameplayInputArgs _inputArgs;
+        private IInputHandler _inputHandler;
+        private ICoroutinesPerformer _coroutinesPerformer;
+        private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
+
+        private bool _initialized = false;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -23,36 +29,39 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
 
-            _inputArgs = args;
+            Debug.Log("Gamemode: " + args.GameConfig.Current);
 
-            _contextRegistrations.Process(_container, _inputArgs);
+            _contextRegistrations.Process(_container, args);
         }
 
         public override IEnumerator Initialize()
         {
-            Debug.Log("Current level: " + _inputArgs.LevelNumber);
+            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
 
-            ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            _inputHandler = _container.Resolve<IInputHandler>();
 
-            coroutinesPerformer.StartPerform(LoadConfigs());
+            _coroutinesPerformer.StartPerform(LoadConfigs());
 
-            yield break;
+            _session = new();
+
+            yield return _session.Initialize(_container);
         }
 
-        public override void Run()
+        private void Update()
         {
-            Debug.Log("Running gameplay scene bootstrap");
+            if (_initialized)
+            {
+                _inputHandler.Update();
+            }
         }
+
+        public override void Run() => _initialized = true;
 
         private IEnumerator LoadConfigs()
         {
             ConfigsProviderService configsProvider = _container.Resolve<ConfigsProviderService>();
 
-            Debug.Log("Configs loading performed");
-
             yield return configsProvider.LoadAsync();
-
-            Debug.Log("Configs loaded");
         }
     }
 }

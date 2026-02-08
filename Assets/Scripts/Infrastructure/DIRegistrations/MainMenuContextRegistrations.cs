@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
-using UnityEngine;
+using Assets.Scripts.Runtime.InputManagement;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
@@ -7,7 +7,10 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
     {
         public void Process(DIContainer container)
         {
-            Debug.Log("MainMenuContextRegistrations: Processing...");
+            container.RegisterAsSingle<IInputHandler>(CreateMainMenuInputHandler);
         }
+
+        private MainMenuInputHandler CreateMainMenuInputHandler(DIContainer c)
+            => new MainMenuInputHandler(c);
     }
 }

@@ -11,7 +11,9 @@ namespace Assets.Scripts.Infrastructure.DI_Container
 
         private readonly DIContainer _parent;
 
-        public DIContainer() : this(null) { }
+        public DIContainer() : this(null)
+        {
+        }
 
         public DIContainer(DIContainer parent) => _parent = parent;
 
