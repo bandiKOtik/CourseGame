@@ -1,9 +1,14 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.LoadingScreen;
+using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.SceneManagement;
+using System;
+using System.Collections.Generic;
+using UnityEngine.Windows.Speech;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Utilities.Factory
@@ -23,6 +28,18 @@ namespace Assets.Scripts.Utilities.Factory
             container.RegisterAsSingle(CreateSceneLoaderService);
 
             container.RegisterAsSingle(CreateSceneSwitcherService);
+
+            container.RegisterAsSingle(CreateWalletService);
+        }
+
+        private WalletService CreateWalletService(DIContainer c)
+        {
+            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
+
+            foreach (var type in Enum.GetValues(typeof(CurrencyTypes)))
+                currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
+
+            return new WalletService(currencies);
         }
 
         private SceneLoaderService CreateSceneLoaderService(DIContainer c)
