@@ -1,8 +1,11 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Runtime.Sequence;
+using Assets.Scripts.Utilities.Factory;
 using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.Sequence;
+using System;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
@@ -14,21 +17,25 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         {
             _args = args;
 
+            container.RegisterAsSingle(CreateSequenceGeneratorFactory);
+
             container.RegisterAsSingle<ISequenceGenerator>(CreateSequenceGenerator);
 
             container.RegisterAsSingle<IInputHandler>(CreateGameplayInputHandler);
 
-            container.RegisterAsSingle<SequenceMatcher>(CreateSequenceMatcher);
+            container.RegisterAsSingle(CreateSequenceMatcher);
         }
 
-        private SequenceGenerator CreateSequenceGenerator(DIContainer container)
+        private SequenceGeneratorFactory CreateSequenceGeneratorFactory(DIContainer c) => new(c);
+
+        private SequenceGenerator CreateSequenceGenerator(DIContainer c)
         {
-            var config = _args.GameConfig.SequenceConfig;
-
-            return new(config.MinLength, config.MaxLength, config.Sequence);
+            return c
+                .Resolve<SequenceGeneratorFactory>()
+                .CreateSequenceGenerator(_args.GenerationConfig);
         }
 
-        private GameplayInputHandler CreateGameplayInputHandler(DIContainer c) => new(c);
+        private InputStringHandler CreateGameplayInputHandler(DIContainer c) => new();
 
         private SequenceMatcher CreateSequenceMatcher(DIContainer c) => new();
     }

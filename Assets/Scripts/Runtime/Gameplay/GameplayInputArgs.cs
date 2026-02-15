@@ -1,15 +1,18 @@
-﻿using Assets.Scripts.Infrastructure.Configs;
+﻿using Assets.Scripts.Configs.Meta.GameModeConfigs;
+using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Utilities.SceneManagement;
 
 namespace Assets.Scripts.Infrastructure.Gameplay
 {
     public class GameplayInputArgs : IInputSceneArgs
     {
-        public GameplayInputArgs(GameModeConfig config)
+        public GameplayInputArgs(GameMode currentGamemode, GameModeConfig config)
         {
-            GameConfig = config;
+            CurrentGamemode = currentGamemode;
+            GenerationConfig = config.GetSequenceConfig(currentGamemode);
         }
 
-        public GameModeConfig GameConfig { get; }
+        public GameMode CurrentGamemode { get; }
+        public SequenceGenerationConfig GenerationConfig { get; }
     }
 }

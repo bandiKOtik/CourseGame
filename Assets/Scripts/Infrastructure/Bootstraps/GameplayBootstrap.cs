@@ -1,9 +1,12 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
-using Assets.Scripts.Runtime.Infrastructure;
+using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Runtime.Sequence;
 using Assets.Scripts.Utilities.CoroutinesManagement;
+using Assets.Scripts.Utilities.DataManagement;
+using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
@@ -29,7 +32,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
 
-            Debug.Log("Gamemode: " + args.GameConfig.Current);
+            Debug.Log("<color=blue>Gamemode</color>: " + args.CurrentGamemode);
 
             _contextRegistrations.Process(_container, args);
         }
@@ -38,30 +41,23 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         {
             _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
 
-            _inputHandler = _container.Resolve<IInputHandler>();
-
-            _coroutinesPerformer.StartPerform(LoadConfigs());
-
             _session = new();
 
-            yield return _session.Initialize(_container);
+            yield return _session.Initialize(
+                _coroutinesPerformer,
+                _container.Resolve<ISequenceGenerator>(),
+                _container.Resolve<SceneSwitcherService>(),
+                _container.Resolve<SequenceMatcher>(),
+                _inputHandler = _container.Resolve<IInputHandler>(),
+                _container.Resolve<PlayerDataProvider>());
         }
 
         private void Update()
         {
             if (_initialized)
-            {
                 _inputHandler.Update();
-            }
         }
 
         public override void Run() => _initialized = true;
-
-        private IEnumerator LoadConfigs()
-        {
-            ConfigsProviderService configsProvider = _container.Resolve<ConfigsProviderService>();
-
-            yield return configsProvider.LoadAsync();
-        }
     }
 }
