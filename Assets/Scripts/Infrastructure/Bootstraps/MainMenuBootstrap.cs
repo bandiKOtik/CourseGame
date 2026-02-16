@@ -19,6 +19,12 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
         private IInputHandler _inputHandler;
         private MainMenuContextRegistrations _contextRegistrations = new();
 
+<<<<<<< Updated upstream
+=======
+        private PlayerDataProvider _dataProvider;
+        private WalletService _walletService;
+
+>>>>>>> Stashed changes
         private bool _initialized = false;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
@@ -34,7 +40,15 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             _inputHandler = _container.Resolve<IInputHandler>();
 
+<<<<<<< Updated upstream
             coroutinesPerformer.StartPerform(LoadConfigs());
+=======
+            _container.Resolve<PlayerDataProvider>();
+
+            _dataProvider = _container.Resolve<PlayerDataProvider>();
+
+            _walletService = _container.Resolve<WalletService>();
+>>>>>>> Stashed changes
 
             yield break;
         }
@@ -43,7 +57,22 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
         {
             if (_initialized)
             {
+<<<<<<< Updated upstream
+=======
+                //&& _walletService.Enough(CurrencyTypes.Gold, GamePrice)
+                //_walletService.Spend(CurrencyTypes.Gold, GamePrice);
+                Debug.Log(_walletService.GetCurrency(CurrencyTypes.Gold).Value);
+>>>>>>> Stashed changes
                 _inputHandler.Update();
+
+                if (Input.GetKeyDown(KeyCode.S))
+                    _dataProvider.Save();
+
+                if (Input.GetKeyDown(KeyCode.A))
+                    _walletService.Add(CurrencyTypes.Gold, 10);
+
+                if (Input.GetKeyDown(KeyCode.D))
+                    _walletService.Spend(CurrencyTypes.Gold, 10);
             }
         }
 

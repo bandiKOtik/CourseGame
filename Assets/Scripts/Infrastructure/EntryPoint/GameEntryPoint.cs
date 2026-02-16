@@ -35,6 +35,20 @@ namespace Assets.Scripts.Infrastructure.EntryPoint
             yield return container
                 .Resolve<ConfigsProviderService>().LoadAsync();
 
+<<<<<<< Updated upstream:Assets/Scripts/Infrastructure/EntryPoint/GameEntryPoint.cs
+=======
+            bool isPlayerDataSaveExists = false;
+
+            yield return playerDataProvider.Exists(result => isPlayerDataSaveExists = result);
+
+            if (isPlayerDataSaveExists)
+                yield return playerDataProvider.Load();
+            else
+                playerDataProvider.Reset();
+
+            playerDataProvider.Load();
+
+>>>>>>> Stashed changes:Assets/Scripts/Infrastructure/Bootstraps/GameEntryPoint.cs
             loadScreen.Hide();
 
             yield return sceneSwitcher.ProcessSwitchTo(Scenes.MainMenu);

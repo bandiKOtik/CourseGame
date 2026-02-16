@@ -41,6 +41,11 @@ namespace Assets.Scripts.Utilities.SceneManagement
 
             sceneBootstrap.ProcessRegistrations(sceneContainer, sceneArgs);
 
+<<<<<<< Updated upstream
+=======
+            sceneContainer.Initialize();
+
+>>>>>>> Stashed changes
             yield return sceneBootstrap.Initialize();
 
             _loadingScreen.Hide();

@@ -60,5 +60,15 @@ namespace Assets.Scripts.Infrastructure.DI_Container
 
             throw new InvalidOperationException($"Registration for {typeof(T)} not exists");
         }
+<<<<<<< Updated upstream
+=======
+
+        public void Initialize()
+        {
+            foreach (Registration registration in _container.Values)
+                if (registration.IsNonLazy)
+                    registration.CreateInstanceFrom(this);
+        }
+>>>>>>> Stashed changes
     }
 }
