@@ -41,7 +41,7 @@ namespace Assets.Scripts.Utilities.SceneManagement
 
             sceneBootstrap.ProcessRegistrations(sceneContainer, sceneArgs);
 
-            sceneBootstrap.Initialize();
+            sceneContainer.Initialize();
 
             yield return sceneBootstrap.Initialize();
 

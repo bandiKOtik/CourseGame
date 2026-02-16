@@ -31,12 +31,15 @@ namespace Assets.Scripts.Meta.Wallet
             return _currencies[type].Value >= amount;
         }
 
-        public void Add(CurrencyTypes type, int amount)
+        public void Append(CurrencyTypes type, int amount)
         {
             if (amount < 0)
                 throw new System.ArgumentOutOfRangeException(nameof(amount));
 
-            _currencies[type].Value += amount;
+            if (_currencies.ContainsKey(type))
+                _currencies[type].Value += amount;
+            else
+                _currencies.Add(type, new ReactiveVariable<int>(amount));
         }
 
         public void Spend(CurrencyTypes type, int amount)

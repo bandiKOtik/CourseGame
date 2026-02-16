@@ -2,6 +2,7 @@
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Assets.Scripts.Meta.Statistics
 {
@@ -18,7 +19,9 @@ namespace Assets.Scripts.Meta.Statistics
             playerDataProvider.RegisterWriter(this);
         }
 
-        public object GetStat(GameStatType type) => _statistics[type];
+        public List<GameStatType> AvaiableStatistics => _statistics.Keys.ToList();
+
+        public int GetStatValue(GameStatType type) => _statistics[type];
 
         public void Increase(GameStatType stat)
         {
@@ -41,12 +44,12 @@ namespace Assets.Scripts.Meta.Statistics
 
         public void WriteTo(PlayerData data)
         {
-            foreach (KeyValuePair<GameStatType, int> statistic in data.PlayedGamesData)
+            foreach (KeyValuePair<GameStatType, int> stat in _statistics)
             {
-                if (data.PlayedGamesData.ContainsKey(statistic.Key))
-                    data.PlayedGamesData[statistic.Key] = statistic.Value;
+                if (data.PlayedGamesData.ContainsKey(stat.Key))
+                    data.PlayedGamesData[stat.Key] = stat.Value;
                 else
-                    data.PlayedGamesData.Add(statistic.Key, statistic.Value);
+                    data.PlayedGamesData.Add(stat.Key, stat.Value);
             }
         }
     }

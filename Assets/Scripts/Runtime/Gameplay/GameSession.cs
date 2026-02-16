@@ -1,27 +1,23 @@
-﻿using Assets.Scripts.Meta.Wallet;
-using Assets.Scripts.Runtime.InputManagement;
+﻿using Assets.Scripts.Runtime.InputManagement;
 using Assets.Scripts.Runtime.Sequence;
 using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering.LookDev;
 
 namespace Assets.Scripts.Runtime.Gameplay
 {
     public class GameSession : IDisposable
     {
         public event Action Win;
+
         public event Action Defeat;
 
         private string _sequence;
         private string _input = "";
-
-        private WalletService _walletService;
 
         private ICoroutinesPerformer _performer;
         private SceneSwitcherService _sceneSwitcher;
@@ -52,12 +48,6 @@ namespace Assets.Scripts.Runtime.Gameplay
             _inputHandler.ExitToMenuRequest += ReturnToMenu;
 
             _sequence = generator.GenerateSequence();
-
-            //foreach (var pair in _walletService)
-            //    Debug.Log("Currency: " + pair.Key + " : " + pair.Value);
-
-            //foreach (var pair in _data.PlayedGamesData)
-            //    Debug.Log("Games: " + pair.Key + " : " + pair.Value);
 
             Debug.LogWarning(_sequence);
 
@@ -115,7 +105,7 @@ namespace Assets.Scripts.Runtime.Gameplay
 
         private void ReturnToMenu()
         {
-            _dataProvider.Save();
+            _performer.StartPerform(_dataProvider.SaveAsync());
 
             _performer
                 .StartPerform(_sceneSwitcher

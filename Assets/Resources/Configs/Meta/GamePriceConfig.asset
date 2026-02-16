@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76244ee5c5f3710489c0fdf9b492cd08, type: 3}
-  m_Name: StartWalletConfig
+  m_Script: {fileID: 11500000, guid: 390c1c494617f8547889111526a2a044, type: 3}
+  m_Name: GamePriceConfig
   m_EditorClassIdentifier: 
   _values:
-  - <Type>k__BackingField: 0
-    <Value>k__BackingField: 100
+  - <Currency>k__BackingField: 0
+    <GameEnterPrice>k__BackingField: 10
+    <WinCashback>k__BackingField: 20

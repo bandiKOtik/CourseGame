@@ -1,10 +1,15 @@
 ﻿using Assets.Scripts.Configs.Meta.GameModeConfigs;
+using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Statistics;
+using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Runtime.InputManagement;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
@@ -18,11 +23,21 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         }
 
         private GameModeSelector CreateGameModeSelector(DIContainer c)
-            => new GameModeSelector(
-                c.Resolve<ICoroutinesPerformer>(),
-                c.Resolve<SceneSwitcherService>(),
-                c.Resolve<PlayerDataProvider>(),
-                c.Resolve<ResourcesAssetsLoader>()
-                .Load<GameModeConfig>(_gameModeConfigPath));
+        {
+            IReadOnlyDictionary<CurrencyTypes, int> prices = c
+                .Resolve<ConfigsProviderService>()
+                        .GetConfig<GamePriceConfig>()
+                        .GetEnterPrices();
+
+            return new(
+                        c.Resolve<ICoroutinesPerformer>(),
+                        c.Resolve<SceneSwitcherService>(),
+                        c.Resolve<PlayerDataProvider>(),
+                        c.Resolve<ResourcesAssetsLoader>()
+                        .Load<GameModeConfig>(_gameModeConfigPath),
+                        c.Resolve<WalletService>(),
+                        c.Resolve<PlayedGamesStatistic>(),
+                        prices);
+        }
     }
 }

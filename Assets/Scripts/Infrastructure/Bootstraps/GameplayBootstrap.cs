@@ -1,15 +1,19 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
+using Assets.Scripts.Meta;
+using Assets.Scripts.Meta.Statistics;
+using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.InputManagement;
 using Assets.Scripts.Runtime.Sequence;
 using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
@@ -20,6 +24,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         private IInputHandler _inputHandler;
         private ICoroutinesPerformer _coroutinesPerformer;
         private GameSession _session;
+        private StatisticManageService _statManager;
         private GameplayContextRegistrations _contextRegistrations = new();
 
         private bool _initialized = false;
@@ -50,6 +55,17 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 _container.Resolve<SequenceMatcher>(),
                 _inputHandler = _container.Resolve<IInputHandler>(),
                 _container.Resolve<PlayerDataProvider>());
+
+            IReadOnlyDictionary<CurrencyTypes, int> prices = _container
+                .Resolve<ConfigsProviderService>()
+                        .GetConfig<GamePriceConfig>()
+                        .GetWinCashback();
+
+            _statManager = new(
+                _session,
+                _container.Resolve<WalletService>(),
+                _container.Resolve<PlayedGamesStatistic>(),
+                prices);
         }
 
         private void Update()

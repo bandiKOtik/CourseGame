@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
@@ -19,7 +20,7 @@ using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Utilities.Factory
 {
-    public class ProjectRegistrations
+    public class ProjectContextRegistrations
     {
         public void Register(DIContainer container)
         {
@@ -42,6 +43,8 @@ namespace Assets.Scripts.Utilities.Factory
             container.RegisterAsSingle(CreateSceneSwitcherService);
 
             container.RegisterAsSingle(CreateWalletService).NonLazy();
+
+            container.RegisterAsSingle(CreatePlayedGamesStatistic).NonLazy();
         }
 
         private SaveLoadService CreateSaveLoadService(DIContainer c)
@@ -71,6 +74,16 @@ namespace Assets.Scripts.Utilities.Factory
                 currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
 
             return new WalletService(currencies, c.Resolve<PlayerDataProvider>());
+        }
+
+        private PlayedGamesStatistic CreatePlayedGamesStatistic(DIContainer c)
+        {
+            Dictionary<GameStatType, int> statistics = new();
+
+            foreach (var type in Enum.GetValues(typeof(GameStatType)))
+                statistics.Add((GameStatType)type, default);
+
+            return new PlayedGamesStatistic(statistics, c.Resolve<PlayerDataProvider>());
         }
 
         private SceneLoaderService CreateSceneLoaderService(DIContainer c)

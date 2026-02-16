@@ -7,8 +7,11 @@ namespace Assets.Scripts.Utilities.InputManagement
     public class InputStringHandler : IInputHandler
     {
         public event Action<char> UserInput;
+
         public event Action CheckSequence;
+
         public event Action ClearValue;
+
         public event Action ExitToMenuRequest;
 
         public void Update() => ListenUserInput();

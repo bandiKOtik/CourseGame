@@ -34,14 +34,14 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             _writers.Add(writer);
         }
 
-        public IEnumerator Save()
+        public IEnumerator SaveAsync()
         {
             UpdateDataFromWriters();
 
             yield return _saveLoadService.Save(_data);
         }
 
-        public IEnumerator Load()
+        public IEnumerator LoadAsync()
         {
             yield return _saveLoadService.Load<TData>(loadedData => _data = loadedData);
 
@@ -56,6 +56,8 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
         public void Reset()
         {
             _data = GetOriginData();
+
+            SendDataToReaders();
         }
 
         protected abstract TData GetOriginData();

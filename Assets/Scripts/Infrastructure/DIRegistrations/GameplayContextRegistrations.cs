@@ -5,7 +5,6 @@ using Assets.Scripts.Runtime.Sequence;
 using Assets.Scripts.Utilities.Factory;
 using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.Sequence;
-using System;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {

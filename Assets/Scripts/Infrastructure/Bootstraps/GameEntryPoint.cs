@@ -12,7 +12,8 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 {
     internal class GameEntryPoint : MonoBehaviour
     {
-        private ProjectRegistrations _projectRegistrations = new();
+        private ProjectContextRegistrations _projectRegistrations = new();
+        private ICoroutinesPerformer _coroutinesPerformer;
 
         private void Awake()
         {
@@ -24,8 +25,10 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             projectContainer.Initialize();
 
-            projectContainer
-                .Resolve<ICoroutinesPerformer>()
+            _coroutinesPerformer = projectContainer
+                .Resolve<ICoroutinesPerformer>();
+
+            _coroutinesPerformer
                 .StartPerform(Initialize(projectContainer));
         }
 
@@ -45,11 +48,13 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
             yield return playerDataProvider.Exists(result => isPlayerDataSaveExists = result);
 
             if (isPlayerDataSaveExists)
-                yield return playerDataProvider.Load();
+                yield return _coroutinesPerformer
+                    .StartPerform(playerDataProvider.LoadAsync());
             else
                 playerDataProvider.Reset();
 
-            playerDataProvider.Save();
+            _coroutinesPerformer
+                .StartPerform(playerDataProvider.SaveAsync());
 
             loadScreen.Hide();
 

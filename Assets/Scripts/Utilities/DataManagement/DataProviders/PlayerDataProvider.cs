@@ -8,13 +8,13 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
 {
     public class PlayerDataProvider : DataProvider<PlayerData>
     {
-        private readonly ConfigsProviderService _configsProviderService;
+        private readonly ConfigsProviderService _configsProvider;
 
         public PlayerDataProvider(
             ISaveLoadService saveLoadService,
-            ConfigsProviderService configsProviderService) : base(saveLoadService)
+            ConfigsProviderService configsProvider) : base(saveLoadService)
         {
-            _configsProviderService = configsProviderService;
+            _configsProvider = configsProvider;
         }
 
         protected override PlayerData GetOriginData()
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
         {
             Dictionary<CurrencyTypes, int> walletData = new();
 
-            StartWalletConfig config = _configsProviderService.GetConfig<StartWalletConfig>();
+            StartWalletConfig config = _configsProvider.GetConfig<StartWalletConfig>();
 
             foreach (CurrencyTypes type in System.Enum.GetValues(typeof(CurrencyTypes)))
                 walletData[type] = config.GetValueFor(type);
