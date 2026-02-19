@@ -13,8 +13,9 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
 
         private readonly Dictionary<Type, string> _configsPath = new()
         {
-            { typeof(StartWalletConfig), "Configs/Meta/StartWalletConfig" },
-            { typeof(GamePriceConfig), "Configs/Meta/GamePriceConfig" }
+            { typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
+            { typeof(GamePriceConfig), "Configs/Meta/Wallet/GamePriceConfig" },
+            { typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" }
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader loader)

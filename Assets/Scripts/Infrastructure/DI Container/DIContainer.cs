@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.DI_Container
 {
@@ -65,8 +66,18 @@ namespace Assets.Scripts.Infrastructure.DI_Container
         public void Initialize()
         {
             foreach (var registration in _container.Values)
-                if (registration.IsNonLazy)
+            {
+                if (registration.IsNonLazy == true)
                     registration.CreateInstanceFrom(this);
+
+                registration.OnInitialize();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var registration in _container.Values)
+                registration.OnDispose();
         }
     }
 }

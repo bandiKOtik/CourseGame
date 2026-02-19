@@ -9,6 +9,7 @@ using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.DataManagement.DataRepository;
 using Assets.Scripts.Utilities.DataManagement.KeysStorage;
 using Assets.Scripts.Utilities.DataManagement.Serializers;
+using Assets.Scripts.Utilities.Factory.UI;
 using Assets.Scripts.Utilities.LoadingScreen;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.SaveScreen;
@@ -24,27 +25,30 @@ namespace Assets.Scripts.Utilities.Factory
     {
         public void Register(DIContainer container)
         {
-            container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
-
-            container.RegisterAsSingle(CreatePlayerDataProvider);
-
+            // Utilities
             container.RegisterAsSingle<ICoroutinesPerformer>(CreateCoroutinesPerformer);
 
+            // Save system
+            container.RegisterAsSingle(CreatePlayerDataProvider);
+            container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
             container.RegisterAsSingle<ILoadingScreen>(CreateLoadingScreenHandler);
-
             container.RegisterAsSingle<ISaveScreen>(CreateSaveScreenHandler);
 
+            // Configs
             container.RegisterAsSingle(CreateConfigsProviderService);
-
             container.RegisterAsSingle(c => new ResourcesAssetsLoader());
 
+            //Scene management
             container.RegisterAsSingle(CreateSceneLoaderService);
-
             container.RegisterAsSingle(CreateSceneSwitcherService);
 
+            // Meta
             container.RegisterAsSingle(CreateWalletService).NonLazy();
-
             container.RegisterAsSingle(CreatePlayedGamesStatistic).NonLazy();
+
+            // Factory
+            container.RegisterAsSingle(c => new ProjectPresentersFactory(c));
+            container.RegisterAsSingle(c => new ViewsFactory(c.Resolve<ResourcesAssetsLoader>()));
         }
 
         private SaveLoadService CreateSaveLoadService(DIContainer c)

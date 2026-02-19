@@ -24,6 +24,20 @@ namespace Assets.Scripts.Infrastructure.DI_Container
             return _cachedInstance;
         }
 
+        public void OnInitialize()
+        {
+            if (_cachedInstance != null)
+                if (_cachedInstance is IInitializeable initializeable)
+                    initializeable.Initialize();
+        }
+
+        public void OnDispose()
+        {
+            if (_cachedInstance != null)
+                if (_cachedInstance is IDisposable disposable)
+                    disposable.Dispose();
+        }
+
         public void NonLazy() => IsNonLazy = true;
     }
 }

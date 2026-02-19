@@ -2,19 +2,23 @@
 using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Runtime.UI.CommonViews;
 using Assets.Scripts.Utilities.CoroutinesManagement;
+using Assets.Scripts.Utilities.Factory.UI;
 using Assets.Scripts.Utilities.SceneManagement;
 using System.Collections;
+using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.Bootstraps
 {
     public class MainMenuBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        private IInputHandler _inputHandler;
         private MainMenuContextRegistrations _contextRegistrations = new();
 
         private bool _initialized = false;
+
+        private IInputHandler _inputHandler;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -27,7 +31,12 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
         {
             ICoroutinesPerformer coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
 
-            yield return _inputHandler = _container.Resolve<IInputHandler>();
+            _inputHandler = _container.Resolve<IInputHandler>();
+
+            _container
+                .Resolve<ProjectPresentersFactory>()
+                .CreateWalletPresenter(Object.FindAnyObjectByType<IconTextListView>())
+                .Initialize();
 
             yield break;
         }
