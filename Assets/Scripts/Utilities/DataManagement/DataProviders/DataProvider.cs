@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Utilities.CoroutinesManagement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -48,7 +49,7 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             SendDataToReaders();
         }
 
-        public IEnumerator Exists(Action<bool> onResult)
+        public IEnumerator CheckExistsAsync(Action<bool> onResult)
         {
             yield return _saveLoadService.Exists<TData>(result => onResult(result));
         }

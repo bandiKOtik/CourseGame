@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Runtime.UI;
+﻿using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Utilities.AssetsManagement;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,9 +8,15 @@ namespace Assets.Scripts.Utilities.Factory.UI
     public partial class ViewsFactory
     {
         private readonly ResourcesAssetsLoader _assetsLoader;
+
         private readonly Dictionary<string, string> _viewIdToResourcesPath = new()
         {
-            { ViewIDs.CurrencyView, "UI/View/IconTextView" }
+            { ViewIDs.CurrencyView, "UI/View/IconTextView" },
+            { ViewIDs.StatisticView, "UI/View/TextView" },
+            { ViewIDs.MainMenuScreen, "UI/MainMenu/MainMenuScreenView" },
+            { ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView" },
+            { ViewIDs.LevelsMenuPopup, "UI/Levels/LevelsMenuPopup" },
+            { ViewIDs.LevelTile, "UI/Levels/LevelTile" },
         };
 
         public ViewsFactory(ResourcesAssetsLoader assetsLoader)
@@ -26,7 +32,7 @@ namespace Assets.Scripts.Utilities.Factory.UI
                     + viewId + " for " + (typeof(TView)));
 
             GameObject prefab = _assetsLoader.Load<GameObject>(resourcePath);
-            GameObject instance = UnityEngine.Object.Instantiate(prefab, parent);
+            GameObject instance = Object.Instantiate(prefab, parent);
             TView view = instance.GetComponent<TView>();
 
             if (view == null)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Runtime.UI.Core;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Runtime.UI.CommonViews
@@ -9,6 +10,7 @@ namespace Assets.Scripts.Runtime.UI.CommonViews
         [SerializeField] private Image _icon;
 
         public void SetText(string text) => _text.text = text;
+
         public void SetIcon(Sprite icon) => _icon.sprite = icon;
     }
 }

@@ -27,7 +27,7 @@ namespace Assets.Scripts.Infrastructure.DI_Container
         public void OnInitialize()
         {
             if (_cachedInstance != null)
-                if (_cachedInstance is IInitializeable initializeable)
+                if (_cachedInstance is IInitializable initializeable)
                     initializeable.Initialize();
         }
 

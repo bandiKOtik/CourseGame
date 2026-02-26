@@ -1,7 +1,8 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Features.LevelsProgression;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement;
@@ -45,11 +46,25 @@ namespace Assets.Scripts.Utilities.Factory
             // Meta
             container.RegisterAsSingle(CreateWalletService).NonLazy();
             container.RegisterAsSingle(CreatePlayedGamesStatistic).NonLazy();
+            container.RegisterAsSingle(c => new LevelsProgressionService(c.Resolve<PlayerDataProvider>())).NonLazy();
 
             // Factory
             container.RegisterAsSingle(c => new ProjectPresentersFactory(c));
             container.RegisterAsSingle(c => new ViewsFactory(c.Resolve<ResourcesAssetsLoader>()));
         }
+
+        private CoroutinesPerformer CreateCoroutinesPerformer(DIContainer c)
+        {
+            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
+
+            CoroutinesPerformer coroutinesPerformer = resourcesAssetsLoader
+                .Load<CoroutinesPerformer>("Utilities/CoroutinePerformer");
+
+            return Object.Instantiate(coroutinesPerformer);
+        }
+
+        private PlayerDataProvider CreatePlayerDataProvider(DIContainer c)
+            => new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
 
         private SaveLoadService CreateSaveLoadService(DIContainer c)
         {
@@ -65,51 +80,6 @@ namespace Assets.Scripts.Utilities.Factory
                 dataKeysStorage,
                 dataRepository,
                 c.Resolve<ISaveScreen>());
-        }
-
-        private PlayerDataProvider CreatePlayerDataProvider(DIContainer c)
-            => new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
-
-        private WalletService CreateWalletService(DIContainer c)
-        {
-            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
-
-            foreach (var type in Enum.GetValues(typeof(CurrencyTypes)))
-                currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
-
-            return new WalletService(currencies, c.Resolve<PlayerDataProvider>());
-        }
-
-        private PlayedGamesStatistic CreatePlayedGamesStatistic(DIContainer c)
-        {
-            Dictionary<GameStatType, int> statistics = new();
-
-            foreach (var type in Enum.GetValues(typeof(GameStatType)))
-                statistics.Add((GameStatType)type, default);
-
-            return new PlayedGamesStatistic(statistics, c.Resolve<PlayerDataProvider>());
-        }
-
-        private SceneLoaderService CreateSceneLoaderService(DIContainer c)
-            => new SceneLoaderService();
-
-        private ConfigsProviderService CreateConfigsProviderService(DIContainer c)
-        {
-            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
-
-            ResourcesConfigsLoader resourcesConfigsLoader = new ResourcesConfigsLoader(resourcesAssetsLoader);
-
-            return new ConfigsProviderService(resourcesConfigsLoader);
-        }
-
-        private CoroutinesPerformer CreateCoroutinesPerformer(DIContainer c)
-        {
-            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
-
-            CoroutinesPerformer coroutinesPerformer = resourcesAssetsLoader
-                .Load<CoroutinesPerformer>("Utilities/CoroutinePerformer");
-
-            return Object.Instantiate(coroutinesPerformer);
         }
 
         private LoadingScreenHandler CreateLoadingScreenHandler(DIContainer c)
@@ -132,10 +102,45 @@ namespace Assets.Scripts.Utilities.Factory
             return Object.Instantiate(saveScreenHandler);
         }
 
+        private ConfigsProviderService CreateConfigsProviderService(DIContainer c)
+        {
+            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
+
+            ResourcesConfigsLoader resourcesConfigsLoader = new ResourcesConfigsLoader(resourcesAssetsLoader);
+
+            return new ConfigsProviderService(resourcesConfigsLoader);
+        }
+
+        private SceneLoaderService CreateSceneLoaderService(DIContainer c)
+            => new SceneLoaderService();
+
         private SceneSwitcherService CreateSceneSwitcherService(DIContainer c)
             => new SceneSwitcherService(
                 c,
                 c.Resolve<SceneLoaderService>(),
                 c.Resolve<ILoadingScreen>());
+
+        private WalletService CreateWalletService(DIContainer c)
+        {
+            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
+
+            foreach (var type in Enum.GetValues(typeof(CurrencyTypes)))
+                currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
+
+            return new WalletService(currencies, c.Resolve<PlayerDataProvider>());
+        }
+
+        private PlayedGamesStatistic CreatePlayedGamesStatistic(DIContainer c)
+        {
+            Dictionary<GameStatType, int> statistics = new();
+
+            foreach (var type in Enum.GetValues(typeof(GameStatType)))
+                statistics.Add((GameStatType)type, default);
+
+            return new PlayedGamesStatistic(
+                statistics,
+                c.Resolve<PlayerDataProvider>(),
+                c.Resolve<ICoroutinesPerformer>());
+        }
     }
 }

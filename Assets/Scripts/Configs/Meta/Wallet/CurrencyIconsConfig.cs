@@ -1,9 +1,7 @@
-﻿using Assets.Scripts.Meta.Wallet;
+﻿using Assets.Scripts.Meta.Features.Wallet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.Scripts.Configs.Meta.Wallet

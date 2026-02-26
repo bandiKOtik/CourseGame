@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Meta.Wallet;
+﻿using Assets.Scripts.Meta.Features.Wallet;
+using Assets.Scripts.Meta.Statistics;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Utilities.DataManagement
@@ -8,5 +8,6 @@ namespace Assets.Scripts.Utilities.DataManagement
     {
         public Dictionary<CurrencyTypes, int> WalletData;
         public Dictionary<GameStatType, int> PlayedGamesData;
+        public List<int> CompletedLevels;
     }
 }

@@ -1,5 +1,6 @@
-﻿using Assets.Scripts.Meta.Wallet;
+﻿using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Runtime.UI.CommonViews;
+using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Utilities.Factory.UI;
 using System.Collections.Generic;
 

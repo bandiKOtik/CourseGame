@@ -45,7 +45,7 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             bool isPlayerDataSaveExists = false;
 
-            yield return playerDataProvider.Exists(result => isPlayerDataSaveExists = result);
+            yield return playerDataProvider.CheckExistsAsync(result => isPlayerDataSaveExists = result);
 
             if (isPlayerDataSaveExists)
                 yield return _coroutinesPerformer

@@ -3,13 +3,10 @@ using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Meta.Wallet;
 using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Runtime.Sequence;
-using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
@@ -22,9 +19,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     {
         private DIContainer _container;
         private IInputHandler _inputHandler;
-        private ICoroutinesPerformer _coroutinesPerformer;
         private GameSession _session;
-        private StatisticManageService _statManager;
         private GameplayContextRegistrations _contextRegistrations = new();
 
         private bool _initialized = false;
@@ -44,28 +39,26 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
         public override IEnumerator Initialize()
         {
-            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            _session = _container.Resolve<GameSession>();
 
-            _session = new();
+            _inputHandler = _container.Resolve<IInputHandler>();
 
-            yield return _session.Initialize(
-                _coroutinesPerformer,
-                _container.Resolve<ISequenceGenerator>(),
-                _container.Resolve<SceneSwitcherService>(),
-                _container.Resolve<SequenceMatcher>(),
-                _inputHandler = _container.Resolve<IInputHandler>(),
-                _container.Resolve<PlayerDataProvider>());
-
-            IReadOnlyDictionary<CurrencyTypes, int> prices = _container
+            var config = _container
                 .Resolve<ConfigsProviderService>()
-                        .GetConfig<GamePriceConfig>()
-                        .GetWinCashback();
+                .GetConfig<GamePriceConfig>();
 
-            _statManager = new(
+            IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
+
+            IReadOnlyDictionary<CurrencyTypes, int> defeatCash = config.GetDefeatPrice();
+
+            StatisticManageService manager = new(
                 _session,
                 _container.Resolve<WalletService>(),
                 _container.Resolve<PlayedGamesStatistic>(),
-                prices);
+                winCash,
+                defeatCash);
+
+            yield break;
         }
 
         private void Update()

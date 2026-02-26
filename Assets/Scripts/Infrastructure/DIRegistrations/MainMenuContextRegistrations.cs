@@ -1,58 +1,69 @@
-﻿using Assets.Scripts.Configs.Meta.GameModeConfigs;
-using Assets.Scripts.Configs.Meta.Wallet;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Meta.Wallet;
-using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Runtime.UI.CommonViews;
-using Assets.Scripts.Runtime.UI.Wallet;
+using Assets.Scripts.Runtime.UI.Core;
+using Assets.Scripts.Runtime.UI.MainMenu;
 using Assets.Scripts.Utilities.AssetsManagement;
-using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Factory.UI;
-using Assets.Scripts.Utilities.SceneManagement;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
     public class MainMenuContextRegistrations
     {
-        private readonly string _gameModeConfigPath = "Configs/GameModeConfig";
-
         public void Process(DIContainer container)
         {
-            container.RegisterAsSingle<IInputHandler>(CreateGameModeSelector);
+            container.RegisterAsSingle(CreateProjectUIRoot).NonLazy();
 
-            container.RegisterAsSingle(CreateWalletPresenter).NonLazy();
+            container.RegisterAsSingle(c => new MainMenuPresentersFactory(c));
+
+            container.RegisterAsSingle(CreateMainMenuScreenPresenter).NonLazy();
+
+            container.RegisterAsSingle(CreateMainMenuPopupService);
+
+            container.RegisterAsSingle(CreateProgressionResetService);
         }
 
-        private WalletPresenter CreateWalletPresenter(DIContainer c)
+        private MainMenuUIRoot CreateProjectUIRoot(DIContainer c)
         {
-            var view = Object.FindObjectOfType<IconTextListView>();
+            ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
 
-            var presenter = c.Resolve<ProjectPresentersFactory>().CreateWalletPresenter(view);
+            MainMenuUIRoot rootPrefab = resourcesAssetsLoader
+                .Load<MainMenuUIRoot>("UI/MainMenu/MainMenuUIRoot");
+
+            return Object.Instantiate(rootPrefab);
+        }
+
+        private MainMenuScreenPresenter CreateMainMenuScreenPresenter(DIContainer c)
+        {
+            MainMenuUIRoot uiRoot = c.Resolve<MainMenuUIRoot>();
+
+            MainMenuScreenView view = c.Resolve<ViewsFactory>()
+                .Create<MainMenuScreenView>(ViewIDs.MainMenuScreen, uiRoot.HUDLayer);
+
+            MainMenuScreenPresenter presenter = c.Resolve<MainMenuPresentersFactory>()
+                .CreateMainMenuScreen(view);
 
             return presenter;
         }
 
-        private GameModeSelector CreateGameModeSelector(DIContainer c)
+        private MainMenuPopupService CreateMainMenuPopupService(DIContainer c)
         {
-            IReadOnlyDictionary<CurrencyTypes, int> prices = c
-                .Resolve<ConfigsProviderService>()
-                        .GetConfig<GamePriceConfig>()
-                        .GetEnterPrices();
+            return new MainMenuPopupService(
+                c.Resolve<ViewsFactory>(),
+                c.Resolve<ProjectPresentersFactory>(),
+                c.Resolve<MainMenuUIRoot>());
+        }
 
+        private ProgressionResetService CreateProgressionResetService(DIContainer c)
+        {
             return new(
-                        c.Resolve<ICoroutinesPerformer>(),
-                        c.Resolve<SceneSwitcherService>(),
-                        c.Resolve<PlayerDataProvider>(),
-                        c.Resolve<ResourcesAssetsLoader>()
-                        .Load<GameModeConfig>(_gameModeConfigPath),
-                        c.Resolve<WalletService>(),
-                        c.Resolve<PlayedGamesStatistic>(),
-                        prices);
+                c.Resolve<WalletService>(),
+                c.Resolve<PlayedGamesStatistic>(),
+                c.Resolve<ConfigsProviderService>()
+                .GetConfig<GamePriceConfig>());
         }
     }
 }

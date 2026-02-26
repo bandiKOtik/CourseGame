@@ -1,7 +1,7 @@
 ﻿using Assets.Scripts.Configs.Meta.Wallet;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Meta.Wallet;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Utilities.DataManagement.DataProviders
@@ -22,7 +22,8 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             return new PlayerData()
             {
                 WalletData = InitWalletData(),
-                PlayedGamesData = InitGamesData()
+                PlayedGamesData = InitGamesData(),
+                CompletedLevels = new()
             };
         }
 

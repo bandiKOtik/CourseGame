@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.Runtime.UI.Core;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.UI.CommonViews

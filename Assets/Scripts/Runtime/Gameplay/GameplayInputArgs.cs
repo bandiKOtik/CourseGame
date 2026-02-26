@@ -6,13 +6,11 @@ namespace Assets.Scripts.Infrastructure.Gameplay
 {
     public class GameplayInputArgs : IInputSceneArgs
     {
-        public GameplayInputArgs(GameMode currentGamemode, GameModeConfig config)
+        public GameplayInputArgs(GameMode currentGamemode)
         {
             CurrentGamemode = currentGamemode;
-            GenerationConfig = config.GetSequenceConfig(currentGamemode);
         }
 
         public GameMode CurrentGamemode { get; }
-        public SequenceGenerationConfig GenerationConfig { get; }
     }
 }

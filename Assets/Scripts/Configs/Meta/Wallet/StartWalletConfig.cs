@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Meta.Wallet;
+﻿using Assets.Scripts.Meta.Features.Wallet;
 using System;
 using System.Collections.Generic;
 using System.Linq;

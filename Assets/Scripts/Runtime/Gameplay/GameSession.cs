@@ -1,11 +1,10 @@
 ﻿using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Runtime.Sequence;
+using Assets.Scripts.Runtime.SequenceGeneration;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay
@@ -13,9 +12,11 @@ namespace Assets.Scripts.Runtime.Gameplay
     public class GameSession : IDisposable
     {
         public event Action Win;
-
         public event Action Defeat;
 
+        public event Action<string> UserInputChanged;
+
+        public string Sequence => _sequence;
         private string _sequence;
         private string _input = "";
 
@@ -25,7 +26,7 @@ namespace Assets.Scripts.Runtime.Gameplay
         private InputStringHandler _inputHandler;
         private PlayerDataProvider _dataProvider;
 
-        public IEnumerator Initialize(
+        public GameSession(
             ICoroutinesPerformer performer,
             ISequenceGenerator generator,
             SceneSwitcherService sceneSwitcher,
@@ -48,25 +49,24 @@ namespace Assets.Scripts.Runtime.Gameplay
             _inputHandler.ExitToMenuRequest += ReturnToMenu;
 
             _sequence = generator.GenerateSequence();
-
-            Debug.LogWarning(_sequence);
-
-            yield break;
         }
 
         public void Dispose()
         {
-            _inputHandler.UserInput -= OnUserInput;
-            _inputHandler.ClearValue -= OnClearLastValue;
-            _inputHandler.CheckSequence -= OnCheckSequence;
-            _inputHandler.ExitToMenuRequest -= ReturnToMenu;
+            if (_inputHandler != null)
+            {
+                _inputHandler.UserInput -= OnUserInput;
+                _inputHandler.ClearValue -= OnClearLastValue;
+                _inputHandler.CheckSequence -= OnCheckSequence;
+                _inputHandler.ExitToMenuRequest -= ReturnToMenu;
+            }
         }
 
         private void OnUserInput(char toAdd)
         {
             _input += toAdd;
 
-            Debug.Log("> " + _input);
+            UserInputChanged?.Invoke(_input);
         }
 
         private void OnClearLastValue()
@@ -74,7 +74,7 @@ namespace Assets.Scripts.Runtime.Gameplay
             if (_input.Length > 0)
                 _input = _input.Substring(0, _input.Length - 1);
 
-            Debug.Log("You wrote: " + _input);
+            UserInputChanged?.Invoke(_input);
         }
 
         private void OnCheckSequence()
