@@ -17,7 +17,7 @@ namespace Assets.Scripts.Infrastructure.DI_Container
 
         public DIContainer(DIContainer parent) => _parent = parent;
 
-        public void RegisterAsSingle<T>(Func<DIContainer, T> creator)
+        public IRegistrationOptions RegisterAsSingle<T>(Func<DIContainer, T> creator)
         {
             if (IsRegister<T>())
                 throw new InvalidOperationException(typeof(T) + " is already register");
@@ -25,6 +25,7 @@ namespace Assets.Scripts.Infrastructure.DI_Container
             Registration registration = new(container => creator.Invoke(container));
 
             _container.Add(typeof(T), registration);
+            return registration;
         }
 
         public bool IsRegister<T>()
@@ -60,15 +61,22 @@ namespace Assets.Scripts.Infrastructure.DI_Container
 
             throw new InvalidOperationException($"Registration for {typeof(T)} not exists");
         }
-<<<<<<< Updated upstream
-=======
 
         public void Initialize()
         {
-            foreach (Registration registration in _container.Values)
-                if (registration.IsNonLazy)
+            foreach (var registration in _container.Values)
+            {
+                if (registration.IsNonLazy == true)
                     registration.CreateInstanceFrom(this);
+
+                registration.OnInitialize();
+            }
         }
->>>>>>> Stashed changes
+
+        public void Dispose()
+        {
+            foreach (var registration in _container.Values)
+                registration.OnDispose();
+        }
     }
 }

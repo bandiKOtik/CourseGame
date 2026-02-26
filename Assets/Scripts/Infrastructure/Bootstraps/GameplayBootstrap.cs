@@ -1,12 +1,16 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
-using Assets.Scripts.Runtime.Infrastructure;
+using Assets.Scripts.Meta;
+using Assets.Scripts.Meta.Features.Wallet;
+using Assets.Scripts.Meta.Statistics;
+using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
@@ -15,7 +19,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     {
         private DIContainer _container;
         private IInputHandler _inputHandler;
-        private ICoroutinesPerformer _coroutinesPerformer;
         private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
 
@@ -29,39 +32,41 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
 
-            Debug.Log("Gamemode: " + args.GameConfig.Current);
+            Debug.Log("<color=blue>Gamemode</color>: " + args.CurrentGamemode);
 
             _contextRegistrations.Process(_container, args);
         }
 
         public override IEnumerator Initialize()
         {
-            _coroutinesPerformer = _container.Resolve<ICoroutinesPerformer>();
+            _session = _container.Resolve<GameSession>();
 
             _inputHandler = _container.Resolve<IInputHandler>();
 
-            _coroutinesPerformer.StartPerform(LoadConfigs());
+            var config = _container
+                .Resolve<ConfigsProviderService>()
+                .GetConfig<GamePriceConfig>();
 
-            _session = new();
+            IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
 
-            yield return _session.Initialize(_container);
+            IReadOnlyDictionary<CurrencyTypes, int> defeatCash = config.GetDefeatPrice();
+
+            StatisticManageService manager = new(
+                _session,
+                _container.Resolve<WalletService>(),
+                _container.Resolve<PlayedGamesStatistic>(),
+                winCash,
+                defeatCash);
+
+            yield break;
         }
 
         private void Update()
         {
             if (_initialized)
-            {
                 _inputHandler.Update();
-            }
         }
 
         public override void Run() => _initialized = true;
-
-        private IEnumerator LoadConfigs()
-        {
-            ConfigsProviderService configsProvider = _container.Resolve<ConfigsProviderService>();
-
-            yield return configsProvider.LoadAsync();
-        }
     }
 }

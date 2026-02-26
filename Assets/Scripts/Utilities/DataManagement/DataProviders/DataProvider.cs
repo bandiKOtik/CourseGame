@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Utilities.CoroutinesManagement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -34,21 +35,21 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             _writers.Add(writer);
         }
 
-        public IEnumerator Save()
+        public IEnumerator SaveAsync()
         {
             UpdateDataFromWriters();
 
             yield return _saveLoadService.Save(_data);
         }
 
-        public IEnumerator Load()
+        public IEnumerator LoadAsync()
         {
             yield return _saveLoadService.Load<TData>(loadedData => _data = loadedData);
 
             SendDataToReaders();
         }
 
-        public IEnumerator Exists(Action<bool> onResult)
+        public IEnumerator CheckExistsAsync(Action<bool> onResult)
         {
             yield return _saveLoadService.Exists<TData>(result => onResult(result));
         }
@@ -56,19 +57,21 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
         public void Reset()
         {
             _data = GetOriginData();
+
+            SendDataToReaders();
         }
 
         protected abstract TData GetOriginData();
 
         private void SendDataToReaders()
         {
-            foreach (IDataReader<TData> reader in _readers)
+            foreach (var reader in _readers)
                 reader.ReadFrom(_data);
         }
 
         private void UpdateDataFromWriters()
         {
-            foreach (IDataWriter<TData> writer in _writers)
+            foreach (var writer in _writers)
                 writer.WriteTo(_data);
         }
     }

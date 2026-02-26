@@ -1,4 +1,7 @@
-﻿using Assets.Scripts.Utilities.AssetsManagement;
+﻿using Assets.Scripts.Configs.Gameplay.Levels;
+using Assets.Scripts.Configs.Meta.GameModeConfigs;
+using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Utilities.AssetsManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +15,11 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
 
         private readonly Dictionary<Type, string> _configsPath = new()
         {
+            { typeof(GameModeConfig), "Configs/GameModeConfig" },
+            { typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
+            { typeof(GamePriceConfig), "Configs/Meta/Wallet/GamePriceConfig" },
+            { typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
+            { typeof(LevelsListConfig), "Configs/Gameplay/LevelsListConfig" },
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader loader)
