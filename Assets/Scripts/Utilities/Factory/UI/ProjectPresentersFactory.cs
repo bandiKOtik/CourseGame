@@ -61,13 +61,13 @@ namespace Assets.Scripts.Utilities.Factory.UI
             return new(statistics, this, viewsFactory, view);
         }
 
-        public LevelTilePresenter CreateLevelTilePresenter(LevelTileView view, GameMode gameMode)
+        public LevelTilePresenter CreateLevelTilePresenter(LevelTileView view, int levelNumber)
         {
             return new(
                 _container.Resolve<LevelsProgressionService>(),
                 _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
-                gameMode,
+                levelNumber,
                 view);
         }
 

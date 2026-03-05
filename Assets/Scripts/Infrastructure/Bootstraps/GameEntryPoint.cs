@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Factory;
@@ -58,7 +59,8 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             loadScreen.Hide();
 
-            yield return sceneSwitcher.ProcessSwitchTo(Scenes.MainMenu);
+            // TO MAIN MENU
+            yield return sceneSwitcher.ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(1));
         }
 
         private void SetupAppSettings()

@@ -1,10 +1,8 @@
 ﻿using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta.Features.LevelsProgression;
-using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
-using UnityEngine;
 
 namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
 {
@@ -14,7 +12,7 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         private readonly SceneSwitcherService _sceneSwitcherService;
         private readonly ICoroutinesPerformer _coroutinesPerformer;
 
-        private readonly GameMode _gameMode;
+        private readonly int _levelNumber;
 
         private readonly LevelTileView _view;
 
@@ -22,13 +20,13 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
             LevelsProgressionService levelsService,
             SceneSwitcherService sceneSwitcherService,
             ICoroutinesPerformer coroutinesPerformer,
-            GameMode gameMode,
+            int levelNumber,
             LevelTileView view)
         {
             _levelsService = levelsService;
             _sceneSwitcherService = sceneSwitcherService;
             _coroutinesPerformer = coroutinesPerformer;
-            _gameMode = gameMode;
+            _levelNumber = levelNumber;
             _view = view;
         }
 
@@ -36,7 +34,7 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
 
         public void Initialize()
         {
-            _view.SetLevel(_gameMode.ToString());
+            _view.SetLevel(_levelNumber.ToString());
         }
 
         public void Dispose()
@@ -58,7 +56,7 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         {
             _coroutinesPerformer
                 .StartPerform(_sceneSwitcherService
-                .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(_gameMode)));
+                .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(_levelNumber)));
         }
     }
 }

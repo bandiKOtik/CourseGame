@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Runtime.SequenceGeneration;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.InputManagement;
@@ -14,79 +13,38 @@ namespace Assets.Scripts.Runtime.Gameplay
         public event Action Win;
         public event Action Defeat;
 
-        public event Action<string> UserInputChanged;
-
-        public string Sequence => _sequence;
-        private string _sequence;
-        private string _input = "";
-
         private ICoroutinesPerformer _performer;
         private SceneSwitcherService _sceneSwitcher;
-        private SequenceMatcher _matcher;
         private InputStringHandler _inputHandler;
         private PlayerDataProvider _dataProvider;
 
         public GameSession(
             ICoroutinesPerformer performer,
-            ISequenceGenerator generator,
             SceneSwitcherService sceneSwitcher,
-            SequenceMatcher matcher,
             IInputHandler inputHandler,
             PlayerDataProvider dataProvider)
         {
             _performer = performer;
             _sceneSwitcher = sceneSwitcher;
-            _matcher = matcher;
             _dataProvider = dataProvider;
 
             if (inputHandler is not InputStringHandler _inputHandler)
                 throw new ArgumentException(
                     nameof(inputHandler) + " is wrong handler of type " + typeof(InputStringHandler));
 
-            _inputHandler.UserInput += OnUserInput;
-            _inputHandler.ClearValue += OnClearLastValue;
-            _inputHandler.CheckSequence += OnCheckSequence;
+            _inputHandler.CheckSequence += SessionWin;
+            _inputHandler.ClearValue += SessionDefeat;
             _inputHandler.ExitToMenuRequest += ReturnToMenu;
-
-            _sequence = generator.GenerateSequence();
         }
 
         public void Dispose()
         {
             if (_inputHandler != null)
             {
-                _inputHandler.UserInput -= OnUserInput;
-                _inputHandler.ClearValue -= OnClearLastValue;
-                _inputHandler.CheckSequence -= OnCheckSequence;
+                _inputHandler.CheckSequence -= SessionWin;
+                _inputHandler.ClearValue -= SessionDefeat;
                 _inputHandler.ExitToMenuRequest -= ReturnToMenu;
             }
-        }
-
-        private void OnUserInput(char toAdd)
-        {
-            _input += toAdd;
-
-            UserInputChanged?.Invoke(_input);
-        }
-
-        private void OnClearLastValue()
-        {
-            if (_input.Length > 0)
-                _input = _input.Substring(0, _input.Length - 1);
-
-            UserInputChanged?.Invoke(_input);
-        }
-
-        private void OnCheckSequence()
-        {
-            Debug.Log("Your answer is: " + _input);
-
-            if (_matcher.IsMatch(_sequence, _input))
-                SessionWin();
-            else
-                SessionDefeat();
-
-            _input = "";
         }
 
         private void SessionWin()
