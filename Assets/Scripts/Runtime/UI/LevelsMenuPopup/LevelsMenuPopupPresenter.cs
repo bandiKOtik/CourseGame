@@ -45,13 +45,13 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
 
             var levelsConfig = _configsProvider.GetConfig<LevelsListConfig>();
 
-            foreach (GameMode gameType in Enum.GetValues(typeof(GameMode)))
+            for (int i = 0; i < levelsConfig.Levels.Count; i++)
             {
                 var tileView = _viewsFactory.Create<LevelTileView>(ViewIDs.LevelTile);
 
                 _view.LevelTilesListView.Add(tileView);
 
-                var tilePresenter = _presentersFactory.CreateLevelTilePresenter(tileView, gameType);
+                var tilePresenter = _presentersFactory.CreateLevelTilePresenter(tileView, i + 1);
 
                 tilePresenter.Initialize();
 

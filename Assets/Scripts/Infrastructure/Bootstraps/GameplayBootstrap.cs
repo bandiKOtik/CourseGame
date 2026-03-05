@@ -6,7 +6,9 @@ using Assets.Scripts.Meta;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.Gameplay;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
@@ -22,6 +24,9 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
 
+        [SerializeField] private TestGameplayExample _gameplayExample;
+        private EntitiesLifeContext _lifeContext;
+
         private bool _initialized = false;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
@@ -32,7 +37,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
 
-            Debug.Log("<color=blue>Gamemode</color>: " + args.CurrentGamemode);
+            Debug.Log("<color=green>Current level</color>: " + args.LevelNumber);
 
             _contextRegistrations.Process(_container, args);
         }
@@ -58,15 +63,29 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 winCash,
                 defeatCash);
 
+            _lifeContext = _container.Resolve<EntitiesLifeContext>();
+
+            yield return _container
+                .Resolve<ICoroutinesPerformer>()
+                .StartPerform(_gameplayExample
+                .Initialize(_container));
+
             yield break;
         }
 
         private void Update()
         {
-            if (_initialized)
-                _inputHandler.Update();
+            if (_initialized == false)
+                return;
+
+            _inputHandler.Update();
+            _lifeContext?.Update(Time.deltaTime);
         }
 
-        public override void Run() => _initialized = true;
+        public override void Run()
+        {
+            _initialized = true;
+            _gameplayExample.Run();
+        }
     }
 }

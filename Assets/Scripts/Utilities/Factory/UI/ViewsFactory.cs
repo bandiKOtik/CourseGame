@@ -14,7 +14,6 @@ namespace Assets.Scripts.Utilities.Factory.UI
             { ViewIDs.CurrencyView, "UI/View/IconTextView" },
             { ViewIDs.StatisticView, "UI/View/TextView" },
             { ViewIDs.MainMenuScreen, "UI/MainMenu/MainMenuScreenView" },
-            { ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView" },
             { ViewIDs.LevelsMenuPopup, "UI/Levels/LevelsMenuPopup" },
             { ViewIDs.LevelTile, "UI/Levels/LevelTile" },
         };
