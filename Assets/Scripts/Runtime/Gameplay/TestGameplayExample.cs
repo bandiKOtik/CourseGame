@@ -10,7 +10,7 @@ namespace Assets.Scripts.Runtime.Gameplay
         private DIContainer _container;
         private EntitiesFactory _factory;
 
-        private Entity _entity;
+        private Entity _ghostEntityTest;
 
         private bool _initialized = false;
 
@@ -24,9 +24,11 @@ namespace Assets.Scripts.Runtime.Gameplay
 
         public void Run()
         {
-            //_entity = _factory.CreateRigidbodyMoveableEntity(Vector3.zero);
+            _ghostEntityTest = _factory.CreateHero(Vector3.zero);
 
-            _entity = _factory.CreateCharacterControllerEntity(Vector3.zero);
+            _factory.CreateGhost(Vector3.forward * 5);
+
+            _factory.CreateDummy(Vector3.back * 5);
 
             _initialized = true;
         }
@@ -38,8 +40,14 @@ namespace Assets.Scripts.Runtime.Gameplay
 
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-            _entity.MoveDirection.Value = input;
-            _entity.RotationDirection.Value = input;
+            _ghostEntityTest.MoveDirection.Value = input;
+            _ghostEntityTest.RotationDirection.Value = input;
+
+            if (Input.GetKeyDown(KeyCode.R))
+                _ghostEntityTest.TakeDamageRequest.Invoke(1f);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                _ghostEntityTest.StartAttackRequest.Invoke();
         }
     }
 }

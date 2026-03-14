@@ -33,11 +33,14 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             container.RegisterAsSingle(CreateGameSession);
 
             container.RegisterAsSingle(GameplayUIRoot).NonLazy();
+
+            container.RegisterAsSingle(c => new CollidersRegistryService());
         }
 
         private MonoEntitiesFactory CreateMonoEntitiesFactory(DIContainer c)
         {
             return new(
+                c.Resolve<CollidersRegistryService>(),
                 c.Resolve<ResourcesAssetsLoader>(),
                 c.Resolve<EntitiesLifeContext>());
         }

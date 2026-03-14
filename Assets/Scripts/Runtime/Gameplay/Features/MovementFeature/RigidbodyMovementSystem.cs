@@ -1,26 +1,40 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
 {
-    public class RigidbodyMovementSystem : IInitializeableSystem, IUpdateableSystem
+    public class RigidbodyMovementSystem : IInitializableSystem, IUpdateableSystem
     {
+        private Rigidbody _rigidbody;
+
         private ReactiveVariable<Vector3> _moveDirection;
         private ReactiveVariable<float> _moveSpeed;
-        private Rigidbody _rigidbody;
+        private ReactiveVariable<bool> _isMoving;
+        private ICompositeCondition _canMove;
 
         public void OnInit(Entity entity)
         {
+            _rigidbody = entity.Rigidbody;
             _moveDirection = entity.MoveDirection;
             _moveSpeed = entity.MoveSpeed;
-            _rigidbody = entity.Rigidbody;
+            _isMoving = entity.IsMoving;
+            _canMove = entity.CanMove;
         }
 
         public void OnUpdate(float deltaTime)
         {
+            if (_canMove.Evaluate() == false)
+            {
+                _rigidbody.velocity = Vector3.zero;
+                return;
+            }
+
             Vector3 velocity = _moveDirection.Value.normalized * _moveSpeed.Value;
+
+            _isMoving.Value = velocity.magnitude > 0;
 
             _rigidbody.velocity = velocity;
         }

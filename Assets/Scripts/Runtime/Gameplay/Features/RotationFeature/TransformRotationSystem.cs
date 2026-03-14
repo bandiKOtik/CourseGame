@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.RotationFeature
 {
-    public class TransformRotationSystem : IInitializeableSystem, IUpdateableSystem
+    public class TransformRotationSystem : IInitializableSystem, IUpdateableSystem
     {
         private ReactiveVariable<Vector3> _rotationDirection;
         private ReactiveVariable<float> _rotationSpeed;

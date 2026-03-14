@@ -27,9 +27,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 
             foreach (var entity in _releaseRequests)
             {
-                _entities.Remove(entity);
                 entity.Dispose();
                 Released?.Invoke(entity);
+                _entities.Remove(entity);
             }
 
             _releaseRequests.Clear();
