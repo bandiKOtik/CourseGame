@@ -17,7 +17,6 @@ namespace Assets.Scripts.Editor
         private static string OutputPath
             => Path.Combine(Application.dataPath, "Scripts/Runtime/Gameplay/EntitiesCore/Generated/EntityAPI.cs");
 
-        [InitializeOnLoadMethod]
         [MenuItem("Tools/GenerateEntityAPI")]
         private static void Generate()
         {

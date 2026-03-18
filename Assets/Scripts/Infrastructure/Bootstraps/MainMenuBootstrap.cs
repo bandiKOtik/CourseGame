@@ -18,8 +18,10 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
             _contextRegistrations.Process(_container);
         }
 
-        public override IEnumerator Initialize() { yield break; }
+        public override IEnumerator Initialize()
+        { yield break; }
 
-        public override void Run() { }
+        public override void Run()
+        { }
     }
 }

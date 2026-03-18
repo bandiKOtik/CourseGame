@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
 {
-    public class CharacterControllerMovementSystem : IInitializeableSystem, IUpdateableSystem
+    public class CharacterControllerMovementSystem : IInitializableSystem, IUpdateableSystem
     {
         private ReactiveVariable<Vector3> _moveDirection;
         private ReactiveVariable<float> _moveSpeed;

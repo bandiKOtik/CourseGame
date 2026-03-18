@@ -3,6 +3,7 @@
     public interface ISubscribedPresenter : IPresenter
     {
         void Subscribe();
+
         void Unsubscribe();
     }
 }

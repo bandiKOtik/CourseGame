@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.CommonViews;
 using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Utilities.Reactive;
 
 namespace Assets.Scripts.Runtime.UI.StatisticsUI
 {
@@ -29,6 +28,7 @@ namespace Assets.Scripts.Runtime.UI.StatisticsUI
             _view.SetText(_statType.ToString() + ": " + _value.ToString());
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        { }
     }
 }

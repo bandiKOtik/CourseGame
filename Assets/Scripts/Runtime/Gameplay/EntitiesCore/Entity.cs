@@ -11,7 +11,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
         private readonly List<IEntitySystem> _systems = new();
 
         private readonly List<IUpdateableSystem> _updateables = new();
-        private readonly List<IInitializeableSystem> _initializeables = new();
+        private readonly List<IInitializableSystem> _initializeables = new();
         private readonly List<IDisposableSystem> _disposables = new();
 
         private bool _initialized = false;
@@ -79,7 +79,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 
             _systems.Add(system);
 
-            if (system is IInitializeableSystem initable)
+            if (system is IInitializableSystem initable)
             {
                 _initializeables.Add(initable);
 

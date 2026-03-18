@@ -20,7 +20,7 @@ namespace Assets.Scripts.Runtime.UI.Core
             _presentersFactory = presentersFactory;
         }
 
-        protected abstract Transform PopupLayer {  get; }
+        protected abstract Transform PopupLayer { get; }
 
         public LevelsMenuPopupPresenter OpenLevelsMenuPopup()
         {

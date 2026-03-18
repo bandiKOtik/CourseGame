@@ -1,6 +1,6 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using UnityEngine;
-using DG.Tweening;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Runtime.UI.Core
@@ -67,9 +67,11 @@ namespace Assets.Scripts.Runtime.UI.Core
             return _currentAnimation = sequence.SetUpdate(true).Play();
         }
 
-        protected virtual void ModifyShowAnimation(Sequence animation) { }
+        protected virtual void ModifyShowAnimation(Sequence animation)
+        { }
 
-        protected virtual void ModifyHideAnimation(Sequence animation) { }
+        protected virtual void ModifyHideAnimation(Sequence animation)
+        { }
 
         public void OnCloseButtonClicked() => CloseRequest?.Invoke();
 

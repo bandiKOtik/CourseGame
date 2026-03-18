@@ -11,8 +11,8 @@ namespace Assets.Scripts.Meta
         private GameSession _gameSession;
         private WalletService _walletService;
         private PlayedGamesStatistic _playerStatistic;
-        IReadOnlyDictionary<CurrencyTypes, int> _winCashback;
-        IReadOnlyDictionary<CurrencyTypes, int> _defeatPrice;
+        private IReadOnlyDictionary<CurrencyTypes, int> _winCashback;
+        private IReadOnlyDictionary<CurrencyTypes, int> _defeatPrice;
 
         public StatisticManageService(
             GameSession gameSession,

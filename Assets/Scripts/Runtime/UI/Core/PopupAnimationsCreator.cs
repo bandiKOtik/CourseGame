@@ -17,6 +17,7 @@ namespace Assets.Scripts.Runtime.UI.Core
             {
                 case PopupAnimationType.None:
                     return DOTween.Sequence();
+
                 case PopupAnimationType.Expand:
                     return DOTween.Sequence()
                         .Append(anticlicker
@@ -26,6 +27,7 @@ namespace Assets.Scripts.Runtime.UI.Core
                             .DOScale(1, animationSpeed)
                             .From(0)
                             .SetEase(Ease.OutBack));
+
                 default:
                     throw new System.ArgumentException(nameof(type));
             }

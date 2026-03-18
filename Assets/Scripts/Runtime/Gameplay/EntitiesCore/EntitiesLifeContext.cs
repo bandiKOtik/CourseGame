@@ -6,6 +6,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
     public class EntitiesLifeContext : IDisposable
     {
         public event Action<Entity> Added;
+
         public event Action<Entity> Released;
 
         private readonly List<Entity> _entities = new();
@@ -27,9 +28,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 
             foreach (var entity in _releaseRequests)
             {
-                _entities.Remove(entity);
                 entity.Dispose();
                 Released?.Invoke(entity);
+                _entities.Remove(entity);
             }
 
             _releaseRequests.Clear();

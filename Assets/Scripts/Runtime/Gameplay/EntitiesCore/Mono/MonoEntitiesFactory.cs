@@ -9,13 +9,16 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
     public class MonoEntitiesFactory : IInitializable, IDisposable
     {
         private readonly ResourcesAssetsLoader _loader;
-
         private readonly EntitiesLifeContext _context;
-
+        private readonly CollidersRegistryService _registry;
         private readonly Dictionary<Entity, MonoEntity> _entityToMono = new();
 
-        public MonoEntitiesFactory(ResourcesAssetsLoader loader, EntitiesLifeContext context)
+        public MonoEntitiesFactory(
+            CollidersRegistryService registry,
+            ResourcesAssetsLoader loader,
+            EntitiesLifeContext context)
         {
+            _registry = registry;
             _loader = loader;
             _context = context;
         }
@@ -26,7 +29,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
 
             var instance = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity, null);
 
-            instance.Setup(entity);
+            instance.Initialize(_registry);
+
+            instance.Link(entity);
 
             _entityToMono.Add(entity, instance);
 
@@ -58,7 +63,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
         {
             var monoEntity = _entityToMono[entity];
             monoEntity.Cleanup(entity);
-            UnityEngine.Object.Destroy(monoEntity);
+            UnityEngine.Object.Destroy(monoEntity.gameObject);
         }
     }
 }

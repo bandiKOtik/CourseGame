@@ -1,9 +1,15 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.RotationFeature
 {
+    public class CanRotate : IEntityComponent
+    {
+        public ICompositeCondition Value;
+    }
+
     public class RotationDirection : IEntityComponent
     {
         public ReactiveVariable<Vector3> Value;
