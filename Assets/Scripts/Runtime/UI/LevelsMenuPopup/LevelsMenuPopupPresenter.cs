@@ -1,10 +1,8 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
-using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup

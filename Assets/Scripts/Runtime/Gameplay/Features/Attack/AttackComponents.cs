@@ -84,4 +84,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
     {
         public ReactiveVariable<bool> Value;
     }
+
+    public class AreaAttackRadius : IEntityComponent
+    {
+        public ReactiveVariable<float> Value;
+    }
 }

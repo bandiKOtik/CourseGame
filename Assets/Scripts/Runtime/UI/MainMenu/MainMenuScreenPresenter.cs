@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Meta.Features.Wallet;
-using Assets.Scripts.Meta.Statistics;
+﻿using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Utilities.Factory.UI;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
         private readonly ProjectPresentersFactory _factory;
 
         private readonly MainMenuPopupService _popupService;
-        ProgressionResetService _resetService;
+        private ProgressionResetService _resetService;
 
         private readonly List<IPresenter> _childPresenters = new();
 

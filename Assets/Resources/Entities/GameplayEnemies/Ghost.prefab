@@ -26,11 +26,11 @@ Transform:
   m_GameObject: {fileID: 5418128861064669006}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.15, y: 1.75, z: 0.1}
+  m_LocalPosition: {x: -0.15, y: 0, z: 0.099999994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4276350456375544872}
+  m_Father: {fileID: 7327283834027415266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &8295558409795588118
 LineRenderer:
@@ -162,11 +162,11 @@ Transform:
   m_GameObject: {fileID: 8126259392862439262}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15, y: 1.75, z: 0.1}
+  m_LocalPosition: {x: 0.15, y: 0, z: 0.099999994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4276350456375544872}
+  m_Father: {fileID: 7327283834027415266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!120 &5754059365847215507
 LineRenderer:
@@ -300,9 +300,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 0.5, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 9105552681047480918}
+  - {fileID: 1760256651599154671}
   m_Father: {fileID: 4276350456375544872}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6218907864625619343
@@ -312,7 +314,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9172942151726185180}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &7619487238052338966
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -440,14 +442,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7327283834027415266}
-    - targetCorrespondingSourceObject: {fileID: 2211365586302194075, guid: 70a1fba6ab96b21459c5bcc647ee33ed,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1760256651599154671}
-    - targetCorrespondingSourceObject: {fileID: 2211365586302194075, guid: 70a1fba6ab96b21459c5bcc647ee33ed,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 9105552681047480918}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3252364875987585721, guid: 70a1fba6ab96b21459c5bcc647ee33ed,
         type: 3}

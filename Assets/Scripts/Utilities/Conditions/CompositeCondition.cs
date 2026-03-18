@@ -13,7 +13,9 @@ namespace Assets.Scripts.Utilities.Conditions
             _standartLogicOperation = standartLogicOperation;
         }
 
-        public CompositeCondition() : this(LogicOperations.And) { }
+        public CompositeCondition() : this(LogicOperations.And)
+        {
+        }
 
         public bool Evaluate()
         {

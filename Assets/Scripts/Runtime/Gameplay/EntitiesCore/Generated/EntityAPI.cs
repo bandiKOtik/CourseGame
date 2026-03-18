@@ -40,6 +40,12 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Sensors.IsTouchedDeathMask() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddIsTouchedDeathMask(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Sensors.IsTouchedDeathMask() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Sensors.ExcludedEntitiesFromContacts ExcludedEntitiesFromContactsComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Sensors.ExcludedEntitiesFromContacts>();
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity[] ExcludedEntitiesFromContacts
+			=> ExcludedEntitiesFromContactsComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddExcludedEntitiesFromContacts(Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity[] value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Sensors.ExcludedEntitiesFromContacts() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.RotationFeature.CanRotate CanRotateComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.RotationFeature.CanRotate>();
 		public Assets.Scripts.Utilities.Conditions.ICompositeCondition CanRotate
@@ -92,6 +98,52 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.IsMoving() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddIsMoving(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.IsMoving() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.MustRequestTeleport MustRequestTeleportComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.MustRequestTeleport>();
+		public Assets.Scripts.Utilities.Conditions.ICompositeCondition MustRequestTeleport
+			=> MustRequestTeleportComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMustRequestTeleport(Assets.Scripts.Utilities.Conditions.ICompositeCondition value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.MustRequestTeleport() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRequest TeleportRequestComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRequest>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveEvent TeleportRequest
+			=> TeleportRequestComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportRequest()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRequest() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveEvent() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportRequest(Assets.Scripts.Utilities.Reactive.ReactiveEvent value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRequest() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportEnergyPrice TeleportEnergyPriceComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportEnergyPrice>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> TeleportEnergyPrice
+			=> TeleportEnergyPriceComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportEnergyPrice()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportEnergyPrice() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportEnergyPrice(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportEnergyPrice() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRadius TeleportRadiusComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRadius>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> TeleportRadius
+			=> TeleportRadiusComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportRadius()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRadius() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportRadius(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportRadius() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.PositionFound PositionFoundComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.PositionFound>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3> PositionFound
+			=> PositionFoundComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddPositionFound()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.PositionFound() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddPositionFound(Assets.Scripts.Utilities.Reactive.ReactiveEvent<UnityEngine.Vector3> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.PositionFound() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved TeleportDestinationAchievedComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveEvent TeleportDestinationAchieved
+			=> TeleportDestinationAchievedComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportDestinationAchieved()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveEvent() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportDestinationAchieved(Assets.Scripts.Utilities.Reactive.ReactiveEvent value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.CurrentHealth CurrentHealthComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.CurrentHealth>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> CurrentHealth
@@ -182,6 +234,14 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.TakeDamageEvent() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveEvent<System.Single>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTakeDamageEvent(Assets.Scripts.Utilities.Reactive.ReactiveEvent<System.Single> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.TakeDamageEvent() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized DamageInitializedComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> DamageInitialized
+			=> DamageInitializedComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddDamageInitialized()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddDamageInitialized(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage BodyContactDamageComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> BodyContactDamage
@@ -190,6 +250,30 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddBodyContactDamage(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Capabilities.CurrentEnergy CurrentEnergyComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Capabilities.CurrentEnergy>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> CurrentEnergy
+			=> CurrentEnergyComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddCurrentEnergy()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.CurrentEnergy() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddCurrentEnergy(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.CurrentEnergy() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Capabilities.MaxEnergy MaxEnergyComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Capabilities.MaxEnergy>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> MaxEnergy
+			=> MaxEnergyComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMaxEnergy()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.MaxEnergy() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMaxEnergy(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.MaxEnergy() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Capabilities.ChargeAmountPerSecond ChargeAmountPerSecondComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Capabilities.ChargeAmountPerSecond>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> ChargeAmountPerSecond
+			=> ChargeAmountPerSecondComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddChargeAmountPerSecond()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.ChargeAmountPerSecond() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddChargeAmountPerSecond(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Capabilities.ChargeAmountPerSecond() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.Attack.StartAttackRequest StartAttackRequestComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Attack.StartAttackRequest>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveEvent StartAttackRequest
@@ -312,6 +396,14 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.InAttackCooldown() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddInAttackCooldown(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.InAttackCooldown() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius AreaAttackRadiusComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> AreaAttackRadius
+			=> AreaAttackRadiusComp.Value;
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddAreaAttackRadius()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddAreaAttackRadius(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Common.TransformComponent TransformComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Common.TransformComponent>();
 		public UnityEngine.Transform Transform

@@ -36,9 +36,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
 
         private void OnDelayEnd()
         {
-            var bullet = _factory.CreateBullet(_shootPoint.position, _shootPoint.forward, _damage.Value);
-
-            Debug.LogError(bullet.Item2.gameObject);
+            _factory.CreateBullet(_shootPoint.position, _shootPoint.forward, _damage.Value);
         }
     }
 }

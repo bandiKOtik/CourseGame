@@ -20,7 +20,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
 
             MonoEntityRegistrator[] registrators = GetComponentsInChildren<MonoEntityRegistrator>();
 
-            if (registrators != null )
+            if (registrators != null)
                 foreach (var register in registrators)
                     register.Register(entity);
 

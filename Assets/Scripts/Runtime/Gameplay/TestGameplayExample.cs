@@ -28,7 +28,7 @@ namespace Assets.Scripts.Runtime.Gameplay
 
             _factory.CreateGhost(Vector3.forward * 5);
 
-            _factory.CreateDummy(Vector3.back * 5);
+            _factory.CreateWizzard(Vector3.back * 5);
 
             _initialized = true;
         }

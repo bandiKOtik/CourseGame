@@ -11,6 +11,7 @@ namespace Assets.Scripts.Runtime.Gameplay
     public class GameSession : IDisposable
     {
         public event Action Win;
+
         public event Action Defeat;
 
         private ICoroutinesPerformer _performer;

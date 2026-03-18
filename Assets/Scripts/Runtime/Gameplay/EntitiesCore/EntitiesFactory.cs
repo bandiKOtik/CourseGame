@@ -2,22 +2,22 @@
 using Assets.Scripts.Runtime.Gameplay.Common;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets.Scripts.Runtime.Gameplay.Features.Attack;
+using Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack;
 using Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot;
+using Assets.Scripts.Runtime.Gameplay.Features.Capabilities;
 using Assets.Scripts.Runtime.Gameplay.Features.DamageFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
 using Assets.Scripts.Utilities.Conditions;
+using Assets.Scripts.Utilities.Simple;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 {
-    public class EntitiesFactory
+    public partial class EntitiesFactory
     {
-        const int BaseMovementSpeed = 10;
-        const int BaseRotationSpeed = 1000;
-        private const int BaseBufferSize = 64;
         private readonly DIContainer _container;
         private readonly EntitiesLifeContext _context;
         private readonly CollidersRegistryService _registry;
@@ -38,19 +38,22 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             _monoEntitiesFactory.Create(entity, position, "Entities/PlayerCharacters/Hero");
 
             entity
+                // Movement
                 .AddMoveDirection()
-                .AddMoveSpeed(new(BaseMovementSpeed))
+                .AddMoveSpeed(new(ConstValues.BaseMovementSpeed))
                 .AddIsMoving()
                 .AddRotationDirection()
-                .AddRotationSpeed(new(BaseRotationSpeed))
+                .AddRotationSpeed(new(ConstValues.BaseRotationSpeed))
+                // Health
                 .AddMaxHealth(new(3f))
-                .AddCurrentHealth(new(3f))
+                .AddCurrentHealth()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
                 .AddIsDead()
                 .AddInDeathProcess()
                 .AddDeathProcessInitialTime(new(3))
                 .AddDeathProcessCurrentTime()
+                // Attack
                 .AddAttackProcessInitialTime(new(2))
                 .AddAttackProcessCurrentTime()
                 .AddInAttackProcess()
@@ -98,6 +101,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddMustCancelAttack(mustCancelAttack);
 
             entity
+                .AddSystem(new ApplyHealthToMaxSystem())
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
                 .AddSystem(new StartAttackSystem())
@@ -118,58 +122,6 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             return entity;
         }
 
-
-        public (Entity, MonoEntity) CreateBullet(Vector3 position, Vector3 direction, float damage)
-        {
-            var entity = CreateEmpty();
-
-            var mono = _monoEntitiesFactory.Create(entity, position, "Entities/Projectile/Bullet");
-
-            entity
-                .AddMoveDirection(new(direction))
-                .AddMoveSpeed(new(BaseMovementSpeed * 2))
-                .AddIsMoving()
-                .AddRotationDirection(new(direction))
-                .AddRotationSpeed(new(9999))
-                .AddBodyContactDamage(new(damage))
-                .AddIsDead()
-                .AddContactsDetectingMask(LayerMask.NameToLayer("Character"))
-                .AddContactsColliderBuffer(new(BaseBufferSize))
-                .AddContactsEntitiesBuffer(new(BaseBufferSize))
-                .AddDeathMask(LayerMask.NameToLayer("Character"))
-                .AddIsTouchedDeathMask();
-
-            ICompositeCondition isAliveCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false));
-
-            ICompositeCondition dieCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsTouchedDeathMask.Value));
-
-            ICompositeCondition selfReleaseCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value));
-
-            entity
-                .AddCanMove(isAliveCondition)
-                .AddCanRotate(isAliveCondition)
-                .AddMustDie(dieCondition)
-                .AddMustSelfRelease(selfReleaseCondition);
-
-            entity
-                .AddSystem(new RigidbodyMovementSystem())
-                .AddSystem(new RigidbodyRotationSystem())
-                .AddSystem(new BodyContactsDetectingSystem())
-                .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
-                .AddSystem(new DealDamageOnContactSystem())
-                .AddSystem(new DeathMaskTouchDetectingSystem())
-                .AddSystem(new DeathSystem())
-                .AddSystem(new DisableCollidersOnDeathSystem())
-                .AddSystem(new SelfReleaseSystem(_context));
-
-            _context.Add(entity);
-
-            return (entity, mono);
-        }
-
         public Entity CreateGhost(Vector3 position)
         {
             var entity = CreateEmpty();
@@ -177,11 +129,13 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             _monoEntitiesFactory.Create(entity, position, "Entities/GameplayEnemies/Ghost");
 
             entity
+                // Movement
                 .AddMoveDirection()
-                .AddMoveSpeed(new(BaseMovementSpeed))
+                .AddMoveSpeed(new(ConstValues.BaseMovementSpeed))
                 .AddIsMoving()
                 .AddRotationDirection()
-                .AddRotationSpeed(new(BaseRotationSpeed))
+                .AddRotationSpeed(new(ConstValues.BaseRotationSpeed))
+                // Health
                 .AddMaxHealth(new(3f))
                 .AddCurrentHealth(new(3f))
                 .AddBodyContactDamage(new(1f))
@@ -191,9 +145,10 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddInDeathProcess()
                 .AddDeathProcessInitialTime(new(3))
                 .AddDeathProcessCurrentTime()
-                .AddContactsDetectingMask(LayerMask.NameToLayer("Character"))
-                .AddContactsColliderBuffer(new(BaseBufferSize))
-                .AddContactsEntitiesBuffer(new(BaseBufferSize));
+                // Contact damage
+                .AddContactsDetectingMask(1 << ConstValues.CharactersLayerMask)
+                .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
+                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
 
             ICompositeCondition isAliveCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
@@ -232,6 +187,92 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             return entity;
         }
 
+        public Entity CreateWizzard(Vector3 position)
+        {
+            var entity = CreateEmpty();
+
+            _monoEntitiesFactory.Create(entity, position, "Entities/GameplayEnemies/Wizzard");
+
+            // canMove -> energy, inProcess == false
+            entity
+                // Movement
+                .AddTeleportRequest()
+                .AddTeleportRadius(new(3))
+                .AddTeleportDestinationAchieved()
+                .AddPositionFound()
+                // Energy
+                .AddMaxEnergy(new(100))
+                .AddCurrentEnergy()
+                .AddTeleportEnergyPrice(new(10))
+                .AddChargeAmountPerSecond(new(5))
+                // Attack
+                .AddStartAttackRequest()
+                .AddStartAttackEvent()
+                .AddInAttackProcess()
+                .AddAreaAttackRadius(new(3))
+                .AddInstantAttackDamage(new(1))
+                // Health
+                .AddMaxHealth(new(3f))
+                .AddCurrentHealth(new(3f))
+                .AddTakeDamageRequest()
+                .AddTakeDamageEvent()
+                .AddIsDead()
+                .AddInDeathProcess()
+                // Contact Damage
+                .AddContactsDetectingMask(ConstValues.CharactersLayerMask)
+                .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
+                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
+
+            ICompositeCondition mustRequestTeleport = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false))
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= 10f));
+
+            ICompositeCondition canStartAttack = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value > 0));
+
+            ICompositeCondition dieCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+
+            ICompositeCondition selfReleaseCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value));
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
+
+            entity
+                .AddMustRequestTeleport(mustRequestTeleport)
+                .AddCanStartAttack(canStartAttack)
+                .AddCanApplyDamage(canApplyDamage)
+                .AddMustDie(dieCondition)
+                .AddMustSelfRelease(selfReleaseCondition);
+
+            // EnergyRechargeSystem, TeleportPositionPickSystem -> InstantTeleportSystem ->
+            // DamageAfterTeleportSystem -> AreaAttackSystem
+            entity
+                // Teleport
+                .AddSystem(new EnergyRechargeSystem())
+                .AddSystem(new RequestTeleportOnConditionSystem())
+                .AddSystem(new TeleportPositionPickSystem())
+                .AddSystem(new InstantTeleportSystem())
+                // Damage deal
+                .AddSystem(new DamageAfterTeleportSystem())
+                .AddSystem(new StartAttackSystem())
+                .AddSystem(new AreaAttackSystem(this))
+                // Applying damage
+                .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new DeathSystem())
+                .AddSystem(new SelfReleaseSystem(_context))
+                .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new DebugHealthSystem())
+                // Contacts
+                .AddSystem(new BodyContactsDetectingSystem())
+                .AddSystem(new BodyContactsEntitiesFilterSystem(_registry));
+
+            _context.Add(entity);
+
+            return entity;
+        }
+
         public Entity CreateDummy(Vector3 position)
         {
             var entity = CreateEmpty();
@@ -245,9 +286,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddTakeDamageEvent()
                 .AddIsDead()
                 .AddInDeathProcess()
-                .AddContactsDetectingMask(LayerMask.NameToLayer("Character"))
-                .AddContactsColliderBuffer(new(BaseBufferSize))
-                .AddContactsEntitiesBuffer(new(BaseBufferSize));
+                .AddContactsDetectingMask(1 << 6)
+                .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
+                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
 
             ICompositeCondition dieCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
@@ -275,7 +316,6 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 
             return entity;
         }
-
 
         private Entity CreateEmpty() => new Entity();
     }

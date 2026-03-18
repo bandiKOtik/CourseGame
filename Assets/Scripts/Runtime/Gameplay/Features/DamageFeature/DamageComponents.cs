@@ -18,4 +18,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.DamageFeature
     {
         public ReactiveEvent<float> Value;
     }
+
+    public class DamageInitialized : IEntityComponent
+    {
+        public ReactiveVariable<bool> Value;
+    }
 }

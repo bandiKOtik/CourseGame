@@ -20,7 +20,8 @@ namespace Assets.Scripts.Runtime.UI.Core
 
         protected abstract PopupViewBase PopupView { get; }
 
-        public virtual void Initialize() { }
+        public virtual void Initialize()
+        { }
 
         public virtual void Dispose()
         {
@@ -45,14 +46,16 @@ namespace Assets.Scripts.Runtime.UI.Core
             PopupView.CloseRequest += OnCloseRequest;
         }
 
-        protected virtual void OnPostShow() { }
+        protected virtual void OnPostShow()
+        { }
 
         protected virtual void OnPreHide()
         {
             PopupView.CloseRequest -= OnCloseRequest;
         }
 
-        protected virtual void OnPostHide() { }
+        protected virtual void OnPostHide()
+        { }
 
         protected void OnCloseRequest() => CloseRequest?.Invoke(this);
 

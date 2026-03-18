@@ -21,6 +21,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
             _startAttackEvent = entity.StartAttackEvent;
             _inProcess = entity.InAttackProcess;
             _canStartAttack = entity.CanStartAttack;
+
             _subscription = _startAttakRequest.Subscribe(OnAttackRequest);
         }
 

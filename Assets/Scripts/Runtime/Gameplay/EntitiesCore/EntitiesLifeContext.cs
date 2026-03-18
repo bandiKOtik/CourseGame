@@ -6,6 +6,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
     public class EntitiesLifeContext : IDisposable
     {
         public event Action<Entity> Added;
+
         public event Action<Entity> Released;
 
         private readonly List<Entity> _entities = new();

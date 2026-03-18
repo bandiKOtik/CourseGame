@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
-using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
-using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using UnityEngine;
