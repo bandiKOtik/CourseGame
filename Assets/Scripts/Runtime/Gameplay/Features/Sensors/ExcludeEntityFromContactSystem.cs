@@ -5,7 +5,7 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.Sensors
 {
-    public class ExcludeEntityFromContactSystem : IInitializableSystem
+    public class ExcludeEntityFromContactSystem : IInitializableSystem, IUpdateableSystem
     {
         private Entity[] _exclude;
         private Buffer<Entity> _contactEntities;
@@ -14,11 +14,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Sensors
         {
             _exclude = entity.ExcludedEntitiesFromContacts;
             _contactEntities = entity.ContactsEntitiesBuffer;
-
-            ExcludeEntities();
         }
 
-        private void ExcludeEntities()
+        public void OnUpdate(float deltaTime)
         {
             for (int i = 0; i < _contactEntities.Count; i++)
             {
