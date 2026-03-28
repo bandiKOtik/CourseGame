@@ -1,7 +1,5 @@
-﻿using Assets.Scripts.Runtime.InputManagement;
-using Assets.Scripts.Utilities.CoroutinesManagement;
+﻿using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using UnityEngine;
@@ -16,36 +14,20 @@ namespace Assets.Scripts.Runtime.Gameplay
 
         private ICoroutinesPerformer _performer;
         private SceneSwitcherService _sceneSwitcher;
-        private InputStringHandler _inputHandler;
         private PlayerDataProvider _dataProvider;
 
         public GameSession(
             ICoroutinesPerformer performer,
             SceneSwitcherService sceneSwitcher,
-            IInputHandler inputHandler,
             PlayerDataProvider dataProvider)
         {
             _performer = performer;
             _sceneSwitcher = sceneSwitcher;
             _dataProvider = dataProvider;
-
-            if (inputHandler is not InputStringHandler _inputHandler)
-                throw new ArgumentException(
-                    nameof(inputHandler) + " is wrong handler of type " + typeof(InputStringHandler));
-
-            _inputHandler.CheckSequence += SessionWin;
-            _inputHandler.ClearValue += SessionDefeat;
-            _inputHandler.ExitToMenuRequest += ReturnToMenu;
         }
 
         public void Dispose()
         {
-            if (_inputHandler != null)
-            {
-                _inputHandler.CheckSequence -= SessionWin;
-                _inputHandler.ClearValue -= SessionDefeat;
-                _inputHandler.ExitToMenuRequest -= ReturnToMenu;
-            }
         }
 
         private void SessionWin()

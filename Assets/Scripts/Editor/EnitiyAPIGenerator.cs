@@ -48,6 +48,17 @@ namespace Assets.Scripts.Editor
                     sb.AppendLine($"\t\tpublic {GetValidTypeName(field.FieldType)} {componentName}");
                     sb.AppendLine($"\t\t\t=> {modified}.{field.Name};");
 
+                    sb.AppendLine($"\t\tpublic bool TryGet{componentName}(out " +
+                        $"{GetValidTypeName(field.FieldType)} {GetVariableNameFrom(field.Name)})");
+                    sb.AppendLine("\t\t{");
+                    sb.AppendLine($"\t\t\tbool result = TryGetComponent(out {fullName} component);");
+                    sb.AppendLine("\t\t\tif (result)");
+                    sb.AppendLine($"\t\t\t\t{GetVariableNameFrom(field.Name)} = component.{field.Name};");
+                    sb.AppendLine("\t\t\telse");
+                    sb.AppendLine($"\t\t\t\t{GetVariableNameFrom(field.Name)} = default({GetValidTypeName(field.FieldType)});");
+                    sb.AppendLine("\t\t\treturn result;");
+                    sb.AppendLine("\t\t}");
+
                     if (HasEmptyConstructor(field.FieldType))
                     {
                         string initializer = "{ " + field.Name + " = new " + GetValidTypeName(field.FieldType) + "() }";

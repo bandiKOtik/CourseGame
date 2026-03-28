@@ -54,17 +54,17 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddDeathProcessInitialTime(new(3))
                 .AddDeathProcessCurrentTime()
                 // Attack
-                .AddAttackProcessInitialTime(new(2))
+                .AddAttackProcessInitialTime(new(.8f))
                 .AddAttackProcessCurrentTime()
                 .AddInAttackProcess()
                 .AddStartAttackRequest()
                 .AddStartAttackEvent()
                 .AddEndAttackEvent()
-                .AddAttackDelayTime(new(1))
+                .AddAttackDelayTime(new(.5f))
                 .AddAttackDelayEndEvent()
                 .AddInstantAttackDamage(new(1))
                 .AddAttackCanceledEvent()
-                .AddAttackCooldownInitialTime(new(2))
+                .AddAttackCooldownInitialTime(new(.3f))
                 .AddAttackCooldownCurrentTime()
                 .AddInAttackCooldown();
 
@@ -136,8 +136,8 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddRotationDirection()
                 .AddRotationSpeed(new(ConstValues.BaseRotationSpeed))
                 // Health
-                .AddMaxHealth(new(3f))
-                .AddCurrentHealth(new(3f))
+                .AddMaxHealth(new(1f))
+                .AddCurrentHealth()
                 .AddBodyContactDamage(new(1f))
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
@@ -171,6 +171,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddMustSelfRelease(selfReleaseCondition);
 
             entity
+                .AddSystem(new ApplyHealthToMaxSystem())
                 .AddSystem(new RigidbodyMovementSystem())
                 .AddSystem(new RigidbodyRotationSystem())
                 .AddSystem(new BodyContactsDetectingSystem())
@@ -187,13 +188,16 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             return entity;
         }
 
-        public Entity CreateWizzard(Vector3 position)
+        public Entity CreateWizzard(
+            Vector3 position,
+            float startEnergy,
+            float teleportCost,
+            float energyRegenPerSec)
         {
             var entity = CreateEmpty();
 
             _monoEntitiesFactory.Create(entity, position, "Entities/GameplayEnemies/Wizzard");
 
-            // canMove -> energy, inProcess == false
             entity
                 // Movement
                 .AddTeleportRequest()
@@ -201,10 +205,10 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddTeleportDestinationAchieved()
                 .AddPositionFound()
                 // Energy
-                .AddMaxEnergy(new(100))
-                .AddCurrentEnergy()
-                .AddTeleportEnergyPrice(new(10))
-                .AddChargeAmountPerSecond(new(5))
+                .AddMaxEnergy(new(startEnergy))
+                .AddCurrentEnergy(new(startEnergy))
+                .AddTeleportEnergyPrice(new(teleportCost))
+                .AddChargeAmountPerSecond(new(energyRegenPerSec))
                 // Attack
                 .AddStartAttackRequest()
                 .AddStartAttackEvent()
@@ -213,7 +217,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddInstantAttackDamage(new(1))
                 // Health
                 .AddMaxHealth(new(3f))
-                .AddCurrentHealth(new(3f))
+                .AddCurrentHealth()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
                 .AddIsDead()
@@ -223,12 +227,15 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
                 .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
 
-            ICompositeCondition mustRequestTeleport = new CompositeCondition()
+            ICompositeCondition canMove = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false))
-                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= 10f));
+                .Add(new FuncCondition(() => entity.CurrentEnergy.Value >= teleportCost));
 
             ICompositeCondition canStartAttack = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value > 0));
+
+            ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             ICompositeCondition dieCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
@@ -236,79 +243,28 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
             ICompositeCondition selfReleaseCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value));
 
-            ICompositeCondition canApplyDamage = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false));
-
             entity
-                .AddMustRequestTeleport(mustRequestTeleport)
+                .AddCanMove(canMove)
                 .AddCanStartAttack(canStartAttack)
                 .AddCanApplyDamage(canApplyDamage)
                 .AddMustDie(dieCondition)
                 .AddMustSelfRelease(selfReleaseCondition);
 
-            // EnergyRechargeSystem, TeleportPositionPickSystem -> InstantTeleportSystem ->
-            // DamageAfterTeleportSystem -> AreaAttackSystem
             entity
                 // Teleport
                 .AddSystem(new EnergyRechargeSystem())
-                .AddSystem(new RequestTeleportOnConditionSystem())
-                .AddSystem(new TeleportPositionPickSystem())
                 .AddSystem(new InstantTeleportSystem())
                 // Damage deal
                 .AddSystem(new DamageAfterTeleportSystem())
                 .AddSystem(new StartAttackSystem())
                 .AddSystem(new AreaAttackSystem(this))
                 // Applying damage
+                .AddSystem(new ApplyHealthToMaxSystem())
                 .AddSystem(new ApplyDamageSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new SelfReleaseSystem(_context))
                 .AddSystem(new DisableCollidersOnDeathSystem())
-                .AddSystem(new DebugHealthSystem())
                 // Contacts
-                .AddSystem(new BodyContactsDetectingSystem())
-                .AddSystem(new BodyContactsEntitiesFilterSystem(_registry));
-
-            _context.Add(entity);
-
-            return entity;
-        }
-
-        public Entity CreateDummy(Vector3 position)
-        {
-            var entity = CreateEmpty();
-
-            _monoEntitiesFactory.Create(entity, position, "Entities/GameplayEnemies/Dummy");
-
-            entity
-                .AddMaxHealth(new(1f))
-                .AddCurrentHealth(new(1f))
-                .AddTakeDamageRequest()
-                .AddTakeDamageEvent()
-                .AddIsDead()
-                .AddInDeathProcess()
-                .AddContactsDetectingMask(1 << 6)
-                .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
-                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
-
-            ICompositeCondition dieCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
-
-            ICompositeCondition selfReleaseCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value));
-
-            ICompositeCondition canApplyDamage = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.IsDead.Value == false));
-
-            entity
-                .AddCanApplyDamage(canApplyDamage)
-                .AddMustDie(dieCondition)
-                .AddMustSelfRelease(selfReleaseCondition);
-
-            entity
-                .AddSystem(new ApplyDamageSystem())
-                .AddSystem(new DeathSystem())
-                .AddSystem(new SelfReleaseSystem(_context))
-                .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry));
 

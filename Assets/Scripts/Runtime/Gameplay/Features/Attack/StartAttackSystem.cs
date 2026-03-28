@@ -34,7 +34,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
         {
             if (_canStartAttack.Evaluate())
             {
-                UnityEngine.Debug.Log("Start attack");
                 _inProcess.Value = true;
                 _startAttackEvent.Invoke();
             }

@@ -3,12 +3,12 @@ using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono;
-using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.AI;
+using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.InputManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using UnityEngine;
 
@@ -22,13 +22,17 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         {
             _args = args;
 
-            container.RegisterAsSingle(c => new EntitiesLifeContext());
-
             container.RegisterAsSingle(c => new EntitiesFactory(c));
 
-            container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
+            container.RegisterAsSingle(c => new EntitiesLifeContext());
 
-            container.RegisterAsSingle<IInputHandler>(CreateGameplayInputHandler);
+            container.RegisterAsSingle(c => new BrainsFactory(c));
+
+            container.RegisterAsSingle(c => new AIBrainsContext());
+
+            container.RegisterAsSingle<IInputService>(c => new DesktopInput());
+
+            container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
 
             container.RegisterAsSingle(CreateGameSession);
 
@@ -45,14 +49,11 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 c.Resolve<EntitiesLifeContext>());
         }
 
-        private InputStringHandler CreateGameplayInputHandler(DIContainer c) => new();
-
         private GameSession CreateGameSession(DIContainer c)
         {
             return new(
                 c.Resolve<ICoroutinesPerformer>(),
                 c.Resolve<SceneSwitcherService>(),
-                c.Resolve<IInputHandler>(),
                 c.Resolve<PlayerDataProvider>());
         }
 

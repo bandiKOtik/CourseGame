@@ -15,6 +15,7 @@ using Assets.Scripts.Utilities.LoadingScreen;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.SaveScreen;
 using Assets.Scripts.Utilities.SceneManagement;
+using Assets.Scripts.Utilities.Timer;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace Assets.Scripts.Utilities.Factory
         {
             // Utilities
             container.RegisterAsSingle<ICoroutinesPerformer>(CreateCoroutinesPerformer);
+            container.RegisterAsSingle<TimerServiceFactory>(c => new(c));
 
             // Save system
             container.RegisterAsSingle(CreatePlayerDataProvider);

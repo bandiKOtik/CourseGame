@@ -9,8 +9,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
     public class InstantTeleportSystem : IInitializableSystem, IDisposableSystem
     {
         private Transform _transform;
-        private ReactiveVariable<float> _current;
-        private ReactiveVariable<float> _price;
+        private ReactiveVariable<float> _currentEnergy;
+        private ReactiveVariable<float> _energyPrice;
         private ReactiveEvent _achieved;
         private ReactiveEvent<Vector3> _found;
 
@@ -19,8 +19,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
         public void OnInit(Entity entity)
         {
             _transform = entity.Transform;
-            _current = entity.CurrentEnergy;
-            _price = entity.TeleportEnergyPrice;
+            _currentEnergy = entity.CurrentEnergy;
+            _energyPrice = entity.TeleportEnergyPrice;
             _achieved = entity.TeleportDestinationAchieved;
             _found = entity.PositionFound;
 
@@ -34,7 +34,10 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
 
         private void OnPositionFound(Vector3 position)
         {
-            _current.Value -= _price.Value;
+            if (_currentEnergy.Value - _energyPrice.Value < 0)
+                return;
+
+            _currentEnergy.Value -= _energyPrice.Value;
             _transform.position = position;
             _achieved.Invoke();
         }

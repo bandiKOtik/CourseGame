@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
 using Assets.Scripts.Utilities;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.Sensors
 {

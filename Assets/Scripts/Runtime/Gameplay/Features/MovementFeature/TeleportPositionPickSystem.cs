@@ -38,9 +38,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
             float x = distance * Mathf.Cos(angle * Mathf.Deg2Rad);
             float z = distance * Mathf.Sin(angle * Mathf.Deg2Rad);
 
-            position = new (x, 0f, z);
+            position = new(x, 0f, z);
 
-            //Debug.Log(position);
             _found.Invoke(position);
         }
     }

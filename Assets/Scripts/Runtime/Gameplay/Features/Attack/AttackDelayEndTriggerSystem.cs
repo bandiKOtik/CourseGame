@@ -40,7 +40,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
 
             if (newValue >= _delay.Value)
             {
-                UnityEngine.Debug.Log("Delay end");
                 _attackDelayEndEvent.Invoke();
                 _attacked = true;
             }

@@ -33,7 +33,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
         {
             if (TimeIsDone(newValue))
             {
-                UnityEngine.Debug.Log("End of attack");
                 _inAttackProcess.Value = false;
                 _endAttackEvent.Invoke();
             }
