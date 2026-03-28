@@ -2,7 +2,6 @@
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
-using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
 {

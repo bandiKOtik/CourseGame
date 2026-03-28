@@ -16,6 +16,8 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 
         private bool _initialized = false;
 
+        public bool Initialized => _initialized;
+
         public void Initialize()
         {
             foreach (var initable in _initializeables)

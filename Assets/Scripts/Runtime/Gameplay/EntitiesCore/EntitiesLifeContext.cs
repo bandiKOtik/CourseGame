@@ -12,6 +12,8 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
         private readonly List<Entity> _entities = new();
         private readonly List<Entity> _releaseRequests = new();
 
+        public IReadOnlyList<Entity> Entities => _entities;
+
         public void Add(Entity entity)
         {
             _entities.Add(entity);

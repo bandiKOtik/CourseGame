@@ -7,7 +7,7 @@ using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
-using Assets.Scripts.Runtime.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
@@ -20,12 +20,12 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        private IInputHandler _inputHandler;
         private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
 
         [SerializeField] private TestGameplayExample _gameplayExample;
         private EntitiesLifeContext _lifeContext;
+        private AIBrainsContext _brainsContext;
 
         private bool _initialized = false;
 
@@ -46,8 +46,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         {
             _session = _container.Resolve<GameSession>();
 
-            _inputHandler = _container.Resolve<IInputHandler>();
-
             var config = _container
                 .Resolve<ConfigsProviderService>()
                 .GetConfig<GamePriceConfig>();
@@ -64,6 +62,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
                 defeatCash);
 
             _lifeContext = _container.Resolve<EntitiesLifeContext>();
+            _brainsContext = _container.Resolve<AIBrainsContext>();
 
             yield return _container
                 .Resolve<ICoroutinesPerformer>()
@@ -78,7 +77,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             if (_initialized == false)
                 return;
 
-            _inputHandler.Update();
+            _brainsContext?.Update(Time.deltaTime);
             _lifeContext?.Update(Time.deltaTime);
         }
 
