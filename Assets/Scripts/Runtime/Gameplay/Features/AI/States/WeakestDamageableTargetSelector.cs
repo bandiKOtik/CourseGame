@@ -24,6 +24,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 if (target.TryGetCanApplyDamage(out var canApplyDamage))
                     result = result && canApplyDamage.Evaluate();
 
+                if (target.TryGetTransform(out var transform))
+                    result = result && transform != null;
+
                 result = result && (target != _source);
 
                 return result;
@@ -43,7 +46,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                     colsest = target;
                 }
             }
-            Debug.Log("Target found!");
+
             return colsest;
         }
     }

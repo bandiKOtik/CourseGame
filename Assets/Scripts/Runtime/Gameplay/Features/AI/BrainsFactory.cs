@@ -40,14 +40,29 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public StateMachineBrain CreateTeleportToWeakestBrain(Entity entity, ITargetSelector selector, float cooldown)
         {
-            var behavior = CreateTeleportToWeakestMachine(entity, cooldown);
-            ReactiveVariable<Entity> target = entity.CurrentTarget;
+            var teleportBehavior = CreateTeleportToWeakestMachine(entity, cooldown);
+            EmptyState restoreState = new();
+
+            ICondition canMove = entity.CanMove;
+            ReactiveVariable<float> energy = entity.CurrentEnergy;
+            ReactiveVariable<float> maxEnergy = entity.MaxEnergy;
 
             FindTargetState findTargetState = new(selector, _lifeContext, entity);
-            AIParallelState parallelState = new(findTargetState, behavior);
+            AIParallelState teleportToTargetState = new(findTargetState, teleportBehavior);
+
+            ICondition teleportToRestoreCondition = new FuncCondition(()
+                => energy.Value < maxEnergy.Value * 0.4f);
+
+            ICompositeCondition restoreToTeleportCondition = new CompositeCondition()
+                .Add(canMove)
+                .Add(new FuncCondition(() => energy.Value > maxEnergy.Value));
 
             AIStateMachine rootMachine = new();
-            rootMachine.AddState(parallelState);
+            rootMachine.AddState(teleportToTargetState);
+            rootMachine.AddState(restoreState);
+
+            rootMachine.AddTransition(teleportToTargetState, restoreState, teleportToRestoreCondition);
+            rootMachine.AddTransition(restoreState, teleportToTargetState, restoreToTeleportCondition);
 
             var brain = new StateMachineBrain(rootMachine);
             _context.SetFor(entity, brain);
@@ -121,12 +136,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             behavior.AddTransition(movementState, combatState, movementToCombatCondition);
             behavior.AddTransition(combatState, movementState, combatToMovementCondition);
 
-            //FindTargetState findTargetState = new(selector, _lifeContext, entity);
-            //AIParallelState parallelState = new(findTargetState, behavior);
-
-            //AIStateMachine rootMachine = new();
-            //rootMachine.AddState(parallelState);
-
             var brain = new StateMachineBrain(behavior);
             _context.SetFor(entity, brain);
 
@@ -135,39 +144,40 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         private AIStateMachine CreateRandomTeleportStateMachine(Entity entity, float cooldown)
         {
-            RandomTeleportWithCooldownState teleportState = new(entity, cooldown);
+            var timer = _timerFactory.Create(cooldown);
+            RandomTeleportWithCooldownState teleportState = new(entity, timer);
+            EmptyState cooldownState = new();
+
+            ICondition onCooldownEnd = new FuncCondition(()
+                => timer.IsOver);
 
             AIStateMachine stateMachine = new();
 
             stateMachine.AddState(teleportState);
+            stateMachine.AddState(cooldownState);
+
+            stateMachine.AddTransition(teleportState, cooldownState, new FuncCondition(() => true));
+            stateMachine.AddTransition(cooldownState, teleportState, onCooldownEnd);
 
             return stateMachine;
         }
 
         private AIStateMachine CreateTeleportToWeakestMachine(Entity entity, float cooldown)
         {
-            TeleportToTargetWithCooldownState teleportState = new(entity, cooldown);
-            EmptyState restoreState = new();
+            var timer = _timerFactory.Create(cooldown);
+            TeleportToTargetWithCooldownState teleportState = new(entity, timer);
+            EmptyState cooldownState = new();
 
-            ICondition canMove = entity.CanMove;
-            ReactiveVariable<float> energy = entity.CurrentEnergy;
-            ReactiveVariable<float> maxEnergy = entity.MaxEnergy;
-            ReactiveVariable<Entity> currentTarget = entity.CurrentTarget;
-
-            ICondition teleportToRestoreCondition = new FuncCondition(()
-                => energy.Value < maxEnergy.Value * 0.4f);
-
-            ICompositeCondition restoreToTeleportCondition = new CompositeCondition()
-                .Add(canMove)
-                .Add(new FuncCondition(() => energy.Value > maxEnergy.Value * 0.7f));
+            ICondition onCooldownEnd = new FuncCondition(()
+                => timer.IsOver);
 
             var stateMachine = new AIStateMachine();
 
             stateMachine.AddState(teleportState);
-            stateMachine.AddState(restoreState);
+            stateMachine.AddState(cooldownState);
 
-            stateMachine.AddTransition(teleportState, restoreState, teleportToRestoreCondition);
-            stateMachine.AddTransition(restoreState, teleportState, restoreToTeleportCondition);
+            stateMachine.AddTransition(teleportState, cooldownState, new FuncCondition(() => true));
+            stateMachine.AddTransition(cooldownState, teleportState, onCooldownEnd);
 
             return stateMachine;
         }
@@ -256,7 +266,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
             ICondition attackToRotateCondition = new FuncCondition(() => inAttackProcess.Value == false);
 
-            var stateMachine = new AIStateMachine();
+            AIStateMachine stateMachine = new();
 
             stateMachine.AddState(rotateState);
             stateMachine.AddState(attackState);

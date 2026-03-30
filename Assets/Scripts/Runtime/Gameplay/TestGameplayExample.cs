@@ -37,12 +37,12 @@ namespace Assets.Scripts.Runtime.Gameplay
             var ghostEntity = _factory.CreateGhost(Vector3.forward * 5);
             _brainsFactory.CreateRandomWalkBrain(ghostEntity);
 
-            //// Wizzard
-            //var wizzardEntity = _factory.CreateWizzard(Vector3.back * 5, 100, 20, 5).AddCurrentTarget();
-            //ITargetSelector weakestSelector = new WeakestDamageableTargetSelector(wizzardEntity);
+            // Wizzard
+            var wizzardEntity = _factory.CreateWizzard(Vector3.back * 5, 100, 20, 5).AddCurrentTarget();
+            ITargetSelector weakestSelector = new WeakestDamageableTargetSelector(wizzardEntity);
 
-            //_brainsFactory.CreateRandomTeleportationBrain(wizzardEntity, 1f);
-            //// OR
+            _brainsFactory.CreateRandomTeleportationBrain(wizzardEntity, 1f);
+            // OR
             //_brainsFactory.CreateTeleportToWeakestBrain(wizzardEntity, weakestSelector, 1f);
 
             _initialized = true;
