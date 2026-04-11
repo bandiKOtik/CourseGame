@@ -35,6 +35,9 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         public void Initialize()
         {
             _view.SetLevel(_levelNumber.ToString());
+
+            if (_levelsService.CanPlay(_levelNumber) == false)
+                _view.SetBlock();
         }
 
         public void Dispose()
@@ -56,7 +59,7 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         {
             _coroutinesPerformer
                 .StartPerform(_sceneSwitcherService
-                .ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(_levelNumber)));
+                .SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(_levelNumber)));
         }
     }
 }

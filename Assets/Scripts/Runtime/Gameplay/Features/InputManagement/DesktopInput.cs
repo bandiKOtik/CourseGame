@@ -9,6 +9,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.InputManagement
 
         public bool IsEnabled { get; set; } = true;
 
+        // Screen Touch Click для взрыва и расстановки мин
+
         public bool AttackRequest
         {
             get => Input.GetMouseButtonDown(0);

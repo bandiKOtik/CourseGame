@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Configs.Gameplay.Levels;
+﻿using Assets.Scripts.Configs.Gameplay.Entities;
+using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Configs.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
 using System;
@@ -17,7 +18,9 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             { typeof(StartWalletConfig), "Configs/Meta/Wallet/StartWalletConfig" },
             { typeof(GamePriceConfig), "Configs/Meta/Wallet/GamePriceConfig" },
             { typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
-            { typeof(LevelsListConfig), "Configs/Gameplay/LevelsListConfig" },
+            { typeof(LevelsListConfig), "Configs/Gameplay/Levels/LevelsListConfig" },
+            { typeof(HeroConfig), "Configs/Gameplay/Entities/HeroConfig" },
+            { typeof(DefendableBuildingConfig), "Configs/Gameplay/Entities/MainBaseConfig" },
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader loader)

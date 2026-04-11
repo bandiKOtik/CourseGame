@@ -1,6 +1,9 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Meta.Statistics;
+using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
+using Assets.Scripts.Utilities.SceneManagement;
 
 namespace Assets.Scripts.Runtime.UI.MainMenu
 {
@@ -16,7 +19,9 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
         public MainMenuScreenPresenter CreateMainMenuScreen(MainMenuScreenView view)
             => new(view,
                 _container.Resolve<ProjectPresentersFactory>(),
-                _container.Resolve<MainMenuPopupService>(),
-                _container.Resolve<ProgressionResetService>());
+                _container.Resolve<ProgressionResetService>(),
+                _container.Resolve<ICoroutinesPerformer>(),
+                _container.Resolve<SceneSwitcherService>(),
+                _container.Resolve<ConfigsProviderService>());
     }
 }

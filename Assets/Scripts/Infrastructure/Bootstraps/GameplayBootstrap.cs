@@ -8,7 +8,9 @@ using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
-using Assets.Scripts.Utilities.CoroutinesManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
+using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
+using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
@@ -23,7 +25,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
 
-        [SerializeField] private TestGameplayExample _gameplayExample;
+        private GameplayStatesContext _gameplayStatesContext;
         private EntitiesLifeContext _lifeContext;
         private AIBrainsContext _brainsContext;
 
@@ -36,8 +38,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             if (sceneArgs is not GameplayInputArgs args)
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
-
-            Debug.Log("<color=green>Current level</color>: " + args.LevelNumber);
 
             _contextRegistrations.Process(_container, args);
         }
@@ -64,12 +64,19 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             _lifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
 
-            yield return _container
-                .Resolve<ICoroutinesPerformer>()
-                .StartPerform(_gameplayExample
-                .Initialize(_container));
+            _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
+
+            _container.Resolve<MainBaseFactory>().Create(Vector3.zero);
+            //_container.Resolve<MainHeroFactory>().Create(Vector3.zero);
 
             yield break;
+        }
+
+        public override void Run()
+        {
+            _initialized = true;
+
+            _gameplayStatesContext.Run();
         }
 
         private void Update()
@@ -79,12 +86,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
             _brainsContext?.Update(Time.deltaTime);
             _lifeContext?.Update(Time.deltaTime);
-        }
-
-        public override void Run()
-        {
-            _initialized = true;
-            _gameplayExample.Run();
+            _gameplayStatesContext?.Update(Time.deltaTime);
         }
     }
 }

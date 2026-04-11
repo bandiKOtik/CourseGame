@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.StateMachineCore;
+using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 {
@@ -19,6 +20,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 
         public void Update(float deltaTime)
         {
+            Debug.Log("Trying to find target");
             _target.Value = _selector.SelectTargetFrom(_lifeContext.Entities);
         }
     }

@@ -46,7 +46,7 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             bool isPlayerDataSaveExists = false;
 
-            yield return playerDataProvider.CheckExistsAsync(result => isPlayerDataSaveExists = result);
+            yield return playerDataProvider.ExistsAsync(result => isPlayerDataSaveExists = result);
 
             if (isPlayerDataSaveExists)
                 yield return _coroutinesPerformer
@@ -59,8 +59,7 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 
             loadScreen.Hide();
 
-            // TO MAIN MENU
-            yield return sceneSwitcher.ProcessSwitchTo(Scenes.Gameplay, new GameplayInputArgs(1));
+            yield return sceneSwitcher.SwitchAsync(Scenes.MainMenu);
         }
 
         private void SetupAppSettings()

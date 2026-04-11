@@ -25,7 +25,7 @@ namespace Assets.Scripts.Utilities.SceneManagement
             _loadingScreen = loadingScreen;
         }
 
-        public IEnumerator ProcessSwitchTo(string sceneName, IInputSceneArgs sceneArgs = null)
+        public IEnumerator SwitchAsync(string sceneName, IInputSceneArgs sceneArgs = null)
         {
             _loadingScreen.Show();
 

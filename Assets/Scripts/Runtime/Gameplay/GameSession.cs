@@ -50,7 +50,7 @@ namespace Assets.Scripts.Runtime.Gameplay
 
             _performer
                 .StartPerform(_sceneSwitcher
-                .ProcessSwitchTo(Scenes.MainMenu));
+                .SwitchAsync(Scenes.MainMenu));
         }
     }
 }

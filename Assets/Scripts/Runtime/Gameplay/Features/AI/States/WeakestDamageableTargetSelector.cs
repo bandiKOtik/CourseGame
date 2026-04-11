@@ -2,7 +2,6 @@
 using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 {
@@ -26,6 +25,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 
                 if (target.TryGetTransform(out var transform))
                     result = result && transform != null;
+
+                if (_source.TryGetTeam(out var sourceTeam) && target.TryGetTeam(out var targetTeam))
+                    result = result && (sourceTeam.Value != targetTeam.Value);
 
                 result = result && (target != _source);
 

@@ -1,7 +1,13 @@
-﻿using Assets.Scripts.Meta.Statistics;
+﻿using Assets.Scripts.Configs.Gameplay.Levels;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.Gameplay;
+using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.Core;
+using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
+using Assets.Scripts.Utilities.SceneManagement;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Runtime.UI.MainMenu
 {
@@ -11,26 +17,32 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
         private readonly MainMenuScreenView _screen;
         private readonly ProjectPresentersFactory _factory;
 
-        private readonly MainMenuPopupService _popupService;
         private ProgressionResetService _resetService;
+        private readonly ICoroutinesPerformer _performer;
+        private readonly SceneSwitcherService _sceneSwitcher;
+        private readonly ConfigsProviderService _configProvider;
 
         private readonly List<IPresenter> _childPresenters = new();
 
         public MainMenuScreenPresenter(
             MainMenuScreenView screen,
             ProjectPresentersFactory factory,
-            MainMenuPopupService popupService,
-            ProgressionResetService resetService)
+            ProgressionResetService resetService,
+            ICoroutinesPerformer performer,
+            SceneSwitcherService sceneSwitcher,
+            ConfigsProviderService configProvider)
         {
             _screen = screen;
             _factory = factory;
-            _popupService = popupService;
             _resetService = resetService;
+            _performer = performer;
+            _sceneSwitcher = sceneSwitcher;
+            _configProvider = configProvider;
         }
 
         public void Initialize()
         {
-            _screen.LevelsButtonClicked += OnLevelsMenuButtonClicked;
+            _screen.LevelsButtonClicked += OnPlayButtonClicked;
             _screen.ResetProgressButtonClicked += OnResetButtonClicked;
 
             CreatePresenters();
@@ -41,7 +53,7 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
 
         public void Dispose()
         {
-            _screen.LevelsButtonClicked -= OnLevelsMenuButtonClicked;
+            _screen.LevelsButtonClicked -= OnPlayButtonClicked;
             _screen.ResetProgressButtonClicked -= OnResetButtonClicked;
 
             foreach (var presenter in _childPresenters)
@@ -50,9 +62,16 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
             _childPresenters.Clear();
         }
 
-        private void OnLevelsMenuButtonClicked()
+        private void OnPlayButtonClicked()
         {
-            _popupService.OpenLevelsMenuPopup();
+            int levelsNumber = _configProvider.GetConfig<LevelsListConfig>().Levels.Count;
+
+            int selectedLevel = Random.Range(1, levelsNumber);
+            Debug.Log("Current level: " + selectedLevel);
+
+            _performer
+                .StartPerform(_sceneSwitcher
+                .SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(selectedLevel)));
         }
 
         private void OnResetButtonClicked()

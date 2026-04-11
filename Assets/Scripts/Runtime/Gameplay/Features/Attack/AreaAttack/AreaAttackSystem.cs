@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
 using Assets.Scripts.Utilities.Reactive;
 using System;

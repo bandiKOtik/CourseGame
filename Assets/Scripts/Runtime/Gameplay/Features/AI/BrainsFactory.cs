@@ -80,6 +80,35 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             return brain;
         }
 
+        public StateMachineBrain CreateTargetWalkBrain(Entity entity, ITargetSelector selector)
+        {
+            TargetMovementState movementState = new(entity);
+            FindTargetState findTargetState = new(selector, _lifeContext, entity);
+
+            ReactiveVariable<Entity> target = entity.CurrentTarget;
+
+            ICompositeCondition findStateToMovementCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => target.Value != null));
+
+            ICompositeCondition movementToFindStateCondition = new CompositeCondition(LogicOperations.Or)
+                .Add(new FuncCondition(() => target.Value == null));
+
+            // Состояние уничтожения/атаки от дистанции
+
+            AIStateMachine behavior = new();
+
+            behavior.AddState(movementState);
+            behavior.AddState(findTargetState);
+
+            behavior.AddTransition(findTargetState, movementState, findStateToMovementCondition);
+            behavior.AddTransition(movementState, findTargetState, movementToFindStateCondition);
+
+            var brain = new StateMachineBrain(behavior);
+            _context.SetFor(entity, brain);
+
+            return brain;
+        }
+
         public StateMachineBrain CreateAutoAttackWhenStandBrain(Entity entity, ITargetSelector selector)
         {
             var combatState = CreateAutoAttackStateMachine(entity);
@@ -137,6 +166,32 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             behavior.AddTransition(combatState, movementState, combatToMovementCondition);
 
             var brain = new StateMachineBrain(behavior);
+            _context.SetFor(entity, brain);
+
+            return brain;
+        }
+
+        public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
+        {
+            var explodeState = new InputRaycastExplosionState(_container.Resolve<IInputService>());
+            var setMineState = new InputPlantMineState(_container.Resolve<IInputService>());
+            ReactiveVariable<Vector3> target = new(Input.mousePosition);
+
+            ICompositeCondition mineToExplosionCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => Input.GetKeyDown(KeyCode.Alpha2)));
+
+            ICompositeCondition explosionToMineCondition = new CompositeCondition(LogicOperations.Or)
+                .Add(new FuncCondition(() => Input.GetKeyDown(KeyCode.Alpha1)));
+
+            AIStateMachine behavior = new();
+
+            behavior.AddState(explodeState);
+            behavior.AddState(setMineState);
+
+            behavior.AddTransition(setMineState, explodeState, mineToExplosionCondition);
+            behavior.AddTransition(explodeState, setMineState, explosionToMineCondition);
+
+            StateMachineBrain brain = new(behavior);
             _context.SetFor(entity, brain);
 
             return brain;
@@ -232,7 +287,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
                         transform.rotation,
                         Quaternion.LookRotation(target.Transform.position - transform.position));
 
-                    return angleToTarget < 1f;
+                    return angleToTarget < 3f;
                 }));
 
             ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
