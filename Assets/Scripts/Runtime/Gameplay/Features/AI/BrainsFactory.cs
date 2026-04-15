@@ -173,8 +173,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
         {
-            var explodeState = new InputRaycastExplosionState(_container.Resolve<IInputService>());
-            var setMineState = new InputPlantMineState(_container.Resolve<IInputService>());
+            var explodeState = new InputRaycastExplosionState(entity, _container.Resolve<IInputService>());
+            var setMineState = new InputPlantMineState(entity, _container.Resolve<IInputService>());
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
             ICompositeCondition mineToExplosionCondition = new CompositeCondition()

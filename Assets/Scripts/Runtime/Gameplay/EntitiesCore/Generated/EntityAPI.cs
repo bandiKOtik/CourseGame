@@ -581,6 +581,23 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddDamageInitialized(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.DamageInitialized() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.MustSelfDestroy MustSelfDestroyComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.MustSelfDestroy>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> MustSelfDestroy
+			=> MustSelfDestroyComp.Value;
+		public bool TryGetMustSelfDestroy(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.MustSelfDestroy component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMustSelfDestroy()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.MustSelfDestroy() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMustSelfDestroy(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.DamageFeature.MustSelfDestroy() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage BodyContactDamageComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.ContactTakeDamage.BodyContactDamage>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> BodyContactDamage
@@ -932,6 +949,40 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddAreaAttackRadius(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttackRadius() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Attack.NearbyAttackTriggerRadius NearbyAttackTriggerRadiusComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Attack.NearbyAttackTriggerRadius>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> NearbyAttackTriggerRadius
+			=> NearbyAttackTriggerRadiusComp.Value;
+		public bool TryGetNearbyAttackTriggerRadius(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.Attack.NearbyAttackTriggerRadius component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddNearbyAttackTriggerRadius()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.NearbyAttackTriggerRadius() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddNearbyAttackTriggerRadius(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.NearbyAttackTriggerRadius() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.Attack.ExplosionPosition ExplosionPositionComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Attack.ExplosionPosition>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> ExplosionPosition
+			=> ExplosionPositionComp.Value;
+		public bool TryGetExplosionPosition(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.Attack.ExplosionPosition component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddExplosionPosition()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.ExplosionPosition() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddExplosionPosition(Assets.Scripts.Utilities.Reactive.ReactiveVariable<UnityEngine.Vector3> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.Attack.ExplosionPosition() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.AI.CurrentTarget CurrentTargetComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.AI.CurrentTarget>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity> CurrentTarget

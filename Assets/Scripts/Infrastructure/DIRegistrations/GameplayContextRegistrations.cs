@@ -60,8 +60,6 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
 
-            container.RegisterAsSingle(CreateGameSession);
-
             container.RegisterAsSingle(GameplayUIRoot).NonLazy();
 
             container.RegisterAsSingle(c => new CollidersRegistryService());
@@ -101,14 +99,6 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 c.Resolve<CollidersRegistryService>(),
                 c.Resolve<ResourcesAssetsLoader>(),
                 c.Resolve<EntitiesLifeContext>());
-        }
-
-        private GameSession CreateGameSession(DIContainer c)
-        {
-            return new(
-                c.Resolve<ICoroutinesPerformer>(),
-                c.Resolve<SceneSwitcherService>(),
-                c.Resolve<PlayerDataProvider>());
         }
 
         private GameplayUIRoot GameplayUIRoot(DIContainer c)

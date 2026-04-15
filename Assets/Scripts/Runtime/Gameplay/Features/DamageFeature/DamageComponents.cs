@@ -23,4 +23,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.DamageFeature
     {
         public ReactiveVariable<bool> Value;
     }
+
+    public class MustSelfDestroy : IEntityComponent
+    {
+        public ReactiveVariable<bool> Value;
+    }
 }

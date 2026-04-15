@@ -15,5 +15,5 @@ MonoBehaviour:
   <PrefabPath>k__BackingField: Entities/GameplayEnemies/TargetMovingEnemy
   <MoveSpeed>k__BackingField: 3
   <RotationSpeed>k__BackingField: 1000
-  <MaxHealth>k__BackingField: 2
-  <BodyContactDamage>k__BackingField: 1
+  <MaxHealth>k__BackingField: 1
+  <AttackRadius>k__BackingField: 3

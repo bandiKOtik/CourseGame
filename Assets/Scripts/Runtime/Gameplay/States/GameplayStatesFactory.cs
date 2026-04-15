@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
-using Assets.Scripts.Meta.Features.LevelsProgression;
+using Assets.Scripts.Meta;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
@@ -24,10 +24,10 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
         public StageProcessState CreateStageProcessState() => new(_container.Resolve<StageProviderService>());
 
-        public WinState CreateWinState(GameplayInputArgs args)
+        public WinState CreateWinState()
         {
-            return new(args,
-                _container.Resolve<LevelsProgressionService>(),
+            return new(
+                _container.Resolve<StatisticManageService>(),
                 _container.Resolve<PlayerDataProvider>(),
                 _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
@@ -37,6 +37,8 @@ namespace Assets.Scripts.Runtime.Gameplay.States
         public DefeatState CreateDefeatState()
         {
             return new(
+                _container.Resolve<StatisticManageService>(),
+                _container.Resolve<PlayerDataProvider>(),
                 _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
                 _container.Resolve<IInputService>());
@@ -50,7 +52,7 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             var heroHoler = _container.Resolve<MainHeroHolderService>();
 
             var coreLoopState = CreateCoreLoopState();
-            var winState = CreateWinState(args);
+            var winState = CreateWinState();
             var defeatState = CreateDefeatState();
 
             ICompositeCondition coreLoopToWinStateCondition = new CompositeCondition()

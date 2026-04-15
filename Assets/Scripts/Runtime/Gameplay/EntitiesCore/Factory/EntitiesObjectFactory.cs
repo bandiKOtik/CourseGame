@@ -1,11 +1,5 @@
-﻿using Assets.Scripts.Configs.Gameplay.Entities;
-using Assets.Scripts.Runtime.Gameplay.Features.Attack;
-using Assets.Scripts.Runtime.Gameplay.Features.DamageFeature;
-using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
-using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
-using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
+﻿using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
 using Assets.Scripts.Utilities;
-using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Simple;
 using System.IO;
 using UnityEngine;

@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.StateMachineCore;
 using UnityEngine;
 
@@ -8,9 +10,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
     {
         private readonly IInputService _inputService;
 
-        public InputRaycastExplosionState(IInputService inputService)
+        private ReactiveEvent _request;
+        private ReactiveVariable<Vector3> _explosionPosition;
+
+        public InputRaycastExplosionState(Entity source, IInputService inputService)
         {
             _inputService = inputService;
+            _request = source.StartAttackRequest;
+            _explosionPosition = source.ExplosionPosition;
         }
 
         public override void Enter()
@@ -23,11 +30,13 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
         {
             if (_inputService.AttackRequest)
             {
-                // main camera raycast
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                // explosionAttackRequest.Invoke, explosionPosition(raycast)
-
-                Debug.Log("Explosion attack");
+                if (Physics.Raycast(ray, out var hit))
+                {
+                    _explosionPosition.Value = hit.point;
+                    _request.Invoke();
+                }
             }
         }
     }

@@ -42,12 +42,16 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             var mono = _monoEntitiesFactory.Create(entity, position, config.PrefabPath);
 
             entity
-                .AddMaxHealth(new(config.MaxHealth))
+                // Health
+                .AddMaxHealth(new(1))
                 .AddCurrentHealth()
-                .AddBodyContactDamage(new(1))
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
                 .AddIsDead()
+                .AddInDeathProcess()
+                // Attack
+                .AddStartAttackRequest()
+                .AddExplosionPosition()
                 .AddContactsDetectingMask(Layers.CharacterMask)
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
                 .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
@@ -58,17 +62,28 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             ICompositeCondition dieCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
 
+            ICompositeCondition selfReleaseCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value))
+                .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
+
             entity
                 .AddCanApplyDamage(canApplyDamage)
-                .AddMustDie(dieCondition);
+                .AddMustDie(dieCondition)
+                .AddMustSelfRelease(selfReleaseCondition);
 
             entity
                 .AddSystem(new ApplyHealthToMaxSystem())
+                .AddSystem(new CastExplosionSystem(this))
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
-                .AddSystem(new DealDamageOnContactSystem());
+                .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new DebugHealthSystem())
+                .AddSystem(new DeathSystem())
+                .AddSystem(new DisableCollidersOnDeathSystem())
+                .AddSystem(new SelfReleaseSystem(_context));
 
             _brainsFactory.CreateExplosiveShooterBrain(entity);
+
             _context.Add(entity);
 
             return entity;
@@ -180,14 +195,17 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 // Health
                 .AddMaxHealth(new(config.MaxHealth))
                 .AddCurrentHealth()
-                .AddBodyContactDamage(new(config.BodyContactDamage))
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
+                .AddMustSelfDestroy()
                 .AddIsDead()
                 .AddInDeathProcess()
                 .AddDeathProcessInitialTime(new(1))
                 .AddDeathProcessCurrentTime()
-                // Contact damage
+                // Attack
+                .AddStartAttackRequest()
+                .AddExplosionPosition()
+                .AddNearbyAttackTriggerRadius(new (config.AttackRadius))
                 .AddContactsDetectingMask(Layers.CharacterMask)
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
                 .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
@@ -195,8 +213,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             ICompositeCondition isAliveCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
-            ICompositeCondition dieCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0));
+            ICompositeCondition dieCondition = new CompositeCondition(LogicOperations.Or)
+                .Add(new FuncCondition(() => entity.CurrentHealth.Value <= 0))
+                .Add(new FuncCondition(() => entity.MustSelfDestroy.Value));
 
             ICompositeCondition selfReleaseCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => entity.IsDead.Value))
@@ -214,11 +233,14 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
 
             entity
                 .AddSystem(new ApplyHealthToMaxSystem())
-                .AddSystem(new RigidbodyMovementSystem())
-                .AddSystem(new RigidbodyRotationSystem())
+                .AddSystem(new CharacterControllerMovementSystem())
+                .AddSystem(new TransformRotationSystem())
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
                 .AddSystem(new ApplyDamageSystem())
+                .AddSystem(new ExplodeWhenNearbySystem())
+                .AddSystem(new CastExplosionSystem(this))
+                .AddSystem(new SelfDestroyAfterAttackSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new DeathProcessTimerSystem())

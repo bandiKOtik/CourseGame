@@ -36,7 +36,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
         {
             Vector3 targetDirection = (_moveTarget.Value.Transform.position - _transform.position).normalized;
             _movementDirection.Value = targetDirection;
-            _rotationDirection.Value = targetDirection;
+            _rotationDirection.Value = new(targetDirection.x, 0, targetDirection.z);
         }
     }
 }

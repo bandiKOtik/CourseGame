@@ -89,4 +89,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
     {
         public ReactiveVariable<float> Value;
     }
+
+    public class NearbyAttackTriggerRadius : IEntityComponent
+    {
+        public ReactiveVariable<float> Value;
+    }
+
+    public class ExplosionPosition : IEntityComponent
+    {
+        public ReactiveVariable<Vector3> Value;
+    }
 }

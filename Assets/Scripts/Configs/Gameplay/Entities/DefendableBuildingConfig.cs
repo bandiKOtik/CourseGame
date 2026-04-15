@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Utilities.Simple;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Configs.Gameplay.Entities
 {

@@ -9,7 +9,6 @@ using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
-using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
 using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
@@ -22,7 +21,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
-        private GameSession _session;
         private GameplayContextRegistrations _contextRegistrations = new();
 
         private GameplayStatesContext _gameplayStatesContext;
@@ -44,23 +42,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
         public override IEnumerator Initialize()
         {
-            _session = _container.Resolve<GameSession>();
-
-            var config = _container
-                .Resolve<ConfigsProviderService>()
-                .GetConfig<GamePriceConfig>();
-
-            IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
-
-            IReadOnlyDictionary<CurrencyTypes, int> defeatCash = config.GetDefeatPrice();
-
-            StatisticManageService manager = new(
-                _session,
-                _container.Resolve<WalletService>(),
-                _container.Resolve<PlayedGamesStatistic>(),
-                winCash,
-                defeatCash);
-
             _lifeContext = _container.Resolve<EntitiesLifeContext>();
             _brainsContext = _container.Resolve<AIBrainsContext>();
 
