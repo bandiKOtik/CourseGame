@@ -5,14 +5,14 @@ using System;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
 {
-    public class MainBaseHolder : IInitializable, IDisposable
+    public class MainBaseHolderService : IInitializable, IDisposable
     {
         private EntitiesLifeContext _context;
 
         private ReactiveEvent<Entity> _baseRegistred = new();
         private Entity _mainBase;
 
-        public MainBaseHolder(EntitiesLifeContext context)
+        public MainBaseHolderService(EntitiesLifeContext context)
         {
             _context = context;
         }

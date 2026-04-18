@@ -4,8 +4,10 @@ using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
+using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
+using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.Simple;
 using System.IO;
 using UnityEngine;
@@ -72,7 +74,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             return entity;
         }
 
-        public Entity CreateExplosion(Entity excluded, Vector3 position, float damage, float radius)
+        public Entity CreateExplosion(ReactiveVariable<Teams> sourceTeam, Vector3 position, float damage, float radius)
         {
             var entity = CreateEmpty();
 
@@ -82,7 +84,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddAreaAttackRadius(new(radius))
                 .AddBodyContactDamage(new(damage))
                 .AddDamageInitialized()
-                .AddExcludedEntitiesFromContacts(new[] { excluded })
+                .AddTeam(sourceTeam)
                 .AddIsDead()
                 .AddContactsDetectingMask(Layers.CharacterMask)
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
@@ -104,7 +106,6 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddSystem(new ColliderSetRadiusSystem())
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
-                .AddSystem(new ExcludeEntityFromContactSystem())
                 .AddSystem(new DealDamageOnContactSystem())
                 .AddSystem(new SelfReleaseSystem(_context));
 

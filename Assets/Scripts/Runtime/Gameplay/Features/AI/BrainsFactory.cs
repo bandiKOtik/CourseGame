@@ -1,7 +1,9 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.AI.States;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.Timer;
@@ -82,10 +84,15 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public StateMachineBrain CreateTargetWalkBrain(Entity entity, ITargetSelector selector)
         {
-            TargetMovementState movementState = new(entity);
             FindTargetState findTargetState = new(selector, _lifeContext, entity);
+            TargetMovementState movementState = new(entity);
+            EmptyState waitingState = new();
 
             ReactiveVariable<Entity> target = entity.CurrentTarget;
+
+            AIStateMachine movementStateMachine = new();
+            movementStateMachine.AddState(movementState);
+            movementStateMachine.AddState(waitingState);
 
             ICompositeCondition findStateToMovementCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => target.Value != null));
@@ -93,15 +100,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             ICompositeCondition movementToFindStateCondition = new CompositeCondition(LogicOperations.Or)
                 .Add(new FuncCondition(() => target.Value == null));
 
-            // Состояние уничтожения/атаки от дистанции
+            movementStateMachine.AddTransition(movementState, waitingState, movementToFindStateCondition);
+            movementStateMachine.AddTransition(waitingState, movementState, findStateToMovementCondition);
+
+            AIParallelState parallel = new(findTargetState, movementStateMachine);
 
             AIStateMachine behavior = new();
 
-            behavior.AddState(movementState);
-            behavior.AddState(findTargetState);
-
-            behavior.AddTransition(findTargetState, movementState, findStateToMovementCondition);
-            behavior.AddTransition(movementState, findTargetState, movementToFindStateCondition);
+            behavior.AddState(parallel);
 
             var brain = new StateMachineBrain(behavior);
             _context.SetFor(entity, brain);
@@ -174,7 +180,11 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
         public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
         {
             var explodeState = new InputRaycastExplosionState(entity, _container.Resolve<IInputService>());
-            var setMineState = new InputPlantMineState(entity, _container.Resolve<IInputService>());
+            var setMineState = new InputPlantMineState(
+                _container.Resolve<MainBaseHolderService>().MainBase,
+                _container.Resolve<EntitiesFactory>(),
+                _container.Resolve<IInputService>());
+
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
             ICompositeCondition mineToExplosionCondition = new CompositeCondition()

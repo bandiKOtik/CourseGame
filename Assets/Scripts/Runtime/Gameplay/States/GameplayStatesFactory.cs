@@ -2,6 +2,7 @@
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Utilities.Conditions;
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             _container = container;
         }
 
-        public PreperationState CreatePreperationState() => new(_container.Resolve<PreperationTriggerService>());
+        public PreperationState CreatePreperationState() => new(_container.Resolve<PreperationInputService>());
 
         public StageProcessState CreateStageProcessState() => new(_container.Resolve<StageProviderService>());
 
@@ -46,25 +47,24 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs args)
         {
-            // Заменить триггер на IInputService ивент активации режима
-            var preperationTrigger = _container.Resolve<PreperationTriggerService>();
+            var preperationTrigger = _container.Resolve<PreperationInputService>();
             var stageProvider = _container.Resolve<StageProviderService>();
-            var heroHoler = _container.Resolve<MainHeroHolderService>();
+            var baseHolder = _container.Resolve<MainBaseHolderService>();
 
             var coreLoopState = CreateCoreLoopState();
             var winState = CreateWinState();
             var defeatState = CreateDefeatState();
 
             ICompositeCondition coreLoopToWinStateCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => preperationTrigger.HasContact.Value))
+                .Add(new FuncCondition(() => preperationTrigger.IsReady.Value))
                 .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
                 .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
 
             ICompositeCondition coreLoopToDefeatStateCondition = new CompositeCondition()
                 .Add(new FuncCondition(() =>
                 {
-                    if (heroHoler.MainHero != null)
-                        return heroHoler.MainHero.IsDead.Value;
+                    if (baseHolder.MainBase != null)
+                        return baseHolder.MainBase.IsDead.Value;
 
                     return false;
                 }));
@@ -83,14 +83,14 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
         public GameplayStateMachine CreateCoreLoopState()
         {
-            var preperationTrigger = _container.Resolve<PreperationTriggerService>();
+            var preperationTrigger = _container.Resolve<PreperationInputService>();
             var stageProvider = _container.Resolve<StageProviderService>();
 
             PreperationState preperationState = CreatePreperationState();
             StageProcessState stageProcessState = CreateStageProcessState();
 
             ICompositeCondition preperationToStageProcessCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => preperationTrigger.HasContact.Value))
+                .Add(new FuncCondition(() => preperationTrigger.IsReady.Value))
                 .Add(new FuncCondition(() => stageProvider.HasNextStage));
 
             FuncCondition stageProcessToPreperationCondition =

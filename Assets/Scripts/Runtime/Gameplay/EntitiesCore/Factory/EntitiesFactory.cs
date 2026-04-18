@@ -8,10 +8,12 @@ using Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack;
 using Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot;
 using Assets.Scripts.Runtime.Gameplay.Features.Capabilities;
 using Assets.Scripts.Runtime.Gameplay.Features.DamageFeature;
+using Assets.Scripts.Runtime.Gameplay.Features.ExplosionFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
+using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Simple;
@@ -43,7 +45,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
 
             entity
                 // Health
-                .AddMaxHealth(new(1))
+                .AddMaxHealth(new(3))
                 .AddCurrentHealth()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
@@ -83,8 +85,6 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddSystem(new SelfReleaseSystem(_context));
 
             _brainsFactory.CreateExplosiveShooterBrain(entity);
-
-            _context.Add(entity);
 
             return entity;
         }
@@ -205,7 +205,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 // Attack
                 .AddStartAttackRequest()
                 .AddExplosionPosition()
-                .AddNearbyAttackTriggerRadius(new (config.AttackRadius))
+                .AddNearbyAttackTriggerRadius(new(config.AttackRadius))
                 .AddContactsDetectingMask(Layers.CharacterMask)
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
                 .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));

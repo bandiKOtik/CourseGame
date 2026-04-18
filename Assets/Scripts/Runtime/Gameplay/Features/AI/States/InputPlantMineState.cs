@@ -1,27 +1,27 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
-using Assets.Scripts.Runtime.Gameplay.Features.Attack;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
+using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities.StateMachineCore;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 {
     public class InputPlantMineState : State, IUpdateableState
     {
-        private readonly IInputService _inputService;
+        private Entity _source;
 
-        public InputPlantMineState(Entity source, IInputService inputService)
+        private readonly IInputService _inputService;
+        private readonly EntitiesFactory _factory;
+
+        public InputPlantMineState(Entity source, EntitiesFactory factory, IInputService inputService)
         {
+            _source = source;
+            _factory = factory;
             _inputService = inputService;
         }
 
-        public override void Enter()
-        {
-            base.Enter();
-
-            Debug.Log("Mine state enter");
-        }
         public void Update(float deltaTime)
         {
             if (_inputService.AttackRequest)
@@ -29,9 +29,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out var hit))
-                    Debug.Log("Plant mine on: " + hit.point);
-
-                //_request.Invoke();
+                    _factory.CreateContactTrigger(Teams.MainHero, hit.point);
             }
         }
     }

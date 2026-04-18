@@ -5,6 +5,7 @@ using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.AI.States;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using UnityEngine;
 
@@ -34,7 +35,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
             {
                 case TargetMovingEnemy targetEnemyConfig:
                     entity = _entitiesFactory.CreateTargetMovingEnemy(position, targetEnemyConfig);
-                    _brainsFactory.CreateTargetWalkBrain(entity, new EntityTeamTargetSelector(entity, Teams.MainHero));
+                    _brainsFactory.CreateTargetWalkBrain(entity, new MainBaseTargetSelector(
+                        entity,
+                        _container.Resolve<MainBaseHolderService>()));
                     break;
 
                 case GhostConfig ghostConfig:

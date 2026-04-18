@@ -1,11 +1,6 @@
-﻿using Assets.Scripts.Configs.Meta.Wallet;
-using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.DIRegistrations;
 using Assets.Scripts.Infrastructure.Gameplay;
-using Assets.Scripts.Meta;
-using Assets.Scripts.Meta.Features.Wallet;
-using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
@@ -13,7 +8,6 @@ using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps

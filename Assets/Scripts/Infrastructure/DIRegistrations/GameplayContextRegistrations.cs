@@ -40,6 +40,8 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             container.RegisterAsSingle(CreateMainHeroHolderService).NonLazy();
 
+            container.RegisterAsSingle(CreateMainBaseHolderService).NonLazy();
+
             container.RegisterAsSingle(c => new EnemiesFactory(c));
 
             container.RegisterAsSingle(c => new BrainsFactory(c));
@@ -50,7 +52,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             container.RegisterAsSingle(CreateGameplayStatesContext);
 
-            container.RegisterAsSingle(CreatePreperationTriggerService);
+            container.RegisterAsSingle(c => new PreperationInputService());
 
             container.RegisterAsSingle(CreateStageProviderService);
 
@@ -70,18 +72,16 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             return new(c.Resolve<EntitiesLifeContext>());
         }
 
+        private MainBaseHolderService CreateMainBaseHolderService(DIContainer c)
+        {
+            return new(c.Resolve<EntitiesLifeContext>());
+        }
+
         private GameplayStatesContext CreateGameplayStatesContext(DIContainer c)
         {
             return new(c
                 .Resolve<GameplayStatesFactory>()
                 .CreateGameplayStateMachine(_args));
-        }
-
-        private PreperationTriggerService CreatePreperationTriggerService(DIContainer c)
-        {
-            return new(
-                c.Resolve<EntitiesFactory>(),
-                c.Resolve<EntitiesLifeContext>());
         }
 
         private StageProviderService CreateStageProviderService(DIContainer c)

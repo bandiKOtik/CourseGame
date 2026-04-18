@@ -6,32 +6,24 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 {
     public class PreperationState : State, IUpdateableState
     {
-        private readonly PreperationTriggerService _triggerService;
+        private readonly PreperationInputService _preperation;
 
-        public PreperationState(PreperationTriggerService triggerService)
+        public PreperationState(PreperationInputService preperation)
         {
-            _triggerService = triggerService;
-        }
-
-        public override void Enter()
-        {
-            base.Enter();
-
-            Vector3 nextPosition = Vector3.back * 4;
-            _triggerService.Create(nextPosition);
+            _preperation = preperation;
         }
 
         public void Update(float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.Space))
-                _triggerService.HasContact.Value = true;
+                _preperation.SetReady();
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            _triggerService.CleanUp();
+            _preperation.CleanUp();
         }
     }
 }

@@ -26,6 +26,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack
 
         public void OnUpdate(float deltaTime)
         {
+            if (_target.Value == null)
+                return;
+
             if (_target.Value.TryGetTransform(out var targetTransform))
             {
                 var distance = Vector3.Distance(_transform.position, targetTransform.position);

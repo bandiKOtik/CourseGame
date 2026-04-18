@@ -66,9 +66,7 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
         {
             int levelsNumber = _configProvider.GetConfig<LevelsListConfig>().Levels.Count;
 
-            int selectedLevel = Random.Range(1, levelsNumber);
-
-            //selectedLevel = 1;
+            int selectedLevel = 1 + Random.Range(0, levelsNumber);
 
             Debug.Log("Current level: " + selectedLevel);
 

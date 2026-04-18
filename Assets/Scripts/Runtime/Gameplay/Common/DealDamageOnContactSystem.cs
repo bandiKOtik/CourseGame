@@ -1,8 +1,10 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Reactive;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Common
 {
@@ -12,6 +14,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Common
         private Buffer<Entity> _contacts;
         private ReactiveVariable<float> _damage;
         private List<Entity> _processedEntities;
+        private ReactiveVariable<Teams> _sourceTeam;
 
         public void OnInit(Entity entity)
         {
@@ -19,19 +22,30 @@ namespace Assets.Scripts.Runtime.Gameplay.Common
             _contacts = entity.ContactsEntitiesBuffer;
             _damage = entity.BodyContactDamage;
             _processedEntities = new(_contacts.Items.Length);
+            _sourceTeam = entity.Team;
         }
 
         public void OnUpdate(float deltaTime)
         {
+            Debug.Log("Contacts: " + _contacts.Count);
             for (int i = 0; i < _contacts.Count; i++)
             {
                 var contactEnitiy = _contacts.Items[i];
 
-                if (_processedEntities.Contains(contactEnitiy) == false)
-                {
-                    _processedEntities.Add(contactEnitiy);
+                // if (_processedEntities.Contains(contactEnitiy) == false)
 
-                    EntitiesHelper.TryTakeDamageFrom(_source, contactEnitiy, _damage.Value);
+                if (contactEnitiy.TryGetComponent<Team>(out var team))
+                {
+                    Debug.Log("Detect: " + team.Value.Value);
+
+                    if (team.Value.Value != _source.Team.Value)
+                    {
+                        Debug.Log(_sourceTeam.Value + " beats " + team.Value.Value);
+
+                        _processedEntities.Add(contactEnitiy);
+
+                        EntitiesHelper.TryTakeDamageFrom(_source, contactEnitiy, _damage.Value);
+                    }
                 }
             }
 

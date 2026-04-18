@@ -20,12 +20,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
             _explosionPosition = source.ExplosionPosition;
         }
 
-        public override void Enter()
-        {
-            base.Enter();
-            Debug.Log("Shoot state enter");
-        }
-
         public void Update(float deltaTime)
         {
             if (_inputService.AttackRequest)
