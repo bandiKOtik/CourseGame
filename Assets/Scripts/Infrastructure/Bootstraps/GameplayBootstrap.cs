@@ -15,6 +15,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     public class GameplayBootstrap : SceneBootstrap
     {
         private DIContainer _container;
+        private GameplayInputArgs _args;
         private GameplayContextRegistrations _contextRegistrations = new();
 
         private GameplayStatesContext _gameplayStatesContext;
@@ -30,8 +31,10 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             if (sceneArgs is not GameplayInputArgs args)
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
+            else
+                _args = args;
 
-            _contextRegistrations.Process(_container, args);
+                _contextRegistrations.Process(_container, args);
         }
 
         public override IEnumerator Initialize()
@@ -41,8 +44,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
             _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
-            _container.Resolve<MainBaseFactory>().Create(Vector3.zero);
-            //_container.Resolve<MainHeroFactory>().Create(Vector3.zero);
+            _container.Resolve<MainBaseFactory>().Create(_args, Vector3.zero);
 
             yield break;
         }

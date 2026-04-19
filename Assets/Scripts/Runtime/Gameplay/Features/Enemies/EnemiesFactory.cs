@@ -40,16 +40,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
                         _container.Resolve<MainBaseHolderService>()));
                     break;
 
-                case GhostConfig ghostConfig:
-                    entity = _entitiesFactory.CreateGhost(position, ghostConfig);
-                    _brainsFactory.CreateRandomWalkBrain(entity);
-                    break;
-
-                case WizzardConfig wizzardConfig:
-                    entity = _entitiesFactory.CreateWizzard(position, wizzardConfig);
-                    _brainsFactory.CreateRandomTeleportationBrain(entity, 3);
-                    break;
-
                 default:
                     throw new System.ArgumentException("Not supported type of config: " + config.GetType());
             }

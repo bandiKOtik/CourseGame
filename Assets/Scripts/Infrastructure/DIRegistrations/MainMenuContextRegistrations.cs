@@ -6,6 +6,8 @@ using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Runtime.UI.MainMenu;
 using Assets.Scripts.Utilities.AssetsManagement;
+using Assets.Scripts.Utilities.CoroutinesManagement;
+using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Factory.UI;
 using UnityEngine;
 
@@ -62,8 +64,8 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             return new(
                 c.Resolve<WalletService>(),
                 c.Resolve<PlayedGamesStatistic>(),
-                c.Resolve<ConfigsProviderService>()
-                .GetConfig<GamePriceConfig>());
+                c.Resolve<ICoroutinesPerformer>(),
+                c.Resolve<PlayerDataProvider>());
         }
     }
 }

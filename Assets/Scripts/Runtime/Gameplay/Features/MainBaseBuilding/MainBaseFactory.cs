@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Entities;
+using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
@@ -21,11 +23,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
             _context = container.Resolve<EntitiesLifeContext>();
         }
 
-        public Entity Create(Vector3 position)
+        public Entity Create(GameplayInputArgs args, Vector3 position)
         {
-            var config = _configProvider.GetConfig<DefendableBuildingConfig>();
+            var baseConfig = _configProvider.GetConfig<DefendableBuildingConfig>();
+            var levelConfig = _configProvider
+                .GetConfig<LevelsListConfig>()
+                .GetLevelByNumber(args.LevelNumber);
 
-            Entity entity = _entitiesFactory.CreateMainDefendBuilding(config, position);
+            Entity entity = _entitiesFactory.CreateMainDefendBuilding(baseConfig, levelConfig, position);
 
             entity
                 .AddIsMainBase()

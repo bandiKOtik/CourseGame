@@ -2,7 +2,6 @@
 using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
-using Assets.Scripts.Runtime.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono;
@@ -10,14 +9,10 @@ using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.Enemies;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
-using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.AssetsManagement;
-using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.SceneManagement;
 using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
@@ -34,11 +29,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             container.RegisterAsSingle(c => new EntitiesLifeContext());
 
-            container.RegisterAsSingle(c => new MainHeroFactory(c));
-
             container.RegisterAsSingle(c => new MainBaseFactory(c));
-
-            container.RegisterAsSingle(CreateMainHeroHolderService).NonLazy();
 
             container.RegisterAsSingle(CreateMainBaseHolderService).NonLazy();
 
@@ -65,11 +56,6 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             container.RegisterAsSingle(GameplayUIRoot).NonLazy();
 
             container.RegisterAsSingle(c => new CollidersRegistryService());
-        }
-
-        private MainHeroHolderService CreateMainHeroHolderService(DIContainer c)
-        {
-            return new(c.Resolve<EntitiesLifeContext>());
         }
 
         private MainBaseHolderService CreateMainBaseHolderService(DIContainer c)

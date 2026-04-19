@@ -77,8 +77,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
         public Entity CreateExplosion(ReactiveVariable<Teams> sourceTeam, Vector3 position, float damage, float radius)
         {
             var entity = CreateEmpty();
-
-            var mono = _monoEntitiesFactory.Create(entity, position, Path.Combine(ProjectilesPath, "Explosion"));
+            _monoEntitiesFactory.Create(entity, position, Path.Combine(ProjectilesPath, "Explosion"));
 
             entity
                 .AddAreaAttackRadius(new(radius))
@@ -107,6 +106,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
                 .AddSystem(new DealDamageOnContactSystem())
+                .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new SelfReleaseSystem(_context));
 
             _context.Add(entity);

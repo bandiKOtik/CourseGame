@@ -69,25 +69,13 @@ namespace Assets.Scripts.Utilities.Factory
         }
 
         private PlayerDataProvider CreatePlayerDataProvider(DIContainer c)
-            => new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
+        {
+            return new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
+        }
 
         private StatisticManageService CreateStatisticManageService(DIContainer c)
         {
-            var config = c
-                .Resolve<ConfigsProviderService>()
-                .GetConfig<GamePriceConfig>();
-
-            IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
-
-            IReadOnlyDictionary<CurrencyTypes, int> defeatCash = config.GetDefeatPrice();
-
-            StatisticManageService manager = new(
-                c.Resolve<WalletService>(),
-                c.Resolve<PlayedGamesStatistic>(),
-                winCash,
-                defeatCash);
-
-            return manager;
+            return new(c.Resolve<PlayedGamesStatistic>());
         }
 
         private SaveLoadService CreateSaveLoadService(DIContainer c)

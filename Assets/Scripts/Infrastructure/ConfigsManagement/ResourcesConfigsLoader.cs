@@ -19,7 +19,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             { typeof(GamePriceConfig), "Configs/Meta/Wallet/GamePriceConfig" },
             { typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
             { typeof(LevelsListConfig), "Configs/Gameplay/Levels/LevelsListConfig" },
-            { typeof(HeroConfig), "Configs/Gameplay/Entities/HeroConfig" },
             { typeof(DefendableBuildingConfig), "Configs/Gameplay/Entities/MainBaseConfig" },
         };
 

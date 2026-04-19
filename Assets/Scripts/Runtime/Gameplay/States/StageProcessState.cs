@@ -1,15 +1,24 @@
-﻿using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
+﻿using Assets.Scripts.Meta.Features.Wallet;
+using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Utilities.StateMachineCore;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Runtime.Gameplay.States
 {
     public class StageProcessState : State, IUpdateableState
     {
-        private StageProviderService _stageProvider;
+        private readonly StageProviderService _stageProvider;
+        private readonly WalletService _walletService;
+        IReadOnlyDictionary<CurrencyTypes, int> _winCashback;
 
-        public StageProcessState(StageProviderService stageProvider)
+        public StageProcessState(
+            StageProviderService stageProvider,
+            WalletService wallet,
+            IReadOnlyDictionary<CurrencyTypes, int> winCashback)
         {
             _stageProvider = stageProvider;
+            _walletService = wallet;
+            _winCashback = winCashback;
         }
 
         public override void Enter()
@@ -28,6 +37,9 @@ namespace Assets.Scripts.Runtime.Gameplay.States
         public override void Exit()
         {
             base.Exit();
+
+            foreach (var cashback in _winCashback)
+                _walletService.Append(cashback.Key, cashback.Value);
 
             _stageProvider.CleanUpCurrent();
         }

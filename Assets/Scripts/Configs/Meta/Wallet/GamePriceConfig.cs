@@ -9,22 +9,13 @@ namespace Assets.Scripts.Configs.Meta.Wallet
     [CreateAssetMenu(menuName = "Configs/Meta/GamePriceConfig", fileName = "GamePriceConfig")]
     public class GamePriceConfig : ScriptableObject
     {
-        [SerializeField] private List<ResetPriceConfig> _resetPrice;
         [SerializeField] private List<PriceConfig> _values;
 
-        public IReadOnlyDictionary<CurrencyTypes, int> GetResetValues()
-        {
-            return _resetPrice.ToDictionary(
-                config => config.Currency,
-                config => config.Price
-            );
-        }
-
-        public IReadOnlyDictionary<CurrencyTypes, int> GetDefeatPrice()
+        public IReadOnlyDictionary<CurrencyTypes, int> GetMinePrice()
         {
             return _values.ToDictionary(
                 config => config.Currency,
-                config => config.DefeatPrice
+                config => config.PlantMinePrice
             );
         }
 
@@ -40,15 +31,8 @@ namespace Assets.Scripts.Configs.Meta.Wallet
         private class PriceConfig
         {
             [field: SerializeField] public CurrencyTypes Currency { get; private set; }
-            [field: SerializeField] public int DefeatPrice { get; private set; } = 10;
+            [field: SerializeField] public int PlantMinePrice { get; private set; } = 10;
             [field: SerializeField] public int WinCashback { get; private set; } = 20;
-        }
-
-        [Serializable]
-        private class ResetPriceConfig
-        {
-            [field: SerializeField] public CurrencyTypes Currency { get; private set; }
-            [field: SerializeField] public int Price { get; private set; }
         }
     }
 }

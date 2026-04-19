@@ -1,9 +1,13 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.AI.States;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
+using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.Timer;
@@ -28,58 +32,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             _context = _container.Resolve<AIBrainsContext>();
             _inputService = _container.Resolve<IInputService>();
             _lifeContext = _container.Resolve<EntitiesLifeContext>();
-        }
-
-        public StateMachineBrain CreateRandomTeleportationBrain(Entity entity, float cooldown)
-        {
-            var stateMachine = CreateRandomTeleportStateMachine(entity, cooldown);
-            StateMachineBrain brain = new(stateMachine);
-
-            _context.SetFor(entity, brain);
-
-            return brain;
-        }
-
-        public StateMachineBrain CreateTeleportToWeakestBrain(Entity entity, ITargetSelector selector, float cooldown)
-        {
-            var teleportBehavior = CreateTeleportToWeakestMachine(entity, cooldown);
-            EmptyState restoreState = new();
-
-            ICondition canMove = entity.CanMove;
-            ReactiveVariable<float> energy = entity.CurrentEnergy;
-            ReactiveVariable<float> maxEnergy = entity.MaxEnergy;
-
-            FindTargetState findTargetState = new(selector, _lifeContext, entity);
-            AIParallelState teleportToTargetState = new(findTargetState, teleportBehavior);
-
-            ICondition teleportToRestoreCondition = new FuncCondition(()
-                => energy.Value < maxEnergy.Value * 0.4f);
-
-            ICompositeCondition restoreToTeleportCondition = new CompositeCondition()
-                .Add(canMove)
-                .Add(new FuncCondition(() => energy.Value > maxEnergy.Value));
-
-            AIStateMachine rootMachine = new();
-            rootMachine.AddState(teleportToTargetState);
-            rootMachine.AddState(restoreState);
-
-            rootMachine.AddTransition(teleportToTargetState, restoreState, teleportToRestoreCondition);
-            rootMachine.AddTransition(restoreState, teleportToTargetState, restoreToTeleportCondition);
-
-            var brain = new StateMachineBrain(rootMachine);
-            _context.SetFor(entity, brain);
-
-            return brain;
-        }
-
-        public StateMachineBrain CreateRandomWalkBrain(Entity entity)
-        {
-            var stateMachine = CreateRandomMovementStateMachine(entity);
-            StateMachineBrain brain = new(stateMachine);
-
-            _context.SetFor(entity, brain);
-
-            return brain;
         }
 
         public StateMachineBrain CreateTargetWalkBrain(Entity entity, ITargetSelector selector)
@@ -115,231 +67,54 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             return brain;
         }
 
-        public StateMachineBrain CreateAutoAttackWhenStandBrain(Entity entity, ITargetSelector selector)
-        {
-            var combatState = CreateAutoAttackStateMachine(entity);
-            var movementState = new PlayerInputMovementState(entity, _inputService);
-            ReactiveVariable<Entity> target = entity.CurrentTarget;
-
-            ICompositeCondition movementToCombatCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => target.Value != null))
-                .Add(new FuncCondition(() => _inputService.Direction == Vector3.zero));
-
-            ICompositeCondition combatToMovementCondition = new CompositeCondition(LogicOperations.Or)
-                .Add(new FuncCondition(() => target.Value == null))
-                .Add(new FuncCondition(() => _inputService.Direction != Vector3.zero));
-
-            AIStateMachine behavior = new();
-
-            behavior.AddState(combatState);
-            behavior.AddState(movementState);
-
-            behavior.AddTransition(movementState, combatState, movementToCombatCondition);
-            behavior.AddTransition(combatState, movementState, combatToMovementCondition);
-
-            FindTargetState findTargetState = new(selector, _lifeContext, entity);
-            AIParallelState parallelState = new(findTargetState, behavior);
-
-            AIStateMachine rootMachine = new();
-            rootMachine.AddState(parallelState);
-
-            var brain = new StateMachineBrain(rootMachine);
-            _context.SetFor(entity, brain);
-
-            return brain;
-        }
-
-        public StateMachineBrain CreateManualShooterBrain(Entity entity)
-        {
-            var combatState = CreateManualAttackStateMachine(entity);
-            var movementState = new PlayerInputMovementState(entity, _inputService);
-            ReactiveVariable<Vector3> target = new(Input.mousePosition);
-
-            ICompositeCondition movementToCombatCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => target.Value != null))
-                .Add(new FuncCondition(() => _inputService.Direction == Vector3.zero));
-
-            ICompositeCondition combatToMovementCondition = new CompositeCondition(LogicOperations.Or)
-                .Add(new FuncCondition(() => target.Value == null))
-                .Add(new FuncCondition(() => _inputService.Direction != Vector3.zero));
-
-            AIStateMachine behavior = new();
-
-            behavior.AddState(combatState);
-            behavior.AddState(movementState);
-
-            behavior.AddTransition(movementState, combatState, movementToCombatCondition);
-            behavior.AddTransition(combatState, movementState, combatToMovementCondition);
-
-            var brain = new StateMachineBrain(behavior);
-            _context.SetFor(entity, brain);
-
-            return brain;
-        }
-
         public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
         {
+            var stageProvider = _container.Resolve<StageProviderService>();
+
             var explodeState = new InputRaycastExplosionState(entity, _container.Resolve<IInputService>());
+
+            var config = _container
+                .Resolve<ConfigsProviderService>()
+                .GetConfig<GamePriceConfig>();
+
+            IReadOnlyDictionary<CurrencyTypes, int> minePrice = config.GetMinePrice();
+
             var setMineState = new InputPlantMineState(
-                _container.Resolve<MainBaseHolderService>().MainBase,
                 _container.Resolve<EntitiesFactory>(),
-                _container.Resolve<IInputService>());
+                _container.Resolve<IInputService>(),
+                _container.Resolve<WalletService>(),
+                minePrice);
+
+            var endgameState = new EmptyState();
 
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
             ICompositeCondition mineToExplosionCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => Input.GetKeyDown(KeyCode.Alpha2)));
+                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Uncompleted));
 
-            ICompositeCondition explosionToMineCondition = new CompositeCondition(LogicOperations.Or)
-                .Add(new FuncCondition(() => Input.GetKeyDown(KeyCode.Alpha1)));
+            ICompositeCondition explosionToMineCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed));
+
+            ICompositeCondition toEndgameState = new CompositeCondition()
+                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
+                .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
 
             AIStateMachine behavior = new();
 
             behavior.AddState(explodeState);
             behavior.AddState(setMineState);
+            behavior.AddState(endgameState);
 
-            behavior.AddTransition(setMineState, explodeState, mineToExplosionCondition);
+            behavior.AddTransition(explodeState, endgameState, toEndgameState);
+            behavior.AddTransition(setMineState, endgameState, toEndgameState);
+
             behavior.AddTransition(explodeState, setMineState, explosionToMineCondition);
+            behavior.AddTransition(setMineState, explodeState, mineToExplosionCondition);
 
             StateMachineBrain brain = new(behavior);
             _context.SetFor(entity, brain);
 
             return brain;
-        }
-
-        private AIStateMachine CreateRandomTeleportStateMachine(Entity entity, float cooldown)
-        {
-            var timer = _timerFactory.Create(cooldown);
-            RandomTeleportWithCooldownState teleportState = new(entity, timer);
-            EmptyState cooldownState = new();
-
-            ICondition onCooldownEnd = new FuncCondition(()
-                => timer.IsOver);
-
-            AIStateMachine stateMachine = new();
-
-            stateMachine.AddState(teleportState);
-            stateMachine.AddState(cooldownState);
-
-            stateMachine.AddTransition(teleportState, cooldownState, new FuncCondition(() => true));
-            stateMachine.AddTransition(cooldownState, teleportState, onCooldownEnd);
-
-            return stateMachine;
-        }
-
-        private AIStateMachine CreateTeleportToWeakestMachine(Entity entity, float cooldown)
-        {
-            var timer = _timerFactory.Create(cooldown);
-            TeleportToTargetWithCooldownState teleportState = new(entity, timer);
-            EmptyState cooldownState = new();
-
-            ICondition onCooldownEnd = new FuncCondition(()
-                => timer.IsOver);
-
-            var stateMachine = new AIStateMachine();
-
-            stateMachine.AddState(teleportState);
-            stateMachine.AddState(cooldownState);
-
-            stateMachine.AddTransition(teleportState, cooldownState, new FuncCondition(() => true));
-            stateMachine.AddTransition(cooldownState, teleportState, onCooldownEnd);
-
-            return stateMachine;
-        }
-
-        private AIStateMachine CreateRandomMovementStateMachine(Entity entity)
-        {
-            List<IDisposable> disposables = new();
-            RandomMovementState randomMovementState = new(entity, .5f);
-            EmptyState emptyState = new();
-
-            var movementTimer = _timerFactory.Create(2f);
-            disposables.Add(movementTimer);
-            disposables.Add(randomMovementState.Entered.Subscribe(movementTimer.Restart));
-
-            var idleTimer = _timerFactory.Create(3f);
-            disposables.Add(idleTimer);
-            disposables.Add(emptyState.Entered.Subscribe(idleTimer.Restart));
-
-            FuncCondition movementEndCondition = new(() => movementTimer.IsOver);
-            FuncCondition idleEndCondition = new(() => idleTimer.IsOver);
-
-            AIStateMachine stateMachine = new AIStateMachine(disposables);
-
-            stateMachine.AddState(randomMovementState);
-            stateMachine.AddState(emptyState);
-
-            stateMachine.AddTransition(randomMovementState, emptyState, movementEndCondition);
-            stateMachine.AddTransition(emptyState, randomMovementState, idleEndCondition);
-
-            return stateMachine;
-        }
-
-        private AIStateMachine CreateAutoAttackStateMachine(Entity entity)
-        {
-            RotateToTargetState rotateState = new(entity);
-            AttackTriggerState attackState = new(entity);
-
-            ICondition canAttack = entity.CanStartAttack;
-            Transform transform = entity.Transform;
-            ReactiveVariable<Entity> currentTarget = entity.CurrentTarget;
-
-            ICompositeCondition rotateToAttackCondition = new CompositeCondition()
-                .Add(canAttack)
-                .Add(new FuncCondition(() =>
-                {
-                    Entity target = currentTarget.Value;
-
-                    if (target == null)
-                        return false;
-
-                    float angleToTarget = Quaternion.Angle(
-                        transform.rotation,
-                        Quaternion.LookRotation(target.Transform.position - transform.position));
-
-                    return angleToTarget < 3f;
-                }));
-
-            ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
-
-            ICondition attackToRotateCondition = new FuncCondition(() => inAttackProcess.Value == false);
-
-            var stateMachine = new AIStateMachine();
-
-            stateMachine.AddState(rotateState);
-            stateMachine.AddState(attackState);
-
-            stateMachine.AddTransition(rotateState, attackState, rotateToAttackCondition);
-            stateMachine.AddTransition(attackState, rotateState, attackToRotateCondition);
-
-            return stateMachine;
-        }
-
-        private AIStateMachine CreateManualAttackStateMachine(Entity entity)
-        {
-            RotateToCursorState rotateState = new(entity);
-            AttackTriggerState attackState = new(entity);
-
-            ICondition canAttack = entity.CanStartAttack;
-            Transform transform = entity.Transform;
-
-            ICompositeCondition rotateToAttackCondition = new CompositeCondition()
-                .Add(canAttack)
-                .Add(new FuncCondition(() => _inputService.AttackRequest));
-
-            ReactiveVariable<bool> inAttackProcess = entity.InAttackProcess;
-
-            ICondition attackToRotateCondition = new FuncCondition(() => inAttackProcess.Value == false);
-
-            AIStateMachine stateMachine = new();
-
-            stateMachine.AddState(rotateState);
-            stateMachine.AddState(attackState);
-
-            stateMachine.AddTransition(rotateState, attackState, rotateToAttackCondition);
-            stateMachine.AddTransition(attackState, rotateState, attackToRotateCondition);
-
-            return stateMachine;
         }
     }
 }

@@ -358,10 +358,6 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveEvent() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeleportDestinationAchieved(Assets.Scripts.Utilities.Reactive.ReactiveEvent value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MovementFeature.TeleportDestinationAchieved() {Value = value});
-		public Assets.Scripts.Runtime.Gameplay.Features.MainHero.IsMainHero IsMainHeroComp
-			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MainHero.IsMainHero>();
-		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddIsMainHero()
-			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.MainHero.IsMainHero() );
 		public Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding.IsMainBase IsMainBaseComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding.IsMainBase>();
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddIsMainBase()

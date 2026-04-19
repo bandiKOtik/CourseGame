@@ -1,14 +1,17 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta;
+using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
-using Assets.Scripts.Runtime.Gameplay.Features.MainHero;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Runtime.Gameplay.States
 {
@@ -23,7 +26,16 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
         public PreperationState CreatePreperationState() => new(_container.Resolve<PreperationInputService>());
 
-        public StageProcessState CreateStageProcessState() => new(_container.Resolve<StageProviderService>());
+        public StageProcessState CreateStageProcessState()
+        {
+            var config = _container
+                .Resolve<ConfigsProviderService>()
+                .GetConfig<GamePriceConfig>();
+
+            IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
+
+            return new(_container.Resolve<StageProviderService>(), _container.Resolve<WalletService>(), winCash);
+        }
 
         public WinState CreateWinState()
         {
@@ -56,7 +68,6 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             var defeatState = CreateDefeatState();
 
             ICompositeCondition coreLoopToWinStateCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => preperationTrigger.IsReady.Value))
                 .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
                 .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
 

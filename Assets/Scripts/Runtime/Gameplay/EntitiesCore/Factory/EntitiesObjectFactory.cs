@@ -1,14 +1,12 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.Features.Attack;
 using Assets.Scripts.Runtime.Gameplay.Features.ExplosionFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
-using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Simple;
 using System.IO;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
@@ -20,7 +18,8 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
         public Entity CreateContactTrigger(Teams team, Vector3 position)
         {
             var entity = CreateEmpty();
-            var mono = _monoEntitiesFactory.Create(entity, position, Path.Combine(ObjectsPath, "ContactTrigger"));
+            var mono = _monoEntitiesFactory
+                .Create(entity, position, Path.Combine(ObjectsPath, "ContactTrigger"));
 
             entity
                 .AddTeam(new(team))
@@ -28,7 +27,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
                 .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize))
                 .AddStartAttackRequest()
-                .AddExplosionPosition()
+                .AddExplosionPosition(new(position))
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
                 .AddMustSelfDestroy()
