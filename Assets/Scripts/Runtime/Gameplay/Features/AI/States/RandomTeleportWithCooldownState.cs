@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.StateMachineCore;
+using Assets.Scripts.Utilities.Timer;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
@@ -9,31 +10,26 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
     {
         private ReactiveVariable<float> _radius;
         private ReactiveEvent<Vector3> _found;
-        private float _cooldown;
-        private float _time;
+        private TimerService _timer;
 
-        public RandomTeleportWithCooldownState(Entity entity, float cooldown)
+        public RandomTeleportWithCooldownState(Entity entity, TimerService timer)
         {
             _radius = entity.TeleportRadius;
             _found = entity.PositionFound;
-            _cooldown = cooldown;
+            _timer = timer;
         }
 
         public override void Enter()
         {
             base.Enter();
-            _time = 0;
+
+            _found.Invoke(GetNewPosition());
+
+            _timer.Restart();
         }
 
         public void Update(float deltaTime)
         {
-            _time += deltaTime;
-
-            if (_time >= _cooldown)
-            {
-                _found.Invoke(GetNewPosition());
-                _time = 0;
-            }
         }
 
         private Vector3 GetNewPosition()

@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities.Reactive;
 using System;
 using UnityEngine;
@@ -15,6 +17,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack
         private ReactiveVariable<float> _damage;
         private ReactiveEvent _startAttackEvent;
         private Transform _transform;
+        private ReactiveVariable<Teams> _team;
 
         private IDisposable _subscription;
 
@@ -30,6 +33,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack
             _damage = entity.InstantAttackDamage;
             _startAttackEvent = entity.StartAttackEvent;
             _transform = entity.Transform;
+            _team = entity.Team;
 
             _subscription = _startAttackEvent.Subscribe(OnStartAttackEvent);
         }
@@ -41,7 +45,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack
 
         private void OnStartAttackEvent()
         {
-            _factory.CreateExplosion(_excludedEntity, _transform.position, _damage.Value, _attackRadius.Value);
+            _factory.CreateExplosion(_team, _transform.position, _damage.Value, _attackRadius.Value);
         }
     }
 }

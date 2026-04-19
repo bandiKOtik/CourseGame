@@ -1,5 +1,7 @@
-﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
+using Assets.Scripts.Meta;
 using Assets.Scripts.Meta.Features.LevelsProgression;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
@@ -33,6 +35,7 @@ namespace Assets.Scripts.Utilities.Factory
 
             // Save system
             container.RegisterAsSingle(CreatePlayerDataProvider);
+            container.RegisterAsSingle(CreateStatisticManageService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
             container.RegisterAsSingle<ILoadingScreen>(CreateLoadingScreenHandler);
             container.RegisterAsSingle<ISaveScreen>(CreateSaveScreenHandler);
@@ -66,7 +69,14 @@ namespace Assets.Scripts.Utilities.Factory
         }
 
         private PlayerDataProvider CreatePlayerDataProvider(DIContainer c)
-            => new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
+        {
+            return new PlayerDataProvider(c.Resolve<ISaveLoadService>(), c.Resolve<ConfigsProviderService>());
+        }
+
+        private StatisticManageService CreateStatisticManageService(DIContainer c)
+        {
+            return new(c.Resolve<PlayedGamesStatistic>());
+        }
 
         private SaveLoadService CreateSaveLoadService(DIContainer c)
         {

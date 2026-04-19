@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
+using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
 using UnityEngine;
 
@@ -10,16 +11,21 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
         private ReactiveVariable<Vector3> _moveDirection;
         private ReactiveVariable<float> _moveSpeed;
         private CharacterController _controller;
+        private ICompositeCondition _canMove;
 
         public void OnInit(Entity entity)
         {
             _moveDirection = entity.MoveDirection;
             _moveSpeed = entity.MoveSpeed;
             _controller = entity.CharacterController;
+            _canMove = entity.CanMove;
         }
 
         public void OnUpdate(float deltaTime)
         {
+            if (_canMove.Evaluate() == false)
+                return;
+
             Vector3 velocity = _moveDirection.Value.normalized * _moveSpeed.Value;
 
             _controller.Move(velocity * deltaTime);

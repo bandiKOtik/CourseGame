@@ -26,6 +26,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 if (target.TryGetCanApplyDamage(out var canApplyDamage))
                     result = result && canApplyDamage.Evaluate();
 
+                if (_source.TryGetTeam(out var sourceTeam) && target.TryGetTeam(out var targetTeam))
+                    result = result && (sourceTeam.Value != targetTeam.Value);
+
                 result = result && (target != _source);
 
                 return result;
@@ -34,8 +37,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
             if (selectedTargets.Any() == false)
                 return null;
 
-            Entity colsest = selectedTargets.First();
-            float minDistance = GetDistanceTo(colsest);
+            Entity closest = selectedTargets.First();
+            float minDistance = GetDistanceTo(closest);
 
             foreach (Entity target in selectedTargets)
             {
@@ -44,11 +47,11 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 if (distance < minDistance)
                 {
                     minDistance = distance;
-                    colsest = target;
+                    closest = target;
                 }
             }
 
-            return colsest;
+            return closest;
         }
 
         private float GetDistanceTo(Entity target) => (_sourceTransform.position - target.Transform.position).magnitude;

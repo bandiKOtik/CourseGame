@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Reactive;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -51,6 +52,12 @@ namespace Assets.Scripts.Meta.Features.Wallet
                 throw new System.ArgumentOutOfRangeException(nameof(amount));
 
             _currencies[type].Value -= amount;
+        }
+
+        internal void Reset()
+        {
+            foreach (var currency in _currencies)
+                currency.Value.Value = 0;
         }
 
         public void ReadFrom(PlayerData data)

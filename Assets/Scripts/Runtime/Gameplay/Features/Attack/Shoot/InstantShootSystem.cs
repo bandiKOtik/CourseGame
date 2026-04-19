@@ -1,8 +1,10 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
 using Assets.Scripts.Utilities.Reactive;
 using System;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
 {
@@ -10,6 +12,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
     {
         private readonly EntitiesFactory _factory;
 
+        private Entity _owner;
         private ReactiveEvent _attackDelayEndEvent;
         private ReactiveVariable<float> _damage;
         private Transform _shootPoint;
@@ -23,6 +26,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
 
         public void OnInit(Entity entity)
         {
+            _owner = entity;
             _attackDelayEndEvent = entity.AttackDelayEndEvent;
             _damage = entity.InstantAttackDamage;
             _shootPoint = entity.ShootPoint;
@@ -36,7 +40,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
 
         private void OnDelayEnd()
         {
-            _factory.CreateBullet(_shootPoint.position, _shootPoint.forward, _damage.Value);
+            _factory.CreateBullet(_owner, _shootPoint.position, _shootPoint.forward, _damage.Value);
         }
     }
 }

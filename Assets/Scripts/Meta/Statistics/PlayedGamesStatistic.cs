@@ -36,8 +36,6 @@ namespace Assets.Scripts.Meta.Statistics
                 _statistics[stat] = default;
 
                 StatChanged?.Invoke(stat, _statistics[stat]);
-
-                _performer.StartPerform(_playerDataProvider.SaveAsync());
             }
         }
 

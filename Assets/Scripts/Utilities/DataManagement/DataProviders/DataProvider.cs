@@ -48,7 +48,7 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             SendDataToReaders();
         }
 
-        public IEnumerator CheckExistsAsync(Action<bool> onResult)
+        public IEnumerator ExistsAsync(Action<bool> onResult)
         {
             yield return _saveLoadService.Exists<TData>(result => onResult(result));
         }

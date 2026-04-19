@@ -35,6 +35,11 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Sensors
         public ReactiveVariable<bool> Value;
     }
 
+    public class IsTouchedAnotherTeam : IEntityComponent
+    {
+        public ReactiveVariable<bool> Value;
+    }
+
     public class ExcludedEntitiesFromContacts : IEntityComponent
     {
         public Entity[] Value;

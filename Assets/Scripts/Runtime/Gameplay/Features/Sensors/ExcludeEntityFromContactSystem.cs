@@ -17,13 +17,13 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Sensors
 
         public void OnUpdate(float deltaTime)
         {
-            for (int i = 0; i < _contactEntities.Count; i++)
+            for (int i = 0; i < _exclude.Length; i++)
             {
-                for (int j = 0; j < _exclude.Length; j++)
+                for (int j = 0; j < _contactEntities.Count; j++)
                 {
-                    if (_contactEntities.Items[i] == _exclude[j])
+                    if (_contactEntities.Items[j] == _exclude[i])
                     {
-                        _contactEntities.Items[i] = _contactEntities.Items[_contactEntities.Count - 1];
+                        _contactEntities.Items[j] = _contactEntities.Items[_contactEntities.Count - 1];
                         _contactEntities.Items[_contactEntities.Count - 1] = null;
                         _contactEntities.Count--;
                     }

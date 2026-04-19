@@ -5,6 +5,7 @@
         public const int BaseMovementSpeed = 10;
         public const int BaseRotationSpeed = 1000;
         public const int BaseBufferSize = 64;
-        public const int CharactersLayerMask = 6;
+        public const string EntitiesProjectilesRootFolderPath = "Entities/Projectiles/";
+        public const string EntitiesObjectsRootFolderPath = "Entities/Objects/";
     }
 }
