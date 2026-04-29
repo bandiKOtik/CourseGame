@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b73edbf04165e4f8d32de43ec6c1df, type: 3}
   m_Name: MainBaseConfig
   m_EditorClassIdentifier: 
-  <PrefabPath>k__BackingField: Entities/Objects/DefendableBuilding
+  <PrefabPath>k__BackingField: Entities/PlayerCharacters/DefendableBuilding
   <MaxHealth>k__BackingField: 10

@@ -9,7 +9,7 @@ namespace Assets.Scripts.Runtime.Gameplay.States
     {
         private readonly StageProviderService _stageProvider;
         private readonly WalletService _walletService;
-        IReadOnlyDictionary<CurrencyTypes, int> _winCashback;
+        private IReadOnlyDictionary<CurrencyTypes, int> _winCashback;
 
         public StageProcessState(
             StageProviderService stageProvider,

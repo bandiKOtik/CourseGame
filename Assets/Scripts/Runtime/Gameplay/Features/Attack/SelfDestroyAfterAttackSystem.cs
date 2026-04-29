@@ -10,7 +10,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Attack
         private ReactiveEvent _attackRequest;
         private ReactiveVariable<bool> _mustDestroy;
 
-        IDisposable _subscription;
+        private IDisposable _subscription;
 
         public void OnInit(Entity entity)
         {

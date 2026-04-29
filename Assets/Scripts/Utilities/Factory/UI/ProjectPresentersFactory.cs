@@ -6,7 +6,7 @@ using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.CommonViews;
 using Assets.Scripts.Runtime.UI.LevelsMenuPopup;
-using Assets.Scripts.Runtime.UI.StatisticsUI;
+using Assets.Scripts.Runtime.UI.Statistics;
 using Assets.Scripts.Runtime.UI.Wallet;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Reactive;

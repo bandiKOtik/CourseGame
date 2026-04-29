@@ -27,21 +27,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Common
 
         public void OnUpdate(float deltaTime)
         {
-            Debug.Log("Contacts: " + _contacts.Count);
             for (int i = 0; i < _contacts.Count; i++)
             {
                 var contactEnitiy = _contacts.Items[i];
 
-                // if (_processedEntities.Contains(contactEnitiy) == false)
-
                 if (contactEnitiy.TryGetComponent<Team>(out var team))
                 {
-                    Debug.Log("Detect: " + team.Value.Value);
-
                     if (team.Value.Value != _source.Team.Value)
                     {
-                        Debug.Log(_sourceTeam.Value + " beats " + team.Value.Value);
-
                         _processedEntities.Add(contactEnitiy);
 
                         EntitiesHelper.TryTakeDamageFrom(_source, contactEnitiy, _damage.Value);

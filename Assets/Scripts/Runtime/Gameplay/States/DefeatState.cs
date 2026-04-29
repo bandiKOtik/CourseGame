@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Meta;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.SceneManagement;
@@ -12,20 +13,21 @@ namespace Assets.Scripts.Runtime.Gameplay.States
     {
         private readonly StatisticManageService _statistics;
         private readonly PlayerDataProvider _dataProvider;
-        private readonly SceneSwitcherService _sceneSwitcher;
         private ICoroutinesPerformer _performer;
+
+        private readonly GameplayPopupService _popupService;
 
         public DefeatState(
             StatisticManageService statistics,
             PlayerDataProvider provider,
-            SceneSwitcherService sceneSwitcher,
             ICoroutinesPerformer performer,
-            IInputService inputService) : base(inputService)
+            IInputService inputService,
+            GameplayPopupService popupService) : base(inputService)
         {
             _statistics = statistics;
             _dataProvider = provider;
-            _sceneSwitcher = sceneSwitcher;
             _performer = performer;
+            _popupService = popupService;
         }
 
         public override void Enter()
@@ -34,15 +36,13 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
             _statistics.DefeatRewards();
 
-            Debug.LogWarning("You loose! Click \"Q\" to exit!");
-
             _performer.StartPerform(_dataProvider.SaveAsync());
+
+            _popupService.OpenDefeatPopup();
         }
 
         public void Update(float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-                _performer.StartPerform(_sceneSwitcher.SwitchAsync(Scenes.MainMenu));
         }
     }
 }

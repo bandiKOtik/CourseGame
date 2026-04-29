@@ -4,6 +4,7 @@ using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
+using Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
@@ -80,6 +81,9 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             _monoEntitiesFactory.Create(entity, position, Path.Combine(ProjectilesPath, "Explosion"));
 
             entity
+                .AddSpawnInitialTime()
+                .AddSpawnCurrentTime()
+                .AddInSpawnProcess()
                 .AddAreaAttackRadius(new(radius))
                 .AddBodyContactDamage(new(damage))
                 .AddDamageInitialized()
@@ -102,6 +106,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddMustSelfRelease(selfReleaseCondition);
 
             entity
+                .AddSystem(new SpawnProcessTimerSystem())
                 .AddSystem(new ColliderSetRadiusSystem())
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))

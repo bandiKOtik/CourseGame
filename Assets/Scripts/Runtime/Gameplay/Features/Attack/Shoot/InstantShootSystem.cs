@@ -4,7 +4,6 @@ using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
 using Assets.Scripts.Utilities.Reactive;
 using System;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.Attack.Shoot
 {

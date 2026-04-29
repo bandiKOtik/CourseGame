@@ -5,6 +5,7 @@ using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.States;
+using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.SceneManagement;
 using System;
 using System.Collections;
@@ -22,6 +23,8 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
         private EntitiesLifeContext _lifeContext;
         private AIBrainsContext _brainsContext;
 
+        private GameplayScreenPresenter _screenPresenter;
+
         private bool _initialized = false;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
@@ -34,7 +37,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             else
                 _args = args;
 
-                _contextRegistrations.Process(_container, args);
+            _contextRegistrations.Process(_container, args);
         }
 
         public override IEnumerator Initialize()
@@ -45,6 +48,8 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
             _container.Resolve<MainBaseFactory>().Create(_args, Vector3.zero);
+
+            _screenPresenter = _container.Resolve<GameplayScreenPresenter>();
 
             yield break;
         }
@@ -64,6 +69,11 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             _brainsContext?.Update(Time.deltaTime);
             _lifeContext?.Update(Time.deltaTime);
             _gameplayStatesContext?.Update(Time.deltaTime);
+        }
+
+        private void LateUpdate()
+        {
+            _screenPresenter?.LateUpdate();
         }
     }
 }

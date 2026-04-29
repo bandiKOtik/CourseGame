@@ -5,9 +5,12 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
 {
     public interface IStage : IDisposable
     {
-        IReadOnlyEvent Completed {  get; }
+        IReadOnlyEvent Completed { get; }
+
         void Start();
+
         void Update(float deltaTime);
+
         void CleanUp();
     }
 }

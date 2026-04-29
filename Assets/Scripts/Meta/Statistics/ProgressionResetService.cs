@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using UnityEngine;
 
 namespace Assets.Scripts.Meta.Statistics
 {

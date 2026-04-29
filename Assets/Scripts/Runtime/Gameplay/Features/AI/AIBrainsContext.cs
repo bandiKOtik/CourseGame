@@ -30,7 +30,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
         {
             for (int i = 0; i < _entityToBrain.Count; i++)
             {
-                if (_entityToBrain[i].Entity.Initialized == false)
+                if (_entityToBrain[i].Entity.IsInitialized == false)
                 {
                     int lastIndex = _entityToBrain.Count - 1;
 

@@ -7,6 +7,7 @@ using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
+using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
@@ -42,9 +43,9 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             return new(
                 _container.Resolve<StatisticManageService>(),
                 _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
-                _container.Resolve<IInputService>());
+                _container.Resolve<IInputService>(),
+                _container.Resolve<GameplayPopupService>());
         }
 
         public DefeatState CreateDefeatState()
@@ -52,9 +53,9 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             return new(
                 _container.Resolve<StatisticManageService>(),
                 _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<ICoroutinesPerformer>(),
-                _container.Resolve<IInputService>());
+                _container.Resolve<IInputService>(),
+                _container.Resolve<GameplayPopupService>());
         }
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs args)

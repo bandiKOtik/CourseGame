@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Entities;
 using Assets.Scripts.Configs.Gameplay.Levels;
-using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
@@ -12,6 +11,7 @@ using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
+using Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Simple;
@@ -116,9 +116,14 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddNearbyAttackTriggerRadius(new(config.AttackRadius))
                 .AddContactsDetectingMask(Layers.CharacterMask)
                 .AddContactsColliderBuffer(new(ConstValues.BaseBufferSize))
-                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize));
+                .AddContactsEntitiesBuffer(new(ConstValues.BaseBufferSize))
+                // Spawn
+                .AddSpawnInitialTime(new(1))
+                .AddSpawnCurrentTime()
+                .AddInSpawnProcess();
 
             ICompositeCondition isAliveCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.InSpawnProcess.Value == false))
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             ICompositeCondition dieCondition = new CompositeCondition(LogicOperations.Or)
@@ -130,6 +135,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .Add(new FuncCondition(() => entity.InDeathProcess.Value == false));
 
             ICompositeCondition canApplyDamage = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.InSpawnProcess.Value == false))
                 .Add(new FuncCondition(() => entity.IsDead.Value == false));
 
             entity
@@ -141,6 +147,7 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
 
             entity
                 .AddSystem(new ApplyHealthToMaxSystem())
+                .AddSystem(new SpawnProcessTimerSystem())
                 .AddSystem(new CharacterControllerMovementSystem())
                 .AddSystem(new TransformRotationSystem())
                 .AddSystem(new BodyContactsDetectingSystem())

@@ -28,6 +28,15 @@ namespace Assets.Scripts.Runtime.UI.Core
                             .From(0)
                             .SetEase(Ease.OutBack));
 
+                case PopupAnimationType.Fade:
+                    return DOTween.Sequence()
+                        .Append(anticlicker
+                            .DOFade(anticlickerMaxAlpha, .2f)
+                            .From(0))
+                        .Join(body
+                            .DOFade(anticlickerMaxAlpha, .2f)
+                            .From(0));
+
                 default:
                     throw new System.ArgumentException(nameof(type));
             }

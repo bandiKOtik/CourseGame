@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Runtime.Gameplay.EntityRegistrators;
+using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
 {
+    [RequireComponent(typeof(TransformEntityRegistrator))]
     public class MonoEntity : MonoBehaviour
     {
         private CollidersRegistryService _registry;
@@ -24,12 +26,24 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
                 foreach (var register in registrators)
                     register.Register(entity);
 
+            EntityView[] views = GetComponentsInChildren<EntityView>();
+
+            if (views != null)
+                foreach (var view in views)
+                    view.Link(entity);
+
             foreach (var col in GetComponentsInChildren<Collider>())
                 _registry.Register(col, entity);
         }
 
         public void Cleanup(Entity entity)
         {
+            EntityView[] views = GetComponentsInChildren<EntityView>();
+
+            if (views != null)
+                foreach (var view in views)
+                    view.CleanUp(entity);
+
             foreach (var col in GetComponentsInChildren<Collider>())
                 _registry.Unregister(col);
 

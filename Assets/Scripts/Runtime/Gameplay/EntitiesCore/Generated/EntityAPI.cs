@@ -19,6 +19,57 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature.Team() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature.Teams>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddTeam(Assets.Scripts.Utilities.Reactive.ReactiveVariable<Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature.Teams> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature.Team() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnInitialTime SpawnInitialTimeComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnInitialTime>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> SpawnInitialTime
+			=> SpawnInitialTimeComp.Value;
+		public bool TryGetSpawnInitialTime(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnInitialTime component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddSpawnInitialTime()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnInitialTime() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddSpawnInitialTime(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnInitialTime() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnCurrentTime SpawnCurrentTimeComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnCurrentTime>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> SpawnCurrentTime
+			=> SpawnCurrentTimeComp.Value;
+		public bool TryGetSpawnCurrentTime(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnCurrentTime component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddSpawnCurrentTime()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnCurrentTime() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddSpawnCurrentTime(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.SpawnCurrentTime() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.InSpawnProcess InSpawnProcessComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.InSpawnProcess>();
+		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> InSpawnProcess
+			=> InSpawnProcessComp.Value;
+		public bool TryGetInSpawnProcess(out Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.InSpawnProcess component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddInSpawnProcess()
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.InSpawnProcess() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean>() });
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddInSpawnProcess(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature.InSpawnProcess() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.Sensors.BodyCollider BodyColliderComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.Sensors.BodyCollider>();
 		public UnityEngine.CapsuleCollider BodyCollider
@@ -396,6 +447,21 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.MaxHealth() { Value = new Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single>() });
 		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddMaxHealth(Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Single> value)
 			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.MaxHealth() {Value = value});
+		public Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.HealthBarPoint HealthBarPointComp
+			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.HealthBarPoint>();
+		public UnityEngine.Transform HealthBarPoint
+			=> HealthBarPointComp.Value;
+		public bool TryGetHealthBarPoint(out UnityEngine.Transform value)
+		{
+			bool result = TryGetComponent(out Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.HealthBarPoint component);
+			if (result)
+				value = component.Value;
+			else
+				value = default(UnityEngine.Transform);
+			return result;
+		}
+		public Assets.Scripts.Runtime.Gameplay.EntitiesCore.Entity AddHealthBarPoint(UnityEngine.Transform value)
+			=> AddComponent(new Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.HealthBarPoint() {Value = value});
 		public Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.IsDead IsDeadComp
 			=> GetComponent<Assets.Scripts.Runtime.Gameplay.Features.LifeCycle.IsDead>();
 		public Assets.Scripts.Utilities.Reactive.ReactiveVariable<System.Boolean> IsDead

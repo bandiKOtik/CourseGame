@@ -1,8 +1,6 @@
 ﻿using Assets.Scripts.Meta.Features.Wallet;
-using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
-using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities.StateMachineCore;
 using System.Collections.Generic;
@@ -15,7 +13,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
         private readonly EntitiesFactory _factory;
         private readonly IInputService _inputService;
         private readonly WalletService _walletService;
-        IReadOnlyDictionary<CurrencyTypes, int> _minePrice;
+        private IReadOnlyDictionary<CurrencyTypes, int> _minePrice;
 
         public InputPlantMineState(
             EntitiesFactory factory,
@@ -47,8 +45,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 if (enoughToPlant == false)
                     return;
 
-                Debug.Log("Before plant: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-
                 foreach (var price in _minePrice)
                     _walletService.Spend(price.Key, price.Value);
 
@@ -56,8 +52,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 
                 if (Physics.Raycast(ray, out var hit))
                     _factory.CreateContactTrigger(Teams.MainHero, hit.point);
-
-                Debug.Log("After plant: " + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
             }
         }
     }

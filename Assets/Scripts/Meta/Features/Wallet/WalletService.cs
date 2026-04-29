@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Reactive;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

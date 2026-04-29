@@ -17,7 +17,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
 
         private Dictionary<Entity, IDisposable> _spawnedEnemiesToRemoveReason = new();
 
-        public ClearAllEnemiesStage(ClearAllEnemiesStageConfig config,  EnemiesFactory enemiesFactory, EntitiesLifeContext context)
+        public ClearAllEnemiesStage(ClearAllEnemiesStageConfig config, EnemiesFactory enemiesFactory, EntitiesLifeContext context)
         {
             _config = config;
             _enemiesFactory = enemiesFactory;

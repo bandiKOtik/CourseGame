@@ -13,9 +13,15 @@ namespace Assets.Scripts.Utilities.Factory.UI
         {
             { ViewIDs.CurrencyView, "UI/View/IconTextView" },
             { ViewIDs.StatisticView, "UI/View/TextView" },
+            { ViewIDs.StageView, "UI/View/StageView" },
             { ViewIDs.MainMenuScreen, "UI/MainMenu/MainMenuScreenView" },
+            { ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView" },
             { ViewIDs.LevelsMenuPopup, "UI/Levels/LevelsMenuPopup" },
             { ViewIDs.LevelTile, "UI/Levels/LevelTile" },
+            { ViewIDs.WinPopup, "UI/Gameplay/EndgamePopup/WinPopup" },
+            { ViewIDs.DefeatPopup, "UI/Gameplay/EndgamePopup/DefeatPopup" },
+            { ViewIDs.SimpleHealthBar, "UI/Gameplay/HealthBar/HealthBar" },
+            { ViewIDs.HealthBarWithText, "UI/Gameplay/HealthBar/HealthBarWithText" },
         };
 
         public ViewsFactory(ResourcesAssetsLoader assetsLoader)

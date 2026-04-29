@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Configs.Meta.Wallet;
-using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.Core;

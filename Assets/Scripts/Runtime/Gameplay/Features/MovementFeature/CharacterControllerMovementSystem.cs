@@ -11,6 +11,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
         private ReactiveVariable<Vector3> _moveDirection;
         private ReactiveVariable<float> _moveSpeed;
         private CharacterController _controller;
+        private ReactiveVariable<bool> _isMoving;
         private ICompositeCondition _canMove;
 
         public void OnInit(Entity entity)
@@ -18,6 +19,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
             _moveDirection = entity.MoveDirection;
             _moveSpeed = entity.MoveSpeed;
             _controller = entity.CharacterController;
+            _isMoving = entity.IsMoving;
             _canMove = entity.CanMove;
         }
 
@@ -27,6 +29,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MovementFeature
                 return;
 
             Vector3 velocity = _moveDirection.Value.normalized * _moveSpeed.Value;
+
+            _isMoving.Value = velocity.magnitude > 0;
 
             _controller.Move(velocity * deltaTime);
         }
