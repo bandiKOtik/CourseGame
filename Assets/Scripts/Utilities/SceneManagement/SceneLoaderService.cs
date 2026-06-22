@@ -1,23 +1,18 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts.Utilities.SceneManagement
 {
     public class SceneLoaderService
     {
-        public IEnumerator LoadAsync(string sceneName, LoadSceneMode sceneMode = LoadSceneMode.Single)
+        public async UniTask LoadAsync(string sceneName, LoadSceneMode sceneMode = LoadSceneMode.Single)
         {
-            AsyncOperation sceneLoaded = SceneManager.LoadSceneAsync(sceneName, sceneMode);
-
-            yield return new WaitWhile(() => sceneLoaded.isDone == false);
+            await SceneManager.LoadSceneAsync(sceneName, sceneMode);
         }
 
-        public IEnumerator UnloadAsync(string sceneName)
+        public async UniTask UnloadAsync(string sceneName)
         {
-            AsyncOperation sceneUnloaded = SceneManager.UnloadSceneAsync(sceneName);
-
-            yield return new WaitWhile(() => sceneUnloaded.isDone == false);
+            await SceneManager.UnloadSceneAsync(sceneName);
         }
     }
 }

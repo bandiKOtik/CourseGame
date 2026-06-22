@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 
 namespace Assets.Scripts.Utilities.DataManagement.DataRepository
 {
     public interface IDataRepository
     {
-        IEnumerator Read(string key, Action<string> onRead);
+        UniTask<string> Read(string key);
 
-        IEnumerator Write(string key, string serializedData);
+        UniTask Write(string key, string serializedData);
 
-        IEnumerator Remove(string key);
+        UniTask Remove(string key);
 
-        IEnumerator Exists(string key, Action<bool> onExistsResult);
+        UniTask<bool> Exists(string key);
     }
 }

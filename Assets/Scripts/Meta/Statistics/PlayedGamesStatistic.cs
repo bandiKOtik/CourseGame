@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.DataManagement;
+﻿using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using System;
 using System.Collections.Generic;
@@ -13,16 +12,13 @@ namespace Assets.Scripts.Meta.Statistics
 
         private readonly Dictionary<GameStatType, int> _statistics;
 
-        private readonly ICoroutinesPerformer _performer;
         private readonly PlayerDataProvider _playerDataProvider;
 
         public PlayedGamesStatistic(
             Dictionary<GameStatType, int> statistic,
-            PlayerDataProvider playerDataProvider,
-            ICoroutinesPerformer performer)
+            PlayerDataProvider playerDataProvider)
         {
             _playerDataProvider = playerDataProvider;
-            _performer = performer;
 
             _statistics = new(statistic);
             _playerDataProvider.RegisterReader(this);

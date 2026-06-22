@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
 using System.Collections.Generic;
 
@@ -20,12 +19,10 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         private readonly List<LevelTilePresenter> _levelTilePresenters = new();
 
         public LevelsMenuPopupPresenter(
-            ICoroutinesPerformer performer,
             ConfigsProviderService configsProvider,
             ProjectPresentersFactory presentersFactory,
             ViewsFactory viewsFactory,
             LevelsMenuPopupView view)
-            : base(performer)
         {
             _configsProvider = configsProvider;
             _presentersFactory = presentersFactory;

@@ -4,8 +4,10 @@ using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.AI.States;
+using Assets.Scripts.Runtime.Gameplay.Features.LootFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
+using Assets.Scripts.Utilities.Conditions;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
@@ -17,6 +19,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
         private readonly EntitiesFactory _entitiesFactory;
         private readonly BrainsFactory _brainsFactory;
         private readonly EntitiesLifeContext _context;
+        private readonly DropLootService _dropLootService;
 
         public EnemiesFactory(DIContainer container)
         {
@@ -24,6 +27,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
             _entitiesFactory = container.Resolve<EntitiesFactory>();
             _brainsFactory = container.Resolve<BrainsFactory>();
             _context = container.Resolve<EntitiesLifeContext>();
+            _dropLootService = container.Resolve<DropLootService>();
         }
 
         public Entity Create(Vector3 position, EntityConfig config)
@@ -43,11 +47,28 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
                     throw new System.ArgumentException("Not supported type of config: " + config.GetType());
             }
 
+            AddDropLootBehaviorTo(entity);
+
             entity.AddTeam(new(Teams.Enemies));
 
             _context.Add(entity);
 
             return entity;
+        }
+
+        private void AddDropLootBehaviorTo(Entity entity)
+        {
+            ICompositeCondition canDrop = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsDead.Value))
+                .Add(new FuncCondition(() => entity.LootIsDropped.Value == false));
+
+            entity
+                .AddLootIsDropped()
+                .AddCanDropLoot(canDrop);
+
+            entity.MustSelfRelease.Add(new FuncCondition(() => entity.LootIsDropped.Value));
+
+            entity.AddSystem(new DropLootSystem(_dropLootService));
         }
     }
 }

@@ -1,64 +1,63 @@
-﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Utilities.CoroutinesManagement;
+﻿using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.Factory;
 using Assets.Scripts.Utilities.LoadingScreen;
 using Assets.Scripts.Utilities.SceneManagement;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Infrastructure.Bootstraps
 {
-    internal class GameEntryPoint : MonoBehaviour
+    public class GameEntryPoint : MonoBehaviour
     {
-        private ProjectContextRegistrations _projectRegistrations = new();
-        private ICoroutinesPerformer _coroutinesPerformer;
+        ILoadingScreen _loadScreen;
+        SceneSwitcherService _sceneSwitcher;
+        PlayerDataProvider _playerDataProvider;
 
         private void Awake()
         {
             SetupAppSettings();
 
-            DIContainer projectContainer = new();
+            //DIContainer projectContainer = new();
 
-            _projectRegistrations.Register(projectContainer);
+            //_projectRegistrations.Register(projectContainer);
 
-            projectContainer.Initialize();
+            //projectContainer.Initialize();
 
-            _coroutinesPerformer = projectContainer
-                .Resolve<ICoroutinesPerformer>();
-
-            _coroutinesPerformer
-                .StartPerform(Initialize(projectContainer));
+            Initialize().Forget();
         }
 
-        public IEnumerator Initialize(DIContainer container)
+        [Inject]
+        private void Construct(
+            ILoadingScreen loadScreen,
+            SceneSwitcherService sceneSwitcher,
+            PlayerDataProvider playerDataProvider)
         {
-            ILoadingScreen loadScreen = container.Resolve<ILoadingScreen>();
-            SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
-            PlayerDataProvider playerDataProvider = container.Resolve<PlayerDataProvider>();
+            _loadScreen = loadScreen;
+            _sceneSwitcher = sceneSwitcher;
+            _playerDataProvider = playerDataProvider;
+        }
 
-            loadScreen.Show();
-
-            yield return container
-                .Resolve<ConfigsProviderService>().LoadAsync();
+        public async UniTask Initialize()
+        {
+            await UniTask.CompletedTask;
+            _loadScreen.Show();
 
             bool isPlayerDataSaveExists = false;
 
-            yield return playerDataProvider.ExistsAsync(result => isPlayerDataSaveExists = result);
+            isPlayerDataSaveExists = await _playerDataProvider.ExistsAsync();
 
             if (isPlayerDataSaveExists)
-                yield return _coroutinesPerformer
-                    .StartPerform(playerDataProvider.LoadAsync());
+                await _playerDataProvider.LoadAsync();
             else
-                playerDataProvider.Reset();
+                _playerDataProvider.Reset();
 
-            _coroutinesPerformer
-                .StartPerform(playerDataProvider.SaveAsync());
+            await _playerDataProvider.SaveAsync();
 
-            loadScreen.Hide();
+            _loadScreen.Hide();
 
-            yield return sceneSwitcher.SwitchAsync(Scenes.MainMenu);
+            await _sceneSwitcher.SwitchAsync(Scenes.MainMenu);
         }
 
         private void SetupAppSettings()

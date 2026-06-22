@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections;
 using System.IO;
 
@@ -15,30 +16,30 @@ namespace Assets.Scripts.Utilities.DataManagement.DataRepository
             _saveFileExtension = saveFileExtension;
         }
 
-        public IEnumerator Exists(string key, Action<bool> onExistsResult)
+        public async UniTask<bool> Exists(string key)
         {
             bool exists = File.Exists(FullPathFor(key));
-            onExistsResult?.Invoke(exists);
-            yield break;
+            await UniTask.CompletedTask;
+            return exists;
         }
 
-        public IEnumerator Read(string key, Action<string> onRead)
+        public async UniTask<string> Read(string key)
         {
             string text = File.ReadAllText(FullPathFor(key));
-            onRead?.Invoke(text);
-            yield break;
+            await UniTask.CompletedTask;
+            return text;
         }
 
-        public IEnumerator Remove(string key)
+        public async UniTask Remove(string key)
         {
             File.Delete(FullPathFor(key));
-            yield break;
+            await UniTask.CompletedTask;
         }
 
-        public IEnumerator Write(string key, string serializedData)
+        public async UniTask Write(string key, string serializedData)
         {
             File.WriteAllText(FullPathFor(key), serializedData);
-            yield break;
+            await UniTask.CompletedTask;
         }
 
         private string FullPathFor(string key)

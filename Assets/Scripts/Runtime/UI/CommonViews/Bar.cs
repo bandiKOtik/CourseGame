@@ -10,6 +10,7 @@ namespace Assets.Scripts.Runtime.UI.CommonViews
         [SerializeField] private Image _filler;
 
         public void UpdateValue(float value) => _slider.value = value;
+
         public void SetFillerColor(Color color) => _filler.color = color;
     }
 }

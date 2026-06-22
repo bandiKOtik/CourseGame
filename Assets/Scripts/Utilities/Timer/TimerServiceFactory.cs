@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 
 namespace Assets.Scripts.Utilities.Timer
 {
@@ -12,7 +11,6 @@ namespace Assets.Scripts.Utilities.Timer
             _container = container;
         }
 
-        public TimerService Create(float cooldown)
-            => new(cooldown, _container.Resolve<ICoroutinesPerformer>());
+        public TimerService Create(float cooldown) => new(cooldown);
     }
 }

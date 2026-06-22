@@ -22,6 +22,8 @@ namespace Assets.Scripts.Utilities.Factory.UI
             { ViewIDs.DefeatPopup, "UI/Gameplay/EndgamePopup/DefeatPopup" },
             { ViewIDs.SimpleHealthBar, "UI/Gameplay/HealthBar/HealthBar" },
             { ViewIDs.HealthBarWithText, "UI/Gameplay/HealthBar/HealthBarWithText" },
+            { ViewIDs.SelectableAbilityView, "UI/Gameplay/AbilitySelectPopup/SelectionAbilityView" },
+            { ViewIDs.AbilitySelectPopup, "UI/Gameplay/AbilitySelectPopup/SelectionAbilityPopup" },
         };
 
         public ViewsFactory(ResourcesAssetsLoader assetsLoader)
@@ -37,7 +39,7 @@ namespace Assets.Scripts.Utilities.Factory.UI
                     + viewId + " for " + (typeof(TView)));
 
             GameObject prefab = _assetsLoader.Load<GameObject>(resourcePath);
-            GameObject instance = Object.Instantiate(prefab, parent);
+            GameObject instance = GameObject.Instantiate(prefab, parent);
             TView view = instance.GetComponent<TView>();
 
             if (view == null)

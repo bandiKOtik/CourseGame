@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Runtime.UI.Core;
+﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.UI.Core;
+using Assets.Scripts.Runtime.UI.Gameplay.AbilitySelectPopup;
 using Assets.Scripts.Runtime.UI.Gameplay.EndgamePopups;
 using Assets.Scripts.Utilities.Factory.UI;
 using System;
@@ -26,9 +28,9 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
 
         public WinPopupPresenter OpenWinPopup(Action closedCallback = null)
         {
-            WinPopupView view = _viewsFactory.Create<WinPopupView>(ViewIDs.WinPopup, PopupLayer);
+            var view = _viewsFactory.Create<WinPopupView>(ViewIDs.WinPopup, PopupLayer);
 
-            WinPopupPresenter popup = _presentersFactory.CreateWinPopupPresenter(view);
+            var popup = _presentersFactory.CreateWinPopupPresenter(view);
 
             OnPopupCreated(popup, view, closedCallback);
 
@@ -37,9 +39,20 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
 
         public DefeatPopupPresenter OpenDefeatPopup(Action closedCallback = null)
         {
-            DefeatPopupView view = _viewsFactory.Create<DefeatPopupView>(ViewIDs.DefeatPopup, PopupLayer);
+            var view = _viewsFactory.Create<DefeatPopupView>(ViewIDs.DefeatPopup, PopupLayer);
 
-            DefeatPopupPresenter popup = _presentersFactory.CreateDefeatPopupPresenter(view);
+            var popup = _presentersFactory.CreateDefeatPopupPresenter(view);
+
+            OnPopupCreated(popup, view, closedCallback);
+
+            return popup;
+        }
+
+        public AbilitySelectPopupPresenter OpenAbilitySelectPopup(Entity entity, int level, Action closedCallback = null)
+        {
+            var view = _viewsFactory.Create<AbilitySelectPopupView>(ViewIDs.AbilitySelectPopup, PopupLayer);
+
+            var popup = _presentersFactory.CreateAbilitySelectPopupPresenter(view, entity, level);
 
             OnPopupCreated(popup, view, closedCallback);
 

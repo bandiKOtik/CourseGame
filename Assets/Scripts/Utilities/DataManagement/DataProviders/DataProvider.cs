@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Utilities.DataManagement.DataProviders
@@ -34,23 +34,23 @@ namespace Assets.Scripts.Utilities.DataManagement.DataProviders
             _writers.Add(writer);
         }
 
-        public IEnumerator SaveAsync()
+        public async UniTask SaveAsync()
         {
             UpdateDataFromWriters();
 
-            yield return _saveLoadService.Save(_data);
+            await _saveLoadService.Save(_data);
         }
 
-        public IEnumerator LoadAsync()
+        public async UniTask LoadAsync()
         {
-            yield return _saveLoadService.Load<TData>(loadedData => _data = loadedData);
+            _data = await _saveLoadService.Load<TData>();
 
             SendDataToReaders();
         }
 
-        public IEnumerator ExistsAsync(Action<bool> onResult)
+        public async UniTask<bool> ExistsAsync()
         {
-            yield return _saveLoadService.Exists<TData>(result => onResult(result));
+            return await _saveLoadService.Exists<TData>();
         }
 
         public void Reset()

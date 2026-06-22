@@ -7,14 +7,18 @@ using Assets.Scripts.Runtime.Gameplay.Features.Attack;
 using Assets.Scripts.Runtime.Gameplay.Features.Attack.AreaAttack;
 using Assets.Scripts.Runtime.Gameplay.Features.DamageFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.ExplosionFeature;
+using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
 using Assets.Scripts.Runtime.Gameplay.Features.LifeCycle;
+using Assets.Scripts.Runtime.Gameplay.Features.LootFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.MovementFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.RotationFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.Sensors;
 using Assets.Scripts.Runtime.Gameplay.Features.SpawnFeature;
+using Assets.Scripts.Runtime.Gameplay.Features.StatFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Simple;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
@@ -41,9 +45,19 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
             var entity = CreateEmpty();
             _monoEntitiesFactory.Create(entity, position, config.PrefabPath);
 
+            Dictionary<StatTypes, float> baseStats = new()
+            {
+                { StatTypes.MaxHealth, config.MaxHealth },
+            };
+
+            Dictionary<StatTypes, float> modStats = new(baseStats);
+
             entity
+                .AddBaseStats(baseStats)
+                .AddModifiedStats(modStats)
+                .AddStatsEffects()
                 // Health
-                .AddMaxHealth(new(levelConfig.MainBaseHealth))
+                .AddMaxHealth(new(baseStats[StatTypes.MaxHealth]))
                 .AddCurrentHealth()
                 .AddTakeDamageRequest()
                 .AddTakeDamageEvent()
@@ -73,11 +87,11 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
 
             entity
                 .AddSystem(new ApplyHealthToMaxSystem())
+                .AddSystem(new MaxHealthSynchronizerSystem())
                 .AddSystem(new CastExplosionSystem(this))
                 .AddSystem(new BodyContactsDetectingSystem())
                 .AddSystem(new BodyContactsEntitiesFilterSystem(_registry))
                 .AddSystem(new ApplyDamageSystem())
-                .AddSystem(new DebugHealthSystem())
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new SelfReleaseSystem(_context));
@@ -159,6 +173,41 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
                 .AddSystem(new DeathSystem())
                 .AddSystem(new DisableCollidersOnDeathSystem())
                 .AddSystem(new DeathProcessTimerSystem())
+                .AddSystem(new SelfReleaseSystem(_context));
+
+            return entity;
+        }
+
+        public Entity CreatePullable(string prefabPath, Vector3 position)
+        {
+            var entity = CreateEmpty();
+            _monoEntitiesFactory.Create(entity, position, prefabPath);
+
+            entity
+                .AddIsPullable()
+                .AddInPullingProcess()
+                .AddInSpawnProcess(new(true))
+                .AddCurrentTarget(new(null))
+                .AddMoveDirection()
+                .AddMoveSpeed(new(12f))
+                .AddIsMoving()
+                .AddIsCollected();
+
+            ICompositeCondition moveCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.InPullingProcess.Value))
+                .Add(new FuncCondition(() => entity.InSpawnProcess.Value == false));
+
+            ICompositeCondition selfReleaseCondition = new CompositeCondition()
+                .Add(new FuncCondition(() => entity.IsCollected.Value));
+
+            entity
+                .AddCanMove(moveCondition)
+                .AddMustSelfRelease(selfReleaseCondition);
+
+            entity
+                .AddSystem(new GenerateMoveDirectionToTargetSystem())
+                .AddSystem(new RigidbodyMovementSystem())
+                .AddSystem(new CollectOnNearToTargetSystem())
                 .AddSystem(new SelfReleaseSystem(_context));
 
             return entity;

@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.Utilities.CoroutinesManagement;
-using Assets.Scripts.Utilities.Reactive;
+﻿using Assets.Scripts.Utilities.Reactive;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 namespace Assets.Scripts.Utilities.Timer
@@ -13,13 +13,11 @@ namespace Assets.Scripts.Utilities.Timer
 
         private ReactiveVariable<float> _currentTime;
 
-        private ICoroutinesPerformer _performer;
-        private Coroutine _cooldownProcess;
+        private CancellationTokenSource _cts = new();
 
-        public TimerService(float cooldown, ICoroutinesPerformer performer)
+        public TimerService(float cooldown)
         {
             _cooldown = cooldown;
-            _performer = performer;
 
             _cooldownEnded = new();
             _currentTime = new();
@@ -33,25 +31,26 @@ namespace Assets.Scripts.Utilities.Timer
 
         public void Stop()
         {
-            if (_cooldownProcess != null)
-                _performer.StopPerform(_cooldownProcess);
+            _cts?.Cancel();
+            _cts?.Dispose();
         }
 
         public void Restart()
         {
             Stop();
-
-            _cooldownProcess = _performer.StartPerform(CooldownProcess());
+            _cts = new CancellationTokenSource();
+            CooldownProcess(_cts.Token).Forget();
         }
 
-        private IEnumerator CooldownProcess()
+        private async UniTask CooldownProcess(CancellationToken token)
         {
             _currentTime.Value = _cooldown;
 
             while (IsOver == false)
             {
+                token.ThrowIfCancellationRequested();
                 _currentTime.Value -= Time.deltaTime;
-                yield return null;
+                await UniTask.Yield();
             }
 
             _cooldownEnded.Invoke();

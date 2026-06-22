@@ -3,9 +3,9 @@ using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
 using Assets.Scripts.Utilities.SceneManagement;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +18,6 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
         private readonly ProjectPresentersFactory _factory;
 
         private ProgressionResetService _resetService;
-        private readonly ICoroutinesPerformer _performer;
         private readonly SceneSwitcherService _sceneSwitcher;
         private readonly ConfigsProviderService _configProvider;
 
@@ -28,14 +27,12 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
             MainMenuScreenView screen,
             ProjectPresentersFactory factory,
             ProgressionResetService resetService,
-            ICoroutinesPerformer performer,
             SceneSwitcherService sceneSwitcher,
             ConfigsProviderService configProvider)
         {
             _screen = screen;
             _factory = factory;
             _resetService = resetService;
-            _performer = performer;
             _sceneSwitcher = sceneSwitcher;
             _configProvider = configProvider;
         }
@@ -70,9 +67,7 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
 
             Debug.Log("Current level: " + selectedLevel);
 
-            _performer
-                .StartPerform(_sceneSwitcher
-                .SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(selectedLevel)));
+            _sceneSwitcher.SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(selectedLevel)).Forget();
         }
 
         private void OnResetButtonClicked()

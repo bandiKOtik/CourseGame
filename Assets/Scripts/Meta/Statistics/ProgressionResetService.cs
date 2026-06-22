@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Meta.Features.Wallet;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Scripts.Meta.Statistics
 {
@@ -8,18 +8,15 @@ namespace Assets.Scripts.Meta.Statistics
     {
         private readonly WalletService _walletService;
         private readonly PlayedGamesStatistic _statistics;
-        private readonly ICoroutinesPerformer _performer;
         private readonly PlayerDataProvider _playerDataProvider;
 
         public ProgressionResetService(
             WalletService walletService,
             PlayedGamesStatistic statistics,
-            ICoroutinesPerformer performer,
             PlayerDataProvider playerDataProvider)
         {
             _walletService = walletService;
             _statistics = statistics;
-            _performer = performer;
             _playerDataProvider = playerDataProvider;
         }
 
@@ -30,7 +27,7 @@ namespace Assets.Scripts.Meta.Statistics
                 _statistics.Reset();
                 _walletService.Reset();
 
-                _performer.StartPerform(_playerDataProvider.SaveAsync());
+                _playerDataProvider.SaveAsync().Forget();
             }
         }
 

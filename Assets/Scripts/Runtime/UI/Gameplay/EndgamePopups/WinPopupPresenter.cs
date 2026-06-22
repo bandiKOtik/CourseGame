@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Scripts.Runtime.UI.Gameplay.EndgamePopups
 {
@@ -10,14 +10,11 @@ namespace Assets.Scripts.Runtime.UI.Gameplay.EndgamePopups
 
         private readonly WinPopupView _view;
         private readonly SceneSwitcherService _sceneSwitcher;
-        private readonly ICoroutinesPerformer _performer;
 
         public WinPopupPresenter(
-            ICoroutinesPerformer performer,
             WinPopupView view,
-            SceneSwitcherService sceneSwitcher) : base(performer)
+            SceneSwitcherService sceneSwitcher)
         {
-            _performer = performer;
             _view = view;
             _sceneSwitcher = sceneSwitcher;
         }
@@ -49,7 +46,7 @@ namespace Assets.Scripts.Runtime.UI.Gameplay.EndgamePopups
 
         private void OnContinueClicked()
         {
-            _performer.StartPerform(_sceneSwitcher.SwitchAsync(Scenes.MainMenu));
+            _sceneSwitcher.SwitchAsync(Scenes.MainMenu).Forget();
             OnCloseRequest();
         }
     }

@@ -1,11 +1,10 @@
 ﻿using Assets.Scripts.Meta;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.PauseFeature;
 using Assets.Scripts.Runtime.UI.Gameplay;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.SceneManagement;
 using Assets.Scripts.Utilities.StateMachineCore;
-using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Scripts.Runtime.Gameplay.States
 {
@@ -13,20 +12,18 @@ namespace Assets.Scripts.Runtime.Gameplay.States
     {
         private readonly StatisticManageService _statistics;
         private readonly PlayerDataProvider _dataProvider;
-        private ICoroutinesPerformer _performer;
 
         private readonly GameplayPopupService _popupService;
 
         public DefeatState(
             StatisticManageService statistics,
             PlayerDataProvider provider,
-            ICoroutinesPerformer performer,
             IInputService inputService,
-            GameplayPopupService popupService) : base(inputService)
+            GameplayPopupService popupService,
+            IPauseService pauseService) : base(inputService, pauseService)
         {
             _statistics = statistics;
             _dataProvider = provider;
-            _performer = performer;
             _popupService = popupService;
         }
 
@@ -36,7 +33,7 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
             _statistics.DefeatRewards();
 
-            _performer.StartPerform(_dataProvider.SaveAsync());
+            _dataProvider.SaveAsync().Forget();
 
             _popupService.OpenDefeatPopup();
         }

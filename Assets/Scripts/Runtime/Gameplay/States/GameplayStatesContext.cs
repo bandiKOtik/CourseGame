@@ -30,6 +30,7 @@ namespace Assets.Scripts.Runtime.Gameplay.States
         public void Dispose()
         {
             _isRunning = false;
+            _stateMachine.Exit();
             _stateMachine.Dispose();
         }
     }

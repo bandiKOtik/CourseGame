@@ -7,7 +7,8 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
 {
     public class GameplayScreenView : MonoBehaviour, IView
     {
-        [field: SerializeField] public IconTextView StageNumberView {  get; private set; }
-        [field: SerializeField] public EntitiesHealthDisplay EntitiesHealthDisplay {  get; private set; }
+        [field: SerializeField] public IconTextView StageNumberView { get; private set; }
+        [field: SerializeField] public EntitiesHealthDisplay EntitiesHealthDisplay { get; private set; }
+        [field: SerializeField] public BarWithText ExperienceBarView { get; private set; }
     }
 }

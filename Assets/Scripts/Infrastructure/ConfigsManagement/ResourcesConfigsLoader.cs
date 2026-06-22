@@ -1,5 +1,8 @@
-﻿using Assets.Scripts.Configs.Gameplay.Entities;
+﻿using Assets.Scripts.Configs.Gameplay;
+using Assets.Scripts.Configs.Gameplay.Abilities;
+using Assets.Scripts.Configs.Gameplay.Entities;
 using Assets.Scripts.Configs.Gameplay.Levels;
+using Assets.Scripts.Configs.Gameplay.Loot;
 using Assets.Scripts.Configs.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
 using System;
@@ -20,6 +23,9 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             { typeof(CurrencyIconsConfig), "Configs/Meta/Wallet/CurrencyIconsConfig" },
             { typeof(LevelsListConfig), "Configs/Gameplay/Levels/LevelsListConfig" },
             { typeof(DefendableBuildingConfig), "Configs/Gameplay/Entities/MainBaseConfig" },
+            { typeof(AbilitiesConfigsContainer), "Configs/Gameplay/Abilities/AbilitiesConfigsContainer" },
+            { typeof(ExperienceForUpgradeLevelConfig), "Configs/Gameplay/ExperienceConfig" },
+            { typeof(LootListConfig), "Configs/Gameplay/Loot/LootListConfig" },
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader loader)

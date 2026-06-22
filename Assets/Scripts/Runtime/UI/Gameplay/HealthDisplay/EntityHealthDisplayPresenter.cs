@@ -121,6 +121,6 @@ namespace Assets.Scripts.Runtime.UI.Gameplay.HealthDisplay
             public Transform BarPoint { get; }
             public IDisposable RemoveReason { get; }
             public EntityHealthPresenter HealthPresenter { get; }
-    }
+        }
     }
 }

@@ -1,8 +1,6 @@
-﻿using Assets.Scripts.Utilities.CoroutinesManagement;
-using DG.Tweening;
+﻿using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
-using UnityEngine;
+using System.Threading;
 
 namespace Assets.Scripts.Runtime.UI.Core
 {
@@ -10,13 +8,7 @@ namespace Assets.Scripts.Runtime.UI.Core
     {
         public event Action<PopupPresenterBase> CloseRequest;
 
-        private readonly ICoroutinesPerformer _performer;
-        private Coroutine _process;
-
-        protected PopupPresenterBase(ICoroutinesPerformer performer)
-        {
-            _performer = performer;
-        }
+        private CancellationTokenSource _cts = new();
 
         protected abstract PopupViewBase PopupView { get; }
 
@@ -32,13 +24,15 @@ namespace Assets.Scripts.Runtime.UI.Core
         public void Show()
         {
             KillProcess();
-            _process = _performer.StartPerform(ProcessShow());
+            _cts = new CancellationTokenSource();
+            ProcessShow(_cts.Token).Forget();
         }
 
         public void Hide(Action callback = null)
         {
             KillProcess();
-            _process = _performer.StartPerform(ProcessHide(callback));
+            _cts = new CancellationTokenSource();
+            ProcessHide(callback, _cts.Token).Forget();
         }
 
         protected virtual void OnPreShow()
@@ -59,20 +53,20 @@ namespace Assets.Scripts.Runtime.UI.Core
 
         protected void OnCloseRequest() => CloseRequest?.Invoke(this);
 
-        private IEnumerator ProcessShow()
+        private async UniTask ProcessShow(CancellationToken token)
         {
             OnPreShow();
 
-            yield return PopupView.Show().WaitForCompletion();
+            await PopupView.Show().ToUniTask(TweenCancelBehaviour.Complete, token);
 
             OnPostShow();
         }
 
-        private IEnumerator ProcessHide(Action callback)
+        private async UniTask ProcessHide(Action callback, CancellationToken token)
         {
             OnPreHide();
 
-            yield return PopupView.Hide().WaitForCompletion();
+            await PopupView.Hide().ToUniTask(TweenCancelBehaviour.Complete, token);
 
             OnPostHide();
 
@@ -81,8 +75,8 @@ namespace Assets.Scripts.Runtime.UI.Core
 
         private void KillProcess()
         {
-            if (_process != null)
-                _performer.StopPerform(_process);
+            _cts?.Cancel();
+            _cts?.Dispose();
         }
     }
 }

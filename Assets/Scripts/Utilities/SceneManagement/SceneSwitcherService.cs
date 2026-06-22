@@ -1,38 +1,35 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps;
 using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Utilities.LoadingScreen;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Utilities.SceneManagement
 {
     public class SceneSwitcherService
     {
-        private readonly DIContainer _projectContainer;
         private readonly SceneLoaderService _sceneLoaderService;
         private readonly ILoadingScreen _loadingScreen;
 
-        private DIContainer _currentSceneContainer;
+        //private DIContainer _currentSceneContainer;
 
         public SceneSwitcherService(
-            DIContainer projectContainer,
             SceneLoaderService sceneLoaderService,
             ILoadingScreen loadingScreen)
         {
-            _projectContainer = projectContainer;
             _sceneLoaderService = sceneLoaderService;
             _loadingScreen = loadingScreen;
         }
 
-        public IEnumerator SwitchAsync(string sceneName, IInputSceneArgs sceneArgs = null)
+        public async UniTask SwitchAsync(string sceneName, IInputSceneArgs sceneArgs = null)
         {
             _loadingScreen.Show();
 
-            _currentSceneContainer?.Dispose();
+            //_currentSceneContainer?.Dispose();
 
-            yield return _sceneLoaderService.LoadAsync(Scenes.Empty);
-            yield return _sceneLoaderService.LoadAsync(sceneName);
+            await _sceneLoaderService.LoadAsync(Scenes.Empty);
+            await _sceneLoaderService.LoadAsync(sceneName);
 
             SceneBootstrap sceneBootstrap = Object.FindObjectOfType<SceneBootstrap>();
 
@@ -40,13 +37,11 @@ namespace Assets.Scripts.Utilities.SceneManagement
                 throw new NullReferenceException(
                     nameof(sceneBootstrap) + " not found on scene");
 
-            _currentSceneContainer = new(_projectContainer);
+            //sceneBootstrap.ProcessRegistrations(_currentSceneContainer, sceneArgs);
 
-            sceneBootstrap.ProcessRegistrations(_currentSceneContainer, sceneArgs);
+            //_currentSceneContainer.Initialize();
 
-            _currentSceneContainer.Initialize();
-
-            yield return sceneBootstrap.Initialize();
+            await sceneBootstrap.Initialize();
 
             _loadingScreen.Hide();
 

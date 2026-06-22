@@ -4,7 +4,6 @@ using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities;
 using Assets.Scripts.Utilities.Reactive;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Common
 {

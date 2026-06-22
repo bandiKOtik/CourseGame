@@ -8,7 +8,6 @@ using Assets.Scripts.Runtime.UI.CommonViews;
 using Assets.Scripts.Runtime.UI.LevelsMenuPopup;
 using Assets.Scripts.Runtime.UI.Statistics;
 using Assets.Scripts.Runtime.UI.Wallet;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Reactive;
 using Assets.Scripts.Utilities.SceneManagement;
 
@@ -16,11 +15,27 @@ namespace Assets.Scripts.Utilities.Factory.UI
 {
     public class ProjectPresentersFactory
     {
-        private readonly DIContainer _container;
+        private readonly ConfigsProviderService _configsProviderService;
+        private readonly SceneSwitcherService _sceneSwitcherService;
+        private readonly LevelsProgressionService _levelsProgressionService;
+        private readonly WalletService _walletService;
+        private readonly ViewsFactory _viewsFactory;
+        private readonly PlayedGamesStatistic _playedGamesStatistic;
 
-        public ProjectPresentersFactory(DIContainer container)
+        public ProjectPresentersFactory(
+            ConfigsProviderService configsProviderService,
+            SceneSwitcherService sceneSwitcherService,
+            LevelsProgressionService levelsProgressionService,
+            WalletService walletService,
+            ViewsFactory viewsFactory,
+            PlayedGamesStatistic playedGamesStatistic)
         {
-            _container = container;
+            _configsProviderService = configsProviderService;
+            _sceneSwitcherService = sceneSwitcherService;
+            _levelsProgressionService = levelsProgressionService;
+            _walletService = walletService;
+            _viewsFactory = viewsFactory;
+            _playedGamesStatistic = playedGamesStatistic;
         }
 
         public CurrencyPresenter CreateCurrencyPresenter(
@@ -28,8 +43,7 @@ namespace Assets.Scripts.Utilities.Factory.UI
             IReadOnlyVariable<int> currency,
             CurrencyTypes currencyType)
         {
-            var config = _container
-                .Resolve<ConfigsProviderService>()
+            var config = _configsProviderService
                 .GetConfig<CurrencyIconsConfig>();
 
             return new(currency, currencyType, config, view);
@@ -37,10 +51,7 @@ namespace Assets.Scripts.Utilities.Factory.UI
 
         public WalletPresenter CreateWalletPresenter(IconTextListView view)
         {
-            var walletService = _container.Resolve<WalletService>();
-            var viewsFactory = _container.Resolve<ViewsFactory>();
-
-            return new(walletService, this, viewsFactory, view);
+            return new(_walletService, this, _viewsFactory, view);
         }
 
         public StatPresenter CreateStatisticPresenter(
@@ -53,18 +64,14 @@ namespace Assets.Scripts.Utilities.Factory.UI
 
         public StatisticsWindowPresenter CreateStatisticsElementsPresenter(TextListView view)
         {
-            var statistics = _container.Resolve<PlayedGamesStatistic>();
-            var viewsFactory = _container.Resolve<ViewsFactory>();
-
-            return new(statistics, this, viewsFactory, view);
+            return new(_playedGamesStatistic, this, _viewsFactory, view);
         }
 
         public LevelTilePresenter CreateLevelTilePresenter(LevelTileView view, int levelNumber)
         {
             return new(
-                _container.Resolve<LevelsProgressionService>(),
-                _container.Resolve<SceneSwitcherService>(),
-                _container.Resolve<ICoroutinesPerformer>(),
+                _levelsProgressionService,
+                _sceneSwitcherService,
                 levelNumber,
                 view);
         }
@@ -72,10 +79,9 @@ namespace Assets.Scripts.Utilities.Factory.UI
         public LevelsMenuPopupPresenter CreateLevelMenuPopupPresenter(LevelsMenuPopupView view)
         {
             return new(
-                _container.Resolve<ICoroutinesPerformer>(),
-                _container.Resolve<ConfigsProviderService>(),
+                _configsProviderService,
                 this,
-                _container.Resolve<ViewsFactory>(),
+                _viewsFactory,
                 view);
         }
     }

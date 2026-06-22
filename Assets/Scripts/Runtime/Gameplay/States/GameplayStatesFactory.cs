@@ -5,13 +5,13 @@ using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.LootFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
+using Assets.Scripts.Runtime.Gameplay.Features.PauseFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.Conditions;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.SceneManagement;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Runtime.Gameplay.States
@@ -38,14 +38,21 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             return new(_container.Resolve<StageProviderService>(), _container.Resolve<WalletService>(), winCash);
         }
 
+        public CollectLootState CreateCollectLootState()
+        {
+            return new(
+                _container.Resolve<LootPullingService>(),
+                _container.Resolve<MainBaseHolderService>());
+        }
+
         public WinState CreateWinState()
         {
             return new(
                 _container.Resolve<StatisticManageService>(),
                 _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<ICoroutinesPerformer>(),
                 _container.Resolve<IInputService>(),
-                _container.Resolve<GameplayPopupService>());
+                _container.Resolve<GameplayPopupService>(),
+                _container.Resolve<IPauseService>());
         }
 
         public DefeatState CreateDefeatState()
@@ -53,9 +60,9 @@ namespace Assets.Scripts.Runtime.Gameplay.States
             return new(
                 _container.Resolve<StatisticManageService>(),
                 _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<ICoroutinesPerformer>(),
                 _container.Resolve<IInputService>(),
-                _container.Resolve<GameplayPopupService>());
+                _container.Resolve<GameplayPopupService>(),
+                _container.Resolve<IPauseService>());
         }
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs args)
@@ -97,24 +104,31 @@ namespace Assets.Scripts.Runtime.Gameplay.States
         {
             var preperationTrigger = _container.Resolve<PreperationInputService>();
             var stageProvider = _container.Resolve<StageProviderService>();
+            var lootPullingService = _container.Resolve<LootPullingService>();
 
-            PreperationState preperationState = CreatePreperationState();
-            StageProcessState stageProcessState = CreateStageProcessState();
+            var collectLootState = CreateCollectLootState();
+            var preperationState = CreatePreperationState();
+            var stageProcessState = CreateStageProcessState();
 
             ICompositeCondition preperationToStageProcessCondition = new CompositeCondition()
                 .Add(new FuncCondition(() => preperationTrigger.IsReady.Value))
                 .Add(new FuncCondition(() => stageProvider.HasNextStage));
 
-            FuncCondition stageProcessToPreperationCondition =
+            FuncCondition stageProcessToCollectStateCondition =
                 new(() => stageProvider.CurrentStageResult.Value == StageResults.Completed);
+
+            FuncCondition collectStateToPreperationCondition =
+                new(() => lootPullingService.AllCollected.Value);
 
             GameplayStateMachine coreLoopState = new();
 
             coreLoopState.AddState(preperationState);
+            coreLoopState.AddState(collectLootState);
             coreLoopState.AddState(stageProcessState);
 
             coreLoopState.AddTransition(preperationState, stageProcessState, preperationToStageProcessCondition);
-            coreLoopState.AddTransition(stageProcessState, preperationState, stageProcessToPreperationCondition);
+            coreLoopState.AddTransition(stageProcessState, collectLootState, stageProcessToCollectStateCondition);
+            coreLoopState.AddTransition(collectLootState, preperationState, collectStateToPreperationCondition);
 
             return coreLoopState;
         }

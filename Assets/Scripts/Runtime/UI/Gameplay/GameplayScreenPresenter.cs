@@ -10,6 +10,7 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         private readonly GameplayPresentersFactory _factory;
         private readonly List<IPresenter> _childPresenters = new();
         private EntityHealthDisplayPresenter _healthPresenter;
+
         public GameplayScreenPresenter(GameplayScreenView screen, GameplayPresentersFactory factory)
         {
             _screen = screen;
@@ -20,6 +21,7 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         {
             CreateStageNumber();
             CreateEntityHealthDisplayPresenter();
+            CreateMainHeroExperienceView();
 
             foreach (var presenter in _childPresenters)
                 presenter.Initialize();
@@ -47,6 +49,13 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
             _healthPresenter = _factory.CreateEntityHealthDisplayPresenter(_screen.EntitiesHealthDisplay);
 
             _childPresenters.Add(_healthPresenter);
+        }
+
+        private void CreateMainHeroExperienceView()
+        {
+            var presenter = _factory.CreateMainBaseExperiencePresenter(_screen.ExperienceBarView);
+
+            _childPresenters.Add(presenter);
         }
     }
 }

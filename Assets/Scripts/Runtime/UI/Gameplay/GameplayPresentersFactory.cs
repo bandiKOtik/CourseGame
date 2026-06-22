@@ -1,12 +1,19 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
+﻿using Assets.Scripts.Configs.Gameplay;
+using Assets.Scripts.Configs.Gameplay.Abilities;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+using Assets.Scripts.Runtime.Gameplay.Features.AbilitiesDropingFeature;
+using Assets.Scripts.Runtime.Gameplay.Features.AbilitiesFeature;
+using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Runtime.UI.CommonViews;
+using Assets.Scripts.Runtime.UI.Gameplay.AbilitySelectPopup;
 using Assets.Scripts.Runtime.UI.Gameplay.EndgamePopups;
+using Assets.Scripts.Runtime.UI.Gameplay.Experience;
 using Assets.Scripts.Runtime.UI.Gameplay.HealthDisplay;
 using Assets.Scripts.Runtime.UI.Gameplay.Stages;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.Factory.UI;
 using Assets.Scripts.Utilities.SceneManagement;
 
@@ -31,7 +38,6 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         public WinPopupPresenter CreateWinPopupPresenter(WinPopupView view)
         {
             return new(
-                _container.Resolve<ICoroutinesPerformer>(),
                 view,
                 _container.Resolve<SceneSwitcherService>());
         }
@@ -39,7 +45,6 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         public DefeatPopupPresenter CreateDefeatPopupPresenter(DefeatPopupView view)
         {
             return new(
-                _container.Resolve<ICoroutinesPerformer>(),
                 view,
                 _container.Resolve<SceneSwitcherService>(),
                 _args);
@@ -62,6 +67,38 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
                 view,
                 this,
                 _container.Resolve<ViewsFactory>());
+        }
+
+        public SelectableAbilityPresenter CreateSelectableAbilityPresenter(
+            AbilityConfig config,
+            SelectableAbilityView view,
+            Entity entity)
+        {
+            return new(
+                config,
+                view,
+                _container.Resolve<AbilitiesFactory>(),
+                entity);
+        }
+
+        public AbilitySelectPopupPresenter CreateAbilitySelectPopupPresenter(AbilitySelectPopupView view, Entity entity, int level)
+        {
+            return new(
+                view,
+                entity,
+                _container.Resolve<AbilityDropingService>(),
+                this,
+                _container.Resolve<ViewsFactory>(),
+                level);
+        }
+
+        public MainBaseExperiencePresenter CreateMainBaseExperiencePresenter(BarWithText view)
+        {
+            return new(
+                view,
+                _container.Resolve<MainBaseHolderService>(),
+                _container.Resolve<ConfigsProviderService>()
+                .GetConfig<ExperienceForUpgradeLevelConfig>());
         }
     }
 }

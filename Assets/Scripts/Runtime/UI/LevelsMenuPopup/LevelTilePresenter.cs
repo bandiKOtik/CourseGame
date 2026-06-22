@@ -1,8 +1,8 @@
 ﻿using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Meta.Features.LevelsProgression;
 using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Utilities.CoroutinesManagement;
 using Assets.Scripts.Utilities.SceneManagement;
+using Cysharp.Threading.Tasks;
 
 namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
 {
@@ -10,7 +10,6 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
     {
         private readonly LevelsProgressionService _levelsService;
         private readonly SceneSwitcherService _sceneSwitcherService;
-        private readonly ICoroutinesPerformer _coroutinesPerformer;
 
         private readonly int _levelNumber;
 
@@ -19,13 +18,11 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
         public LevelTilePresenter(
             LevelsProgressionService levelsService,
             SceneSwitcherService sceneSwitcherService,
-            ICoroutinesPerformer coroutinesPerformer,
             int levelNumber,
             LevelTileView view)
         {
             _levelsService = levelsService;
             _sceneSwitcherService = sceneSwitcherService;
-            _coroutinesPerformer = coroutinesPerformer;
             _levelNumber = levelNumber;
             _view = view;
         }
@@ -57,9 +54,7 @@ namespace Assets.Scripts.Runtime.UI.LevelsMenuPopup
 
         private void OnViewClicked()
         {
-            _coroutinesPerformer
-                .StartPerform(_sceneSwitcherService
-                .SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(_levelNumber)));
+            _sceneSwitcherService.SwitchAsync(Scenes.Gameplay, new GameplayInputArgs(_levelNumber)).Forget();
         }
     }
 }

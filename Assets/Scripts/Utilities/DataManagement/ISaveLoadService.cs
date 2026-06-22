@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 
 namespace Assets.Scripts.Utilities.DataManagement
 {
     public interface ISaveLoadService
     {
-        IEnumerator Load<TData>(Action<TData> onLoad) where TData : ISaveData;
+        UniTask<TData> Load<TData>() where TData : ISaveData;
 
-        IEnumerator Save<TData>(TData data) where TData : ISaveData;
+        UniTask Save<TData>(TData data) where TData : ISaveData;
 
-        IEnumerator Remove<TData>() where TData : ISaveData;
+        UniTask Remove<TData>() where TData : ISaveData;
 
-        IEnumerator Exists<TData>(Action<bool> onExistsResult) where TData : ISaveData;
+        UniTask<bool> Exists<TData>() where TData : ISaveData;
     }
 }

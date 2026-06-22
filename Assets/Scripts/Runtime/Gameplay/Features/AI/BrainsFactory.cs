@@ -6,10 +6,10 @@ using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.AI.States;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
+using Assets.Scripts.Runtime.Gameplay.Features.PauseFeature;
 using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Utilities.Conditions;
 using Assets.Scripts.Utilities.Reactive;
-using Assets.Scripts.Utilities.Timer;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,17 +18,13 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
     public class BrainsFactory
     {
         private readonly DIContainer _container;
-        private readonly TimerServiceFactory _timerFactory;
         private readonly AIBrainsContext _context;
-        private readonly IInputService _inputService;
         private readonly EntitiesLifeContext _lifeContext;
 
         public BrainsFactory(DIContainer container)
         {
             _container = container;
-            _timerFactory = _container.Resolve<TimerServiceFactory>();
             _context = _container.Resolve<AIBrainsContext>();
-            _inputService = _container.Resolve<IInputService>();
             _lifeContext = _container.Resolve<EntitiesLifeContext>();
         }
 
@@ -67,6 +63,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
         {
+            var pauseService = _container.Resolve<IPauseService>();
+
             var stageProvider = _container.Resolve<StageProviderService>();
 
             var explodeState = new InputRaycastExplosionState(entity, _container.Resolve<IInputService>());
@@ -83,7 +81,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
                 _container.Resolve<WalletService>(),
                 minePrice);
 
-            var endgameState = new EmptyState();
+            var emptyState = new EmptyState();
 
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
@@ -97,17 +95,25 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
                 .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
                 .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
 
+            ICondition toPauseState = new FuncCondition(() => pauseService.IsPaused);
+            ICondition fromPauseState = new FuncCondition(() => pauseService.IsPaused == false);
+
             AIStateMachine behavior = new();
 
             behavior.AddState(explodeState);
             behavior.AddState(setMineState);
-            behavior.AddState(endgameState);
+            behavior.AddState(emptyState);
 
-            behavior.AddTransition(explodeState, endgameState, toEndgameState);
-            behavior.AddTransition(setMineState, endgameState, toEndgameState);
+            behavior.AddTransition(explodeState, emptyState, toPauseState);                     // When game is paused
+            behavior.AddTransition(setMineState, emptyState, toPauseState);                     // ***
+            behavior.AddTransition(emptyState, explodeState, fromPauseState);                   // Returning from pause
+            behavior.AddTransition(emptyState, setMineState, fromPauseState);                   // ***
 
-            behavior.AddTransition(explodeState, setMineState, explosionToMineCondition);
-            behavior.AddTransition(setMineState, explodeState, mineToExplosionCondition);
+            behavior.AddTransition(explodeState, emptyState, toEndgameState);                   // Endgame
+            behavior.AddTransition(setMineState, emptyState, toEndgameState);                   // ***
+
+            behavior.AddTransition(setMineState, explodeState, mineToExplosionCondition);       // In-round state
+            behavior.AddTransition(explodeState, setMineState, explosionToMineCondition);       // Between rounds
 
             StateMachineBrain brain = new(behavior);
             _context.SetFor(entity, brain);

@@ -13,5 +13,7 @@
         public const string DefeatPopup = nameof(DefeatPopup);
         public const string SimpleHealthBar = nameof(SimpleHealthBar);
         public const string HealthBarWithText = nameof(HealthBarWithText);
+        public const string SelectableAbilityView = nameof(SelectableAbilityView);
+        public const string AbilitySelectPopup = nameof(AbilitySelectPopup);
     }
 }

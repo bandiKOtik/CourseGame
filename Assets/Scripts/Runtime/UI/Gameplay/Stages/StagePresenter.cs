@@ -2,7 +2,6 @@
 using Assets.Scripts.Runtime.UI.CommonViews;
 using Assets.Scripts.Runtime.UI.Core;
 using System;
-using UnityEngine;
 
 namespace Assets.Scripts.Runtime.UI.Gameplay.Stages
 {
