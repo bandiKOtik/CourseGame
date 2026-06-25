@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Levels.Stages;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.Enemies;
 
@@ -7,11 +6,13 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
 {
     public class StagesFactory
     {
-        private readonly DIContainer _container;
+        private readonly EnemiesFactory _enemiesFactory;
+        private readonly EntitiesLifeContext _context;
 
-        public StagesFactory(DIContainer container)
+        public StagesFactory(EnemiesFactory enemiesFactory, EntitiesLifeContext context)
         {
-            _container = container;
+            _enemiesFactory = enemiesFactory;
+            _context = context;
         }
 
         public IStage Create(StageConfig config)
@@ -21,8 +22,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
                 case ClearAllEnemiesStageConfig clearAllConfig:
                     return new ClearAllEnemiesStage(
                         clearAllConfig,
-                        _container.Resolve<EnemiesFactory>(),
-                        _container.Resolve<EntitiesLifeContext>());
+                        _enemiesFactory,
+                        _context);
 
                 default:
                     throw new System.NotImplementedException("Not implemented stage config type: " + config);

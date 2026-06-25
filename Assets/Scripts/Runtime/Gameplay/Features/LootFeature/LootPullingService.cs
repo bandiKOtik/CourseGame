@@ -1,10 +1,10 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Utilities.Reactive;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.LootFeature
 {

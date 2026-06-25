@@ -14,20 +14,24 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
 {
     public class EnemiesFactory
     {
-        private readonly DIContainer _container;
-
         private readonly EntitiesFactory _entitiesFactory;
         private readonly BrainsFactory _brainsFactory;
-        private readonly EntitiesLifeContext _context;
+        private readonly EntitiesLifeContext _lifeContext;
         private readonly DropLootService _dropLootService;
+        private readonly MainBaseHolderService _heroHolder;
 
-        public EnemiesFactory(DIContainer container)
+        public EnemiesFactory(
+            EntitiesFactory entitiesFactory,
+            BrainsFactory brainsFactory,
+            EntitiesLifeContext lifeContext,
+            DropLootService dropLootService,
+            MainBaseHolderService mainBaseHolderService)
         {
-            _container = container;
-            _entitiesFactory = container.Resolve<EntitiesFactory>();
-            _brainsFactory = container.Resolve<BrainsFactory>();
-            _context = container.Resolve<EntitiesLifeContext>();
-            _dropLootService = container.Resolve<DropLootService>();
+            _entitiesFactory = entitiesFactory;
+            _brainsFactory = brainsFactory;
+            _lifeContext = lifeContext;
+            _dropLootService = dropLootService;
+            _heroHolder = mainBaseHolderService;
         }
 
         public Entity Create(Vector3 position, EntityConfig config)
@@ -40,7 +44,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
                     entity = _entitiesFactory.CreateTargetMovingEnemy(position, targetEnemyConfig);
                     _brainsFactory.CreateTargetWalkBrain(entity, new MainBaseTargetSelector(
                         entity,
-                        _container.Resolve<MainBaseHolderService>()));
+                        _heroHolder));
                     break;
 
                 default:
@@ -51,7 +55,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.Enemies
 
             entity.AddTeam(new(Teams.Enemies));
 
-            _context.Add(entity);
+            _lifeContext.Add(entity);
 
             return entity;
         }

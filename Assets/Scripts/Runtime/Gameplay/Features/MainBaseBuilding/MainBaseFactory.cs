@@ -3,7 +3,6 @@ using Assets.Scripts.Configs.Gameplay.Abilities;
 using Assets.Scripts.Configs.Gameplay.Entities;
 using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
@@ -16,17 +15,21 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
 {
     public class MainBaseFactory
     {
-        private readonly DIContainer _container;
         private readonly EntitiesFactory _entitiesFactory;
         private readonly ConfigsProviderService _configProvider;
-        private readonly EntitiesLifeContext _context;
+        private readonly EntitiesLifeContext _lifeContext;
+        private readonly AbilitiesFactory _abilitiesFactory;
 
-        public MainBaseFactory(DIContainer container)
+        public MainBaseFactory(
+            EntitiesFactory entitiesFactory,
+            ConfigsProviderService configsProvider,
+            EntitiesLifeContext lifeContext,
+            AbilitiesFactory abilitiesFactory)
         {
-            _container = container;
-            _entitiesFactory = container.Resolve<EntitiesFactory>();
-            _configProvider = container.Resolve<ConfigsProviderService>();
-            _context = container.Resolve<EntitiesLifeContext>();
+            _entitiesFactory = entitiesFactory;
+            _configProvider = configsProvider;
+            _lifeContext = lifeContext;
+            _abilitiesFactory = abilitiesFactory;
         }
 
         public Entity Create(GameplayInputArgs args, Vector3 position)
@@ -42,7 +45,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
                 .AddIsMainBase()
                 .AddTeam(new(Teams.MainHero));
 
-            AbilitiesFactory factory = _container.Resolve<AbilitiesFactory>();
             AbilitiesList list = new();
 
             entity
@@ -55,15 +57,15 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
                 .AddSystem(new LevelUpSystem(_configProvider
                 .GetConfig<ExperienceForUpgradeLevelConfig>()));
 
-            list.Add(factory
+            list.Add(_abilitiesFactory
                 .CreateAbilityFor(entity, _configProvider
                 .GetConfig<AbilitiesConfigsContainer>().AbilityConfigs[0]));
 
-            list.Add(factory
+            list.Add(_abilitiesFactory
                 .CreateAbilityFor(entity, _configProvider
                 .GetConfig<AbilitiesConfigsContainer>().AbilityConfigs[1]));
 
-            _context.Add(entity);
+            _lifeContext.Add(entity);
 
             return entity;
         }

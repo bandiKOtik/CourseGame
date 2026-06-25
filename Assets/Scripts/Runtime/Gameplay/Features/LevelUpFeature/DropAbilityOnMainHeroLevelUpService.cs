@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.Features.PauseFeature;
 using Assets.Scripts.Runtime.UI.Gameplay;
@@ -8,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.LevelUpFeature
 {

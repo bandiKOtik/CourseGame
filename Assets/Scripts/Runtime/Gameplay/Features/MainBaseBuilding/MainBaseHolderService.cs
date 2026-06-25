@@ -1,7 +1,7 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
+﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Utilities.Reactive;
 using System;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
 {

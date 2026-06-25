@@ -9,7 +9,6 @@ namespace Assets.Scripts.Runtime.UI.MainMenu
     public class MainMenuScreenView : MonoBehaviour, IView
     {
         public event Action LevelsButtonClicked;
-
         public event Action ResetProgressButtonClicked;
 
         [field: SerializeField] public IconTextListView WalletView { get; private set; }

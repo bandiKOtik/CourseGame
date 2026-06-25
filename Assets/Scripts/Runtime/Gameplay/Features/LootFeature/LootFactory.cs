@@ -10,10 +10,10 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.LootFeature
         private EntitiesFactory _entitiesFactory;
         private EntitiesLifeContext _lifeContext;
 
-        public LootFactory(DIContainer container)
+        public LootFactory(EntitiesFactory entitiesFactory, EntitiesLifeContext context)
         {
-            _entitiesFactory = container.Resolve<EntitiesFactory>();
-            _lifeContext = container.Resolve<EntitiesLifeContext>();
+            _entitiesFactory = entitiesFactory;
+            _lifeContext = context;
         }
 
         public Entity CreateHealthLoot(string prefabPatrh, Vector3 position, float amount)

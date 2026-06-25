@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Infrastructure.DIRegistrations;
-using Assets.Scripts.Infrastructure.Gameplay;
+﻿using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
@@ -15,9 +13,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 {
     public class GameplayBootstrap : SceneBootstrap
     {
-        private DIContainer _container;
         private GameplayInputArgs _args;
-        private GameplayContextRegistrations _contextRegistrations = new();
 
         private GameplayStatesContext _gameplayStatesContext;
         private EntitiesLifeContext _lifeContext;
@@ -29,31 +25,29 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
         private bool _initialized = false;
 
-        public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
+        public override void ProcessRegistrations(IInputSceneArgs sceneArgs = null)
         {
-            _container = container;
-
             if (sceneArgs is not GameplayInputArgs args)
                 throw new ArgumentException(
                     nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
             else
                 _args = args;
 
-            _contextRegistrations.Process(_container, args);
+            //_contextRegistrations.Process(_container, args);
 
-            _mainBaseHolderService = _container.Resolve<MainBaseHolderService>();
+            //_mainBaseHolderService = _container.Resolve<MainBaseHolderService>();
         }
 
         public override async UniTask Initialize()
         {
-            _lifeContext = _container.Resolve<EntitiesLifeContext>();
-            _brainsContext = _container.Resolve<AIBrainsContext>();
+            //_lifeContext = _container.Resolve<EntitiesLifeContext>();
+            //_brainsContext = _container.Resolve<AIBrainsContext>();
 
-            _gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
+            //_gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
 
-            _container.Resolve<MainBaseFactory>().Create(_args, Vector3.zero);
+            //_container.Resolve<MainBaseFactory>().Create(_args, Vector3.zero);
 
-            _screenPresenter = _container.Resolve<GameplayScreenPresenter>();
+            //_screenPresenter = _container.Resolve<GameplayScreenPresenter>();
 
             await UniTask.CompletedTask;
         }

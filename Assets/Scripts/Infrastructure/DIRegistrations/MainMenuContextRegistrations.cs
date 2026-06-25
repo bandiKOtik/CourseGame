@@ -10,58 +10,58 @@ using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
-    public class MainMenuContextRegistrations
-    {
-        //public void Process(DIContainer container)
-        //{
-        //    container.RegisterAsSingle(CreateProjectUIRoot).NonLazy();
+    //public class MainMenuContextRegistrations
+    //{
+    //    public void Process(DIContainer container)
+    //    {
+    //        container.RegisterAsSingle(CreateProjectUIRoot).NonLazy();
 
-        //    container.RegisterAsSingle(c => new MainMenuPresentersFactory(c));
+    //        container.RegisterAsSingle(c => new MainMenuPresentersFactory(c));
 
-        //    container.RegisterAsSingle(CreateMainMenuScreenPresenter).NonLazy();
+    //        container.RegisterAsSingle(CreateMainMenuScreenPresenter).NonLazy();
 
-        //    container.RegisterAsSingle(CreateMainMenuPopupService);
+    //        container.RegisterAsSingle(CreateMainMenuPopupService);
 
-        //    container.RegisterAsSingle(CreateProgressionResetService);
-        //}
+    //        container.RegisterAsSingle(CreateProgressionResetService);
+    //    }
 
-        //private MainMenuUIRoot CreateProjectUIRoot(DIContainer c)
-        //{
-        //    ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
+    //    private MainMenuUIRoot CreateProjectUIRoot(DIContainer c)
+    //    {
+    //        ResourcesAssetsLoader resourcesAssetsLoader = c.Resolve<ResourcesAssetsLoader>();
 
-        //    MainMenuUIRoot rootPrefab = resourcesAssetsLoader
-        //        .Load<MainMenuUIRoot>("UI/MainMenu/MainMenuUIRoot");
+    //        MainMenuUIRoot rootPrefab = resourcesAssetsLoader
+    //            .Load<MainMenuUIRoot>("UI/MainMenu/MainMenuUIRoot");
 
-        //    return Object.Instantiate(rootPrefab);
-        //}
+    //        return Object.Instantiate(rootPrefab);
+    //    }
 
-        //private MainMenuScreenPresenter CreateMainMenuScreenPresenter(DIContainer c)
-        //{
-        //    MainMenuUIRoot uiRoot = c.Resolve<MainMenuUIRoot>();
+    //    private MainMenuScreenPresenter CreateMainMenuScreenPresenter(DIContainer c)
+    //    {
+    //        MainMenuUIRoot uiRoot = c.Resolve<MainMenuUIRoot>();
 
-        //    MainMenuScreenView view = c.Resolve<ViewsFactory>()
-        //        .Create<MainMenuScreenView>(ViewIDs.MainMenuScreen, uiRoot.HUDLayer);
+    //        MainMenuScreenView view = c.Resolve<ViewsFactory>()
+    //            .Create<MainMenuScreenView>(ViewIDs.MainMenuScreen, uiRoot.HUDLayer);
 
-        //    MainMenuScreenPresenter presenter = c.Resolve<MainMenuPresentersFactory>()
-        //        .CreateMainMenuScreen(view);
+    //        MainMenuScreenPresenter presenter = c.Resolve<MainMenuPresentersFactory>()
+    //            .CreateMainMenuScreen(view);
 
-        //    return presenter;
-        //}
+    //        return presenter;
+    //    }
 
-        //private MainMenuPopupService CreateMainMenuPopupService(DIContainer c)
-        //{
-        //    return new MainMenuPopupService(
-        //        c.Resolve<ViewsFactory>(),
-        //        c.Resolve<ProjectPresentersFactory>(),
-        //        c.Resolve<MainMenuUIRoot>());
-        //}
+    //    private MainMenuPopupService CreateMainMenuPopupService(DIContainer c)
+    //    {
+    //        return new MainMenuPopupService(
+    //            c.Resolve<ViewsFactory>(),
+    //            c.Resolve<ProjectPresentersFactory>(),
+    //            c.Resolve<MainMenuUIRoot>());
+    //    }
 
-        //private ProgressionResetService CreateProgressionResetService(DIContainer c)
-        //{
-        //    return new(
-        //        c.Resolve<WalletService>(),
-        //        c.Resolve<PlayedGamesStatistic>(),
-        //        c.Resolve<PlayerDataProvider>());
-        //}
-    }
+    //    private ProgressionResetService CreateProgressionResetService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<WalletService>(),
+    //            c.Resolve<PlayedGamesStatistic>(),
+    //            c.Resolve<PlayerDataProvider>());
+    //    }
+    //}
 }

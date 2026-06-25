@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Meta.Statistics;
 using Assets.Scripts.Utilities.Factory.UI;
 using Assets.Scripts.Utilities.SceneManagement;

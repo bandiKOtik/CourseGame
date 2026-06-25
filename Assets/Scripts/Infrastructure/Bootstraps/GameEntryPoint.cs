@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Utilities.DataManagement.DataProviders;
-using Assets.Scripts.Utilities.Factory;
+﻿using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.LoadingScreen;
 using Assets.Scripts.Utilities.SceneManagement;
 using Cysharp.Threading.Tasks;
@@ -11,22 +9,9 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
 {
     public class GameEntryPoint : MonoBehaviour
     {
-        ILoadingScreen _loadScreen;
-        SceneSwitcherService _sceneSwitcher;
-        PlayerDataProvider _playerDataProvider;
-
-        private void Awake()
-        {
-            SetupAppSettings();
-
-            //DIContainer projectContainer = new();
-
-            //_projectRegistrations.Register(projectContainer);
-
-            //projectContainer.Initialize();
-
-            Initialize().Forget();
-        }
+        private ILoadingScreen _loadScreen;
+        private SceneSwitcherService _sceneSwitcher;
+        private PlayerDataProvider _playerDataProvider;
 
         [Inject]
         private void Construct(
@@ -39,9 +24,17 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
             _playerDataProvider = playerDataProvider;
         }
 
+        private void Start()
+        {
+            SetupAppSettings();
+
+            Initialize().Forget();
+        }
+
         public async UniTask Initialize()
         {
             await UniTask.CompletedTask;
+
             _loadScreen.Show();
 
             bool isPlayerDataSaveExists = false;

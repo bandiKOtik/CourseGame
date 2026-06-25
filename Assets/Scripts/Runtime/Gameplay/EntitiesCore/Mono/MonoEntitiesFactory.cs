@@ -1,8 +1,8 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using Assets.Scripts.Utilities.AssetsManagement;
+﻿using Assets.Scripts.Utilities.AssetsManagement;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono
 {

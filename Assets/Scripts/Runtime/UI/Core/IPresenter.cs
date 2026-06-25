@@ -1,5 +1,5 @@
-﻿using Assets.Scripts.Infrastructure.DI_Container;
-using System;
+﻿using System;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.UI.Core
 {

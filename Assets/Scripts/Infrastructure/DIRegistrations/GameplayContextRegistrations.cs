@@ -26,153 +26,153 @@ using UnityEngine;
 
 namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
-    public class GameplayContextRegistrations
-    {
-        private GameplayInputArgs _args;
+    //public class GameplayContextRegistrations
+    //{
+    //    private GameplayInputArgs _args;
 
-        public void Process(DIContainer container, GameplayInputArgs args)
-        {
-            _args = args;
+    //    public void Process(DIContainer container, GameplayInputArgs args)
+    //    {
+    //        _args = args;
 
-            container.RegisterAsSingle(c => new EntitiesFactory(c));
+    //        container.RegisterAsSingle(c => new EntitiesFactory(c));
 
-            container.RegisterAsSingle(c => new EntitiesLifeContext());
+    //        container.RegisterAsSingle(c => new EntitiesLifeContext());
 
-            container.RegisterAsSingle(c => new MainBaseFactory(c));
+    //        container.RegisterAsSingle(c => new MainBaseFactory(c));
 
-            container.RegisterAsSingle(CreateMainBaseHolderService).NonLazy();
+    //        container.RegisterAsSingle(CreateMainBaseHolderService).NonLazy();
 
-            container.RegisterAsSingle(c => new EnemiesFactory(c));
+    //        container.RegisterAsSingle(c => new EnemiesFactory(c));
 
-            container.RegisterAsSingle(c => new BrainsFactory(c));
+    //        container.RegisterAsSingle(c => new BrainsFactory(c));
 
-            container.RegisterAsSingle(c => new LootFactory(c));
+    //        container.RegisterAsSingle(c => new LootFactory(c));
 
-            container.RegisterAsSingle(c => new LootPullingService(c.Resolve<EntitiesLifeContext>())).NonLazy();
+    //        container.RegisterAsSingle(c => new LootPullingService(c.Resolve<EntitiesLifeContext>())).NonLazy();
 
-            container.RegisterAsSingle(CreateDropLootService);
+    //        container.RegisterAsSingle(CreateDropLootService);
 
-            container.RegisterAsSingle(c => new StagesFactory(c));
+    //        container.RegisterAsSingle(c => new StagesFactory(c));
 
-            container.RegisterAsSingle(c => new GameplayStatesFactory(c));
+    //        container.RegisterAsSingle(c => new GameplayStatesFactory(c));
 
-            container.RegisterAsSingle(CreateGameplayStatesContext);
+    //        container.RegisterAsSingle(CreateGameplayStatesContext);
 
-            container.RegisterAsSingle(c => new PreperationInputService());
+    //        container.RegisterAsSingle(c => new PreperationInputService());
 
-            container.RegisterAsSingle(CreateStageProviderService);
+    //        container.RegisterAsSingle(CreateStageProviderService);
 
-            container.RegisterAsSingle(c => new AIBrainsContext());
+    //        container.RegisterAsSingle(c => new AIBrainsContext());
 
-            container.RegisterAsSingle<IInputService>(c => new DesktopInput());
+    //        container.RegisterAsSingle<IInputService>(c => new DesktopInput());
 
-            container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
+    //        container.RegisterAsSingle(CreateMonoEntitiesFactory).NonLazy();
 
-            container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
+    //        container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
 
-            container.RegisterAsSingle(CreateGameplayScreenPresenter).NonLazy();
+    //        container.RegisterAsSingle(CreateGameplayScreenPresenter).NonLazy();
 
-            container.RegisterAsSingle(c => new CollidersRegistryService());
+    //        container.RegisterAsSingle(c => new CollidersRegistryService());
 
-            container.RegisterAsSingle(c => new GameplayPresentersFactory(c, _args));
+    //        container.RegisterAsSingle(c => new GameplayPresentersFactory(c, _args));
 
-            container.RegisterAsSingle(CreateGameplayPopupService);
+    //        container.RegisterAsSingle(CreateGameplayPopupService);
 
-            container.RegisterAsSingle(c => new AbilitiesFactory(c));
+    //        container.RegisterAsSingle(c => new AbilitiesFactory(c));
 
-            container.RegisterAsSingle(c => new AbilityDropingRulesService());
+    //        container.RegisterAsSingle(c => new AbilityDropingRulesService());
 
-            container.RegisterAsSingle(CreateAbilityDropingService);
+    //        container.RegisterAsSingle(CreateAbilityDropingService);
 
-            container.RegisterAsSingle(CreateDropAbilityOnMainHeroLevelUpService).NonLazy();
+    //        container.RegisterAsSingle(CreateDropAbilityOnMainHeroLevelUpService).NonLazy();
 
-            container.RegisterAsSingle<IPauseService>(c => new TimerScalePauseService());
-        }
+    //        container.RegisterAsSingle<IPauseService>(c => new TimerScalePauseService());
+    //    }
 
-        private MainBaseHolderService CreateMainBaseHolderService(DIContainer c)
-        {
-            return new(c.Resolve<EntitiesLifeContext>());
-        }
+    //    private MainBaseHolderService CreateMainBaseHolderService(DIContainer c)
+    //    {
+    //        return new(c.Resolve<EntitiesLifeContext>());
+    //    }
 
-        private DropLootService CreateDropLootService(DIContainer c)
-        {
-            return new(
-                c.Resolve<ConfigsProviderService>()
-                .GetConfig<LootListConfig>(),
-                c.Resolve<LootFactory>());
-        }
+    //    private DropLootService CreateDropLootService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<ConfigsProviderService>()
+    //            .GetConfig<LootListConfig>(),
+    //            c.Resolve<LootFactory>());
+    //    }
 
-        private GameplayStatesContext CreateGameplayStatesContext(DIContainer c)
-        {
-            return new(c
-                .Resolve<GameplayStatesFactory>()
-                .CreateGameplayStateMachine(_args));
-        }
+    //    private GameplayStatesContext CreateGameplayStatesContext(DIContainer c)
+    //    {
+    //        return new(c
+    //            .Resolve<GameplayStatesFactory>()
+    //            .CreateGameplayStateMachine(_args));
+    //    }
 
-        private StageProviderService CreateStageProviderService(DIContainer c)
-        {
-            return new(
-                c.Resolve<StagesFactory>(),
-                c.Resolve<ConfigsProviderService>()
-                    .GetConfig<LevelsListConfig>()
-                    .GetLevelByNumber(_args.LevelNumber));
-        }
+    //    private StageProviderService CreateStageProviderService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<StagesFactory>(),
+    //            c.Resolve<ConfigsProviderService>()
+    //                .GetConfig<LevelsListConfig>()
+    //                .GetLevelByNumber(_args.LevelNumber));
+    //    }
 
-        private MonoEntitiesFactory CreateMonoEntitiesFactory(DIContainer c)
-        {
-            return new(
-                c.Resolve<CollidersRegistryService>(),
-                c.Resolve<ResourcesAssetsLoader>(),
-                c.Resolve<EntitiesLifeContext>());
-        }
+    //    private MonoEntitiesFactory CreateMonoEntitiesFactory(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<CollidersRegistryService>(),
+    //            c.Resolve<ResourcesAssetsLoader>(),
+    //            c.Resolve<EntitiesLifeContext>());
+    //    }
 
-        private GameplayUIRoot CreateGameplayUIRoot(DIContainer c)
-        {
-            ResourcesAssetsLoader loader = c.Resolve<ResourcesAssetsLoader>();
+    //    private GameplayUIRoot CreateGameplayUIRoot(DIContainer c)
+    //    {
+    //        ResourcesAssetsLoader loader = c.Resolve<ResourcesAssetsLoader>();
 
-            GameplayUIRoot rootPrefab = loader
-                .Load<GameplayUIRoot>("UI/Gameplay/GameplayUIRoot");
+    //        GameplayUIRoot rootPrefab = loader
+    //            .Load<GameplayUIRoot>("UI/Gameplay/GameplayUIRoot");
 
-            return Object.Instantiate(rootPrefab);
-        }
+    //        return Object.Instantiate(rootPrefab);
+    //    }
 
-        private GameplayScreenPresenter CreateGameplayScreenPresenter(DIContainer c)
-        {
-            GameplayUIRoot root = c.Resolve<GameplayUIRoot>();
+    //    private GameplayScreenPresenter CreateGameplayScreenPresenter(DIContainer c)
+    //    {
+    //        GameplayUIRoot root = c.Resolve<GameplayUIRoot>();
 
-            GameplayScreenView view = c
-                .Resolve<ViewsFactory>()
-                .Create<GameplayScreenView>(ViewIDs.GameplayScreen, root.HUDLayer);
+    //        GameplayScreenView view = c
+    //            .Resolve<ViewsFactory>()
+    //            .Create<GameplayScreenView>(ViewIDs.GameplayScreen, root.HUDLayer);
 
-            GameplayScreenPresenter presenter = c
-                .Resolve<GameplayPresentersFactory>()
-                .CreateGameplayScreenPresenter(view);
+    //        GameplayScreenPresenter presenter = c
+    //            .Resolve<GameplayPresentersFactory>()
+    //            .CreateGameplayScreenPresenter(view);
 
-            return presenter;
-        }
+    //        return presenter;
+    //    }
 
-        private GameplayPopupService CreateGameplayPopupService(DIContainer c)
-        {
-            return new(
-                c.Resolve<ViewsFactory>(),
-                c.Resolve<ProjectPresentersFactory>(),
-                c.Resolve<GameplayUIRoot>(),
-                c.Resolve<GameplayPresentersFactory>());
-        }
+    //    private GameplayPopupService CreateGameplayPopupService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<ViewsFactory>(),
+    //            c.Resolve<ProjectPresentersFactory>(),
+    //            c.Resolve<GameplayUIRoot>(),
+    //            c.Resolve<GameplayPresentersFactory>());
+    //    }
 
-        private AbilityDropingService CreateAbilityDropingService(DIContainer c)
-        {
-            return new(
-                c.Resolve<ConfigsProviderService>().GetConfig<AbilitiesConfigsContainer>(),
-                c.Resolve<AbilityDropingRulesService>());
-        }
+    //    private AbilityDropingService CreateAbilityDropingService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<ConfigsProviderService>().GetConfig<AbilitiesConfigsContainer>(),
+    //            c.Resolve<AbilityDropingRulesService>());
+    //    }
 
-        private DropAbilityOnMainHeroLevelUpService CreateDropAbilityOnMainHeroLevelUpService(DIContainer c)
-        {
-            return new(
-                c.Resolve<MainBaseHolderService>(),
-                c.Resolve<GameplayPopupService>(),
-                c.Resolve<IPauseService>());
-        }
-    }
+    //    private DropAbilityOnMainHeroLevelUpService CreateDropAbilityOnMainHeroLevelUpService(DIContainer c)
+    //    {
+    //        return new(
+    //            c.Resolve<MainBaseHolderService>(),
+    //            c.Resolve<GameplayPopupService>(),
+    //            c.Resolve<IPauseService>());
+    //    }
+    //}
 }

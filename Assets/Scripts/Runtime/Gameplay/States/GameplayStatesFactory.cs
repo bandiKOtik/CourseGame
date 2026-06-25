@@ -18,72 +18,95 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 {
     public class GameplayStatesFactory
     {
-        private readonly DIContainer _container;
+        private readonly ConfigsProviderService _configsProvider;
+        private readonly StatisticManageService _statisticManageService;
+        private readonly PlayerDataProvider _playerDataProvider;
+        private readonly IInputService _inputService;
+        private readonly GameplayPopupService _gameplayPopupService;
+        private readonly IPauseService _pauseService;
+        private readonly PreperationInputService _preperationInputService;
+        private readonly StageProviderService _stageProviderService;
+        private readonly WalletService _walletService;
+        private readonly LootPullingService _lootPullingService;
+        private readonly MainBaseHolderService _heroHolder;
 
-        public GameplayStatesFactory(DIContainer container)
+        public GameplayStatesFactory(
+            ConfigsProviderService configsProvider,
+            StatisticManageService statisticManageService,
+            PlayerDataProvider playerDataProvider,
+            IInputService inputService,
+            GameplayPopupService gameplayPopupService,
+            IPauseService pauseService,
+            PreperationInputService preperationInputService,
+            StageProviderService stageProviderService,
+            WalletService walletService,
+            LootPullingService lootPullingService,
+            MainBaseHolderService heroHolder)
         {
-            _container = container;
+            _configsProvider = configsProvider;
+            _statisticManageService = statisticManageService;
+            _playerDataProvider = playerDataProvider;
+            _inputService = inputService;
+            _gameplayPopupService = gameplayPopupService;
+            _pauseService = pauseService;
+            _preperationInputService = preperationInputService;
+            _stageProviderService = stageProviderService;
+            _walletService = walletService;
+            _lootPullingService = lootPullingService;
+            _heroHolder = heroHolder;
         }
 
-        public PreperationState CreatePreperationState() => new(_container.Resolve<PreperationInputService>());
+        public PreperationState CreatePreperationState() => new(_preperationInputService);
 
         public StageProcessState CreateStageProcessState()
         {
-            var config = _container
-                .Resolve<ConfigsProviderService>()
-                .GetConfig<GamePriceConfig>();
+            var config = _configsProvider.GetConfig<GamePriceConfig>();
 
             IReadOnlyDictionary<CurrencyTypes, int> winCash = config.GetWinCashback();
 
-            return new(_container.Resolve<StageProviderService>(), _container.Resolve<WalletService>(), winCash);
+            return new(_stageProviderService, _walletService, winCash);
         }
 
         public CollectLootState CreateCollectLootState()
         {
-            return new(
-                _container.Resolve<LootPullingService>(),
-                _container.Resolve<MainBaseHolderService>());
+            return new(_lootPullingService, _heroHolder);
         }
 
         public WinState CreateWinState()
         {
             return new(
-                _container.Resolve<StatisticManageService>(),
-                _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<IInputService>(),
-                _container.Resolve<GameplayPopupService>(),
-                _container.Resolve<IPauseService>());
+                _statisticManageService,
+                _playerDataProvider,
+                _inputService,
+                _gameplayPopupService,
+                _pauseService);
         }
 
         public DefeatState CreateDefeatState()
         {
             return new(
-                _container.Resolve<StatisticManageService>(),
-                _container.Resolve<PlayerDataProvider>(),
-                _container.Resolve<IInputService>(),
-                _container.Resolve<GameplayPopupService>(),
-                _container.Resolve<IPauseService>());
+                _statisticManageService,
+                _playerDataProvider,
+                _inputService,
+                _gameplayPopupService,
+                _pauseService);
         }
 
         public GameplayStateMachine CreateGameplayStateMachine(GameplayInputArgs args)
         {
-            var preperationTrigger = _container.Resolve<PreperationInputService>();
-            var stageProvider = _container.Resolve<StageProviderService>();
-            var baseHolder = _container.Resolve<MainBaseHolderService>();
-
             var coreLoopState = CreateCoreLoopState();
             var winState = CreateWinState();
             var defeatState = CreateDefeatState();
 
             ICompositeCondition coreLoopToWinStateCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
-                .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
+                .Add(new FuncCondition(() => _stageProviderService.CurrentStageResult.Value == StageResults.Completed))
+                .Add(new FuncCondition(() => _stageProviderService.HasNextStage == false));
 
             ICompositeCondition coreLoopToDefeatStateCondition = new CompositeCondition()
                 .Add(new FuncCondition(() =>
                 {
-                    if (baseHolder.MainBase != null)
-                        return baseHolder.MainBase.IsDead.Value;
+                    if (_heroHolder.MainBase != null)
+                        return _heroHolder.MainBase.IsDead.Value;
 
                     return false;
                 }));
@@ -102,23 +125,19 @@ namespace Assets.Scripts.Runtime.Gameplay.States
 
         public GameplayStateMachine CreateCoreLoopState()
         {
-            var preperationTrigger = _container.Resolve<PreperationInputService>();
-            var stageProvider = _container.Resolve<StageProviderService>();
-            var lootPullingService = _container.Resolve<LootPullingService>();
-
             var collectLootState = CreateCollectLootState();
             var preperationState = CreatePreperationState();
             var stageProcessState = CreateStageProcessState();
 
             ICompositeCondition preperationToStageProcessCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => preperationTrigger.IsReady.Value))
-                .Add(new FuncCondition(() => stageProvider.HasNextStage));
+                .Add(new FuncCondition(() => _preperationInputService.IsReady.Value))
+                .Add(new FuncCondition(() => _stageProviderService.HasNextStage));
 
             FuncCondition stageProcessToCollectStateCondition =
-                new(() => stageProvider.CurrentStageResult.Value == StageResults.Completed);
+                new(() => _stageProviderService.CurrentStageResult.Value == StageResults.Completed);
 
             FuncCondition collectStateToPreperationCondition =
-                new(() => lootPullingService.AllCollected.Value);
+                new(() => _lootPullingService.AllCollected.Value);
 
             GameplayStateMachine coreLoopState = new();
 

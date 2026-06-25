@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Configs.Gameplay.Entities;
 using Assets.Scripts.Configs.Gameplay.Levels;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Mono;
 using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.Attack;
@@ -25,19 +24,21 @@ namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory
 {
     public partial class EntitiesFactory
     {
-        private readonly DIContainer _container;
         private readonly EntitiesLifeContext _context;
         private readonly CollidersRegistryService _registry;
         private readonly MonoEntitiesFactory _monoEntitiesFactory;
         private readonly BrainsFactory _brainsFactory;
 
-        public EntitiesFactory(DIContainer container)
+        public EntitiesFactory(
+            EntitiesLifeContext context,
+            CollidersRegistryService registry,
+            MonoEntitiesFactory monoEntitiesFactory,
+            BrainsFactory brainsFactory)
         {
-            _container = container;
-            _context = _container.Resolve<EntitiesLifeContext>();
-            _registry = _container.Resolve<CollidersRegistryService>();
-            _monoEntitiesFactory = _container.Resolve<MonoEntitiesFactory>();
-            _brainsFactory = _container.Resolve<BrainsFactory>();
+            _context = context;
+            _registry = registry;
+            _monoEntitiesFactory = monoEntitiesFactory;
+            _brainsFactory = brainsFactory;
         }
 
         public Entity CreateMainDefendBuilding(DefendableBuildingConfig config, LevelConfig levelConfig, Vector3 position)

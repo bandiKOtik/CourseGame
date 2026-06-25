@@ -17,15 +17,33 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 {
     public class BrainsFactory
     {
-        private readonly DIContainer _container;
         private readonly AIBrainsContext _context;
+        private readonly EntitiesFactory _entitiesFactory;
         private readonly EntitiesLifeContext _lifeContext;
+        private readonly IPauseService _pauseService;
+        private readonly IInputService _inputService;
+        private readonly StageProviderService _stageProvider;
+        private readonly ConfigsProviderService _configsProvider;
+        private readonly WalletService _walletService;
 
-        public BrainsFactory(DIContainer container)
+        public BrainsFactory(
+            AIBrainsContext aIBrainsContext,
+            EntitiesFactory entitiesFactory,
+            EntitiesLifeContext entitiesLifeContext,
+            IPauseService pauseService,
+            IInputService inputService,
+            StageProviderService stageProvider,
+            ConfigsProviderService configsProvider,
+            WalletService walletService)
         {
-            _container = container;
-            _context = _container.Resolve<AIBrainsContext>();
-            _lifeContext = _container.Resolve<EntitiesLifeContext>();
+            _context = aIBrainsContext;
+            _entitiesFactory = entitiesFactory;
+            _lifeContext = entitiesLifeContext;
+            _pauseService = pauseService;
+            _inputService = inputService;
+            _stageProvider = stageProvider;
+            _configsProvider = configsProvider;
+            _walletService = walletService;
         }
 
         public StateMachineBrain CreateTargetWalkBrain(Entity entity, ITargetSelector selector)
@@ -63,22 +81,16 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public StateMachineBrain CreateExplosiveShooterBrain(Entity entity)
         {
-            var pauseService = _container.Resolve<IPauseService>();
+            var explodeState = new InputRaycastExplosionState(entity, _inputService);
 
-            var stageProvider = _container.Resolve<StageProviderService>();
-
-            var explodeState = new InputRaycastExplosionState(entity, _container.Resolve<IInputService>());
-
-            var config = _container
-                .Resolve<ConfigsProviderService>()
-                .GetConfig<GamePriceConfig>();
+            var config = _configsProvider.GetConfig<GamePriceConfig>();
 
             IReadOnlyDictionary<CurrencyTypes, int> minePrice = config.GetMinePrice();
 
             var setMineState = new InputPlantMineState(
-                _container.Resolve<EntitiesFactory>(),
-                _container.Resolve<IInputService>(),
-                _container.Resolve<WalletService>(),
+                _entitiesFactory,
+                _inputService,
+                _walletService,
                 minePrice);
 
             var emptyState = new EmptyState();
@@ -86,17 +98,17 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
             ICompositeCondition mineToExplosionCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Uncompleted));
+                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Uncompleted));
 
             ICompositeCondition explosionToMineCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed));
+                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Completed));
 
             ICompositeCondition toEndgameState = new CompositeCondition()
-                .Add(new FuncCondition(() => stageProvider.CurrentStageResult.Value == StageResults.Completed))
-                .Add(new FuncCondition(() => stageProvider.HasNextStage == false));
+                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Completed))
+                .Add(new FuncCondition(() => _stageProvider.HasNextStage == false));
 
-            ICondition toPauseState = new FuncCondition(() => pauseService.IsPaused);
-            ICondition fromPauseState = new FuncCondition(() => pauseService.IsPaused == false);
+            ICondition toPauseState = new FuncCondition(() => _pauseService.IsPaused);
+            ICondition fromPauseState = new FuncCondition(() => _pauseService.IsPaused == false);
 
             AIStateMachine behavior = new();
 

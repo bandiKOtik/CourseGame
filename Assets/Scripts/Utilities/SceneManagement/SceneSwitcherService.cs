@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Utilities.LoadingScreen;
 using Cysharp.Threading.Tasks;
 using System;
@@ -11,8 +10,6 @@ namespace Assets.Scripts.Utilities.SceneManagement
     {
         private readonly SceneLoaderService _sceneLoaderService;
         private readonly ILoadingScreen _loadingScreen;
-
-        //private DIContainer _currentSceneContainer;
 
         public SceneSwitcherService(
             SceneLoaderService sceneLoaderService,
@@ -26,8 +23,6 @@ namespace Assets.Scripts.Utilities.SceneManagement
         {
             _loadingScreen.Show();
 
-            //_currentSceneContainer?.Dispose();
-
             await _sceneLoaderService.LoadAsync(Scenes.Empty);
             await _sceneLoaderService.LoadAsync(sceneName);
 
@@ -37,9 +32,7 @@ namespace Assets.Scripts.Utilities.SceneManagement
                 throw new NullReferenceException(
                     nameof(sceneBootstrap) + " not found on scene");
 
-            //sceneBootstrap.ProcessRegistrations(_currentSceneContainer, sceneArgs);
-
-            //_currentSceneContainer.Initialize();
+            sceneBootstrap.ProcessRegistrations(sceneArgs);
 
             await sceneBootstrap.Initialize();
 

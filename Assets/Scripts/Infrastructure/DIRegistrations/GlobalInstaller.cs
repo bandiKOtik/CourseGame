@@ -1,9 +1,10 @@
 ﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Meta;
 using Assets.Scripts.Meta.Features.LevelsProgression;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
+using Assets.Scripts.Runtime.UI.Core;
+using Assets.Scripts.Runtime.UI.MainMenu;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
@@ -67,24 +68,16 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Container.Bind<SceneSwitcherService>().AsSingle();
 
             // Meta
-            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
-            foreach (var type in Enum.GetValues(typeof(CurrencyTypes)))
-                currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
-
             Container
                 .Bind<WalletService>()
+                .FromMethod(RegisterWalletService)
                 .AsSingle()
-                .WithArguments(currencies)
                 .NonLazy();
-
-            Dictionary<GameStatType, int> statistics = new();
-            foreach (var type in Enum.GetValues(typeof(GameStatType)))
-                statistics.Add((GameStatType)type, default);
 
             Container
                 .Bind<PlayedGamesStatistic>()
+                .FromMethod(RegisterPlayedGamesStatistic)
                 .AsSingle()
-                .WithArguments(statistics)
                 .NonLazy();
 
             Container.Bind<LevelsProgressionService>().AsSingle().NonLazy();
@@ -94,6 +87,24 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Container.Bind<ViewsFactory>().AsSingle();
 
             Debug.Log("Global installation complete!");
+        }
+
+        private WalletService RegisterWalletService()
+        {
+            Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies = new();
+            foreach (var type in Enum.GetValues(typeof(CurrencyTypes)))
+                currencies.Add((CurrencyTypes)type, new ReactiveVariable<int>());
+
+            return new(currencies, Container.Resolve<PlayerDataProvider>());
+        }
+
+        private PlayedGamesStatistic RegisterPlayedGamesStatistic()
+        {
+            Dictionary<GameStatType, int> statistics = new();
+            foreach (var type in Enum.GetValues(typeof(GameStatType)))
+                statistics.Add((GameStatType)type, default);
+
+            return new(statistics, Container.Resolve<PlayerDataProvider>());
         }
     }
 }

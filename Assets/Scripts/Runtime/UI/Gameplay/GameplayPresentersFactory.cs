@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Configs.Gameplay;
 using Assets.Scripts.Configs.Gameplay.Abilities;
 using Assets.Scripts.Infrastructure.ConfigsManagement;
-using Assets.Scripts.Infrastructure.DI_Container;
 using Assets.Scripts.Infrastructure.Gameplay;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.Features.AbilitiesDropingFeature;
@@ -21,38 +20,61 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
 {
     public class GameplayPresentersFactory
     {
-        private readonly DIContainer _container;
         private readonly GameplayInputArgs _args;
+        private readonly MainBaseHolderService _heroHolder;
+        private readonly EntitiesLifeContext _lifeContext;
+        private readonly SceneSwitcherService _sceneSwitcher;
+        private readonly StageProviderService _stageProvider;
+        private readonly ConfigsProviderService _configsProvider;
+        private readonly ViewsFactory _viewsFactory;
+        private readonly AbilitiesFactory _abilitiesFactory;
+        private readonly AbilityDropingService _abilityDropingService;
 
-        public GameplayPresentersFactory(DIContainer container, GameplayInputArgs args)
+        public GameplayPresentersFactory(
+            GameplayInputArgs args,
+            EntitiesLifeContext context,
+            MainBaseHolderService heroHolder,
+            SceneSwitcherService sceneSwitcherService,
+            StageProviderService stageProvider,
+            ConfigsProviderService configsProvider,
+            ViewsFactory viewsFactory,
+            AbilitiesFactory abilitiesFactory,
+            AbilityDropingService abilityDropingService)
         {
-            _container = container;
             _args = args;
+            _heroHolder = heroHolder;
+            _lifeContext = context;
+            _sceneSwitcher = sceneSwitcherService;
+            _stageProvider = stageProvider;
+            _configsProvider = configsProvider;
+            _viewsFactory = viewsFactory;
+            _abilitiesFactory = abilitiesFactory;
+            _abilityDropingService = abilityDropingService;
         }
 
         public GameplayScreenPresenter CreateGameplayScreenPresenter(GameplayScreenView view)
         {
-            return new(view, _container.Resolve<GameplayPresentersFactory>());
+            return new(view, this);
         }
 
         public WinPopupPresenter CreateWinPopupPresenter(WinPopupView view)
         {
             return new(
                 view,
-                _container.Resolve<SceneSwitcherService>());
+                _sceneSwitcher);
         }
 
         public DefeatPopupPresenter CreateDefeatPopupPresenter(DefeatPopupView view)
         {
             return new(
                 view,
-                _container.Resolve<SceneSwitcherService>(),
+                _sceneSwitcher,
                 _args);
         }
 
         public StagePresenter CreateStagePresenter(IconTextView view)
         {
-            return new(view, _container.Resolve<StageProviderService>());
+            return new(view, _stageProvider);
         }
 
         public EntityHealthPresenter CreateEntityHealthPresenter(Entity entity, BarWithText bar)
@@ -63,10 +85,10 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         public EntityHealthDisplayPresenter CreateEntityHealthDisplayPresenter(EntitiesHealthDisplay view)
         {
             return new(
-                _container.Resolve<EntitiesLifeContext>(),
+                _lifeContext,
                 view,
                 this,
-                _container.Resolve<ViewsFactory>());
+                _viewsFactory);
         }
 
         public SelectableAbilityPresenter CreateSelectableAbilityPresenter(
@@ -77,7 +99,7 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
             return new(
                 config,
                 view,
-                _container.Resolve<AbilitiesFactory>(),
+                _abilitiesFactory,
                 entity);
         }
 
@@ -86,9 +108,9 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
             return new(
                 view,
                 entity,
-                _container.Resolve<AbilityDropingService>(),
+                _abilityDropingService,
                 this,
-                _container.Resolve<ViewsFactory>(),
+                _viewsFactory,
                 level);
         }
 
@@ -96,9 +118,8 @@ namespace Assets.Scripts.Runtime.UI.Gameplay
         {
             return new(
                 view,
-                _container.Resolve<MainBaseHolderService>(),
-                _container.Resolve<ConfigsProviderService>()
-                .GetConfig<ExperienceForUpgradeLevelConfig>());
+                _heroHolder,
+                _configsProvider.GetConfig<ExperienceForUpgradeLevelConfig>());
         }
     }
 }

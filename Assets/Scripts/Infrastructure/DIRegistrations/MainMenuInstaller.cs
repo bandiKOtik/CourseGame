@@ -9,46 +9,42 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
     public class MainMenuInstaller : MonoInstaller
     {
-        ViewsFactory _viewsFactory;
-        MainMenuPresentersFactory _presentersFactory;
-
-        [Inject]
-        private void Construct(ViewsFactory viewsFactory)
-        {
-            _viewsFactory = viewsFactory;
-        }
-
         public override void InstallBindings()
         {
             Debug.Log("Main menu installation...");
 
             Container
                 .Bind<MainMenuUIRoot>()
-                .FromResource("UI/MainMenu/MainMenuUIRoot")
+                .FromComponentInNewPrefabResource("UI/MainMenu/MainMenuUIRoot")
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<MainMenuPresentersFactory>().AsSingle().NonLazy();
+            Container.Bind<MainMenuPresentersFactory>().AsSingle();
 
             Container.Bind<ProgressionResetService>().AsSingle();
 
-            MainMenuScreenView view = _viewsFactory.Create<MainMenuScreenView>(
-                ViewIDs.MainMenuScreen,
-                Container.Resolve<MainMenuUIRoot>().HUDLayer);
-
-            _presentersFactory = Container.Resolve<MainMenuPresentersFactory>();
-
-            MainMenuScreenPresenter presenter = _presentersFactory.CreateMainMenuScreen(view);
-
             Container
                 .Bind<MainMenuScreenPresenter>()
-                .FromInstance(presenter)
+                .FromMethod(RegisterMainMenuScreenPresenter)
                 .AsSingle()
                 .NonLazy();
 
             Container.Bind<MainMenuPopupService>().AsSingle();
 
             Debug.Log("Main menu installation completed!");
+        }
+
+        private MainMenuScreenPresenter RegisterMainMenuScreenPresenter()
+        {
+            ViewsFactory viewsFactory = Container.Resolve<ViewsFactory>();
+
+            MainMenuScreenView view = viewsFactory.Create<MainMenuScreenView>(
+                ViewIDs.MainMenuScreen,
+                Container.Resolve<MainMenuUIRoot>().HUDLayer);
+
+            var presentersFactory = Container.Resolve<MainMenuPresentersFactory>();
+
+            return presentersFactory.CreateMainMenuScreen(view);
         }
     }
 }
