@@ -39,7 +39,10 @@ namespace Assets.Scripts.Utilities.Factory.UI
                     + viewId + " for " + (typeof(TView)));
 
             GameObject prefab = _assetsLoader.Load<GameObject>(resourcePath);
-            GameObject instance = GameObject.Instantiate(prefab, parent);
+
+            GameObject instance = GameObject.Instantiate(prefab);
+            instance.transform.SetParent(parent, false);
+
             TView view = instance.GetComponent<TView>();
 
             if (view == null)

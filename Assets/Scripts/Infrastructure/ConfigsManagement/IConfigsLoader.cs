@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.Infrastructure.ConfigsManagement
 {
     public interface IConfigsLoader
     {
-        IEnumerator LoadAsync(Action<Dictionary<Type, object>> onConfigsLoaded);
+        UniTask LoadAsync(Action<Dictionary<Type, object>> onConfigsLoaded);
     }
 }

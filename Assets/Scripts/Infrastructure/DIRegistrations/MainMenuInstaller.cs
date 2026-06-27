@@ -15,7 +15,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             Container
                 .Bind<MainMenuUIRoot>()
-                .FromComponentInNewPrefabResource("UI/MainMenu/MainMenuUIRoot")
+                .FromResource("UI/MainMenu/MainMenuUIRoot")
                 .AsSingle()
                 .NonLazy();
 
@@ -24,7 +24,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Container.Bind<ProgressionResetService>().AsSingle();
 
             Container
-                .Bind<MainMenuScreenPresenter>()
+                .BindInterfacesAndSelfTo<MainMenuScreenPresenter>()
                 .FromMethod(RegisterMainMenuScreenPresenter)
                 .AsSingle()
                 .NonLazy();
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Debug.Log("Main menu installation completed!");
         }
 
-        private MainMenuScreenPresenter RegisterMainMenuScreenPresenter()
+        private MainMenuScreenPresenter RegisterMainMenuScreenPresenter(InjectContext arg)
         {
             ViewsFactory viewsFactory = Container.Resolve<ViewsFactory>();
 

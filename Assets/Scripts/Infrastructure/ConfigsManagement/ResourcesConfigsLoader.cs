@@ -5,8 +5,8 @@ using Assets.Scripts.Configs.Gameplay.Levels;
 using Assets.Scripts.Configs.Gameplay.Loot;
 using Assets.Scripts.Configs.Meta.Wallet;
 using Assets.Scripts.Utilities.AssetsManagement;
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             _loader = loader;
         }
 
-        public IEnumerator LoadAsync(Action<Dictionary<Type, object>> onConfigsLoaded)
+        public async UniTask LoadAsync(Action<Dictionary<Type, object>> onConfigsLoaded)
         {
             Dictionary<Type, object> loadedConfigs = new();
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
             {
                 ScriptableObject config = _loader.Load<ScriptableObject>(configsPath.Value);
                 loadedConfigs.Add(configsPath.Key, config);
-                yield return null;
+                await UniTask.CompletedTask;
             }
 
             onConfigsLoaded?.Invoke(loadedConfigs);

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
@@ -13,12 +13,12 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement
         public ConfigsProviderService(params IConfigsLoader[] loaders)
             => _loaders = loaders;
 
-        public IEnumerator LoadAsync()
+        public async UniTask LoadAsync()
         {
             _configs.Clear();
 
             foreach (IConfigsLoader loader in _loaders)
-                yield return loader.LoadAsync(
+                await loader.LoadAsync(
                     loadedConfigs => _configs.AddRange(loadedConfigs));
         }
 

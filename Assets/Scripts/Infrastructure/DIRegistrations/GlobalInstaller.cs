@@ -1,10 +1,9 @@
-﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+﻿using Assets.Scripts.Configs.Meta.Wallet;
+using Assets.Scripts.Infrastructure.ConfigsManagement;
 using Assets.Scripts.Meta;
 using Assets.Scripts.Meta.Features.LevelsProgression;
 using Assets.Scripts.Meta.Features.Wallet;
 using Assets.Scripts.Meta.Statistics;
-using Assets.Scripts.Runtime.UI.Core;
-using Assets.Scripts.Runtime.UI.MainMenu;
 using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.DataManagement;
 using Assets.Scripts.Utilities.DataManagement.DataProviders;
@@ -59,9 +58,12 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 .AsSingle();
 
             // Configs
-            Container.Bind<IConfigsLoader>().To<ResourcesConfigsLoader>().AsSingle();
-            Container.Bind<ConfigsProviderService>().AsSingle();
             Container.Bind<ResourcesAssetsLoader>().AsSingle();
+            Container.Bind<IConfigsLoader>().To<ResourcesConfigsLoader>().AsSingle();
+
+            Container
+                .Bind<ConfigsProviderService>()
+                .AsSingle();
 
             //Scene management
             Container.Bind<SceneLoaderService>().AsSingle();
@@ -87,6 +89,16 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Container.Bind<ViewsFactory>().AsSingle();
 
             Debug.Log("Global installation complete!");
+        }
+
+        private ConfigsProviderService RegisterConfigsProviderService()
+        {
+            var loader = Container.Resolve<ResourcesConfigsLoader>();
+            var provider = new ConfigsProviderService(loader);
+            var config = provider.GetConfig<GamePriceConfig>();
+            Debug.LogError(config.name);
+
+            return provider;
         }
 
         private WalletService RegisterWalletService()
