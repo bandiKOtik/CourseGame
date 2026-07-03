@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utilities.DataManagement.DataProviders;
+﻿using Assets.Scripts.Infrastructure.ConfigsManagement;
+using Assets.Scripts.Utilities.DataManagement.DataProviders;
 using Assets.Scripts.Utilities.LoadingScreen;
 using Assets.Scripts.Utilities.SceneManagement;
 using Cysharp.Threading.Tasks;
@@ -10,16 +11,19 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
     public class GameEntryPoint : MonoBehaviour
     {
         private ILoadingScreen _loadScreen;
+        private ConfigsProviderService _provider;
         private SceneSwitcherService _sceneSwitcher;
         private PlayerDataProvider _playerDataProvider;
 
         [Inject]
         private void Construct(
             ILoadingScreen loadScreen,
+            ConfigsProviderService provider,
             SceneSwitcherService sceneSwitcher,
             PlayerDataProvider playerDataProvider)
         {
             _loadScreen = loadScreen;
+            _provider = provider;
             _sceneSwitcher = sceneSwitcher;
             _playerDataProvider = playerDataProvider;
         }
@@ -36,6 +40,8 @@ namespace Assets.Scripts.Infrastructure.Bootstraps
             await UniTask.CompletedTask;
 
             _loadScreen.Show();
+
+            await _provider.LoadAsync();
 
             bool isPlayerDataSaveExists = false;
 

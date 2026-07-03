@@ -2,17 +2,19 @@
 using Assets.Scripts.Utilities.LoadingScreen;
 using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine.SceneManagement;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Assets.Scripts.Utilities.SceneManagement
 {
     public class SceneSwitcherService
     {
-        private readonly SceneLoaderService _sceneLoaderService;
+        private readonly ZenjectSceneLoader _sceneLoaderService;
         private readonly ILoadingScreen _loadingScreen;
 
         public SceneSwitcherService(
-            SceneLoaderService sceneLoaderService,
+            ZenjectSceneLoader sceneLoaderService,
             ILoadingScreen loadingScreen)
         {
             _sceneLoaderService = sceneLoaderService;
@@ -23,16 +25,18 @@ namespace Assets.Scripts.Utilities.SceneManagement
         {
             _loadingScreen.Show();
 
-            await _sceneLoaderService.LoadAsync(Scenes.Empty);
-            await _sceneLoaderService.LoadAsync(sceneName);
+            await _sceneLoaderService.LoadSceneAsync(Scenes.Empty);
+            await _sceneLoaderService.LoadSceneAsync(sceneName, LoadSceneMode.Single, container =>
+            {
+                if (sceneArgs != null)
+                    container.Bind(sceneArgs.GetType()).FromInstance(sceneArgs).AsSingle();
+            });
 
             SceneBootstrap sceneBootstrap = Object.FindObjectOfType<SceneBootstrap>();
 
             if (sceneBootstrap == null)
                 throw new NullReferenceException(
                     nameof(sceneBootstrap) + " not found on scene");
-
-            sceneBootstrap.ProcessRegistrations(sceneArgs);
 
             await sceneBootstrap.Initialize();
 

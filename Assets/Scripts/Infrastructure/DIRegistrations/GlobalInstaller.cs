@@ -29,6 +29,10 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         {
             Debug.Log("Global installation...");
 
+            // Factory
+            Container.Bind<ProjectPresentersFactory>().AsSingle();
+            Container.Bind<ViewsFactory>().AsSingle();
+
             // Utilities
             Container.Bind<TimerServiceFactory>().AsSingle();
 
@@ -84,21 +88,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             Container.Bind<LevelsProgressionService>().AsSingle().NonLazy();
 
-            // Factory
-            Container.Bind<ProjectPresentersFactory>().AsSingle();
-            Container.Bind<ViewsFactory>().AsSingle();
-
             Debug.Log("Global installation complete!");
-        }
-
-        private ConfigsProviderService RegisterConfigsProviderService()
-        {
-            var loader = Container.Resolve<ResourcesConfigsLoader>();
-            var provider = new ConfigsProviderService(loader);
-            var config = provider.GetConfig<GamePriceConfig>();
-            Debug.LogError(config.name);
-
-            return provider;
         }
 
         private WalletService RegisterWalletService()

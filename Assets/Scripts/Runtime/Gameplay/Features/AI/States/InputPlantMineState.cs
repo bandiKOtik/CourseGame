@@ -10,18 +10,18 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 {
     public class InputPlantMineState : State, IUpdateableState
     {
-        private readonly EntitiesFactory _factory;
+        //private readonly EntitiesFactory _factory;
         private readonly IInputService _inputService;
         private readonly WalletService _walletService;
         private IReadOnlyDictionary<CurrencyTypes, int> _minePrice;
 
         public InputPlantMineState(
-            EntitiesFactory factory,
+            //EntitiesFactory factory,
             IInputService inputService,
             WalletService walletService,
             IReadOnlyDictionary<CurrencyTypes, int> minePrice)
         {
-            _factory = factory;
+            //_factory = factory;
             _inputService = inputService;
             _walletService = walletService;
             _minePrice = minePrice;
@@ -51,7 +51,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (Physics.Raycast(ray, out var hit))
-                    _factory.CreateContactTrigger(Teams.MainHero, hit.point);
+                    Debug.Log("Plant mine");
+                    //_factory.CreateContactTrigger(Teams.MainHero, hit.point);
             }
         }
     }

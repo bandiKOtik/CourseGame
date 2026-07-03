@@ -13,13 +13,13 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         {
             Debug.Log("Main menu installation...");
 
+            Container.Bind<MainMenuPresentersFactory>().AsSingle();
+
             Container
                 .Bind<MainMenuUIRoot>()
-                .FromResource("UI/MainMenu/MainMenuUIRoot")
+                .FromComponentInNewPrefabResource("UI/MainMenu/MainMenuUIRoot")
                 .AsSingle()
                 .NonLazy();
-
-            Container.Bind<MainMenuPresentersFactory>().AsSingle();
 
             Container.Bind<ProgressionResetService>().AsSingle();
 
@@ -38,9 +38,11 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
         {
             ViewsFactory viewsFactory = Container.Resolve<ViewsFactory>();
 
+            Transform hudLayer = Container.Resolve<MainMenuUIRoot>().HUDLayer;
+
             MainMenuScreenView view = viewsFactory.Create<MainMenuScreenView>(
                 ViewIDs.MainMenuScreen,
-                Container.Resolve<MainMenuUIRoot>().HUDLayer);
+                hudLayer);
 
             var presentersFactory = Container.Resolve<MainMenuPresentersFactory>();
 

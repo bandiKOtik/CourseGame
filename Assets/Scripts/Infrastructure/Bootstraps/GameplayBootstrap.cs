@@ -8,6 +8,7 @@ using Assets.Scripts.Utilities.SceneManagement;
 using Cysharp.Threading.Tasks;
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 {
@@ -15,39 +16,41 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
     {
         private GameplayInputArgs _args;
 
+        private MainBaseHolderService _mainBaseHolderService;
+        private MainBaseFactory _mainBaseFactory;
+
         private GameplayStatesContext _gameplayStatesContext;
         private EntitiesLifeContext _lifeContext;
         private AIBrainsContext _brainsContext;
 
         private GameplayScreenPresenter _screenPresenter;
 
-        private MainBaseHolderService _mainBaseHolderService;
-
         private bool _initialized = false;
 
-        public override void ProcessRegistrations(IInputSceneArgs sceneArgs = null)
+        [Inject]
+        private void Construct(
+            GameplayInputArgs args,
+            MainBaseHolderService mainBaseHolderService,
+            MainBaseFactory mainBaseFactory,
+            GameplayStatesContext gameplayStatesContext,
+            EntitiesLifeContext lifeContext,
+            AIBrainsContext brainsContext,
+            GameplayScreenPresenter screenPresenter)
         {
-            if (sceneArgs is not GameplayInputArgs args)
-                throw new ArgumentException(
-                    nameof(sceneArgs) + " is not match with " + typeof(GameplayInputArgs));
-            else
-                _args = args;
-
-            //_contextRegistrations.Process(_container, args);
-
-            //_mainBaseHolderService = _container.Resolve<MainBaseHolderService>();
+            _args = args;
+            _mainBaseHolderService = mainBaseHolderService;
+            _mainBaseFactory = mainBaseFactory;
+            _gameplayStatesContext = gameplayStatesContext;
+            _lifeContext = lifeContext;
+            _brainsContext = brainsContext;
+            _screenPresenter = screenPresenter;
         }
 
         public override async UniTask Initialize()
         {
-            //_lifeContext = _container.Resolve<EntitiesLifeContext>();
-            //_brainsContext = _container.Resolve<AIBrainsContext>();
-
-            //_gameplayStatesContext = _container.Resolve<GameplayStatesContext>();
-
-            //_container.Resolve<MainBaseFactory>().Create(_args, Vector3.zero);
-
-            //_screenPresenter = _container.Resolve<GameplayScreenPresenter>();
+            Debug.Log("Factory: " + _mainBaseFactory == null);
+            Debug.Log("Args: " + _args == null);
+            _mainBaseFactory.Create(_args, Vector3.zero);
 
             await UniTask.CompletedTask;
         }
@@ -68,7 +71,7 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
             _lifeContext?.Update(Time.deltaTime);
             _gameplayStatesContext?.Update(Time.deltaTime);
 
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Input.GetKeyDown(KeyCode.D))
                 _mainBaseHolderService.MainBase.Experience.Value += 1000;
         }
 

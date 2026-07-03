@@ -6,8 +6,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 {
     public abstract class SceneBootstrap : MonoBehaviour
     {
-        public abstract void ProcessRegistrations(IInputSceneArgs sceneArgs = null);
-
         public abstract UniTask Initialize();
 
         public abstract void Run();

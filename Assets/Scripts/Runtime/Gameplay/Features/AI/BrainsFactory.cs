@@ -18,7 +18,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
     public class BrainsFactory
     {
         private readonly AIBrainsContext _context;
-        private readonly EntitiesFactory _entitiesFactory;
         private readonly EntitiesLifeContext _lifeContext;
         private readonly IPauseService _pauseService;
         private readonly IInputService _inputService;
@@ -28,7 +27,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
 
         public BrainsFactory(
             AIBrainsContext aIBrainsContext,
-            EntitiesFactory entitiesFactory,
             EntitiesLifeContext entitiesLifeContext,
             IPauseService pauseService,
             IInputService inputService,
@@ -37,7 +35,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             WalletService walletService)
         {
             _context = aIBrainsContext;
-            _entitiesFactory = entitiesFactory;
             _lifeContext = entitiesLifeContext;
             _pauseService = pauseService;
             _inputService = inputService;
@@ -88,7 +85,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             IReadOnlyDictionary<CurrencyTypes, int> minePrice = config.GetMinePrice();
 
             var setMineState = new InputPlantMineState(
-                _entitiesFactory,
+                //_entitiesFactory,
                 _inputService,
                 _walletService,
                 minePrice);

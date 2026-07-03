@@ -19,9 +19,8 @@ using Assets.Scripts.Runtime.Gameplay.Features.StagesFeature;
 using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Runtime.UI.Gameplay;
-using Assets.Scripts.Runtime.UI.MainMenu;
-using Assets.Scripts.Utilities.AssetsManagement;
 using Assets.Scripts.Utilities.Factory.UI;
+using Assets.Scripts.Utilities.SceneManagement;
 using UnityEngine;
 using Zenject;
 
@@ -29,25 +28,29 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
     public class GameplayInstaller : MonoInstaller
     {
-        GameplayInputArgs _args;
+        private GameplayInputArgs _args;
 
         public override void InstallBindings()
         {
             Debug.Log("Gameplay installation...");
 
+            // Factory
             Container.Bind<EntitiesFactory>().AsSingle();
 
-            Container.Bind<EntitiesLifeContext>().AsSingle();
+            Container.BindInterfacesAndSelfTo<EntitiesLifeContext>().AsSingle();
 
             Container.Bind<MainBaseFactory>().AsSingle();
-
-            Container.Bind<MainBaseHolderService>().AsSingle().NonLazy();
 
             Container.Bind<EnemiesFactory>().AsSingle();
 
             Container.Bind<BrainsFactory>().AsSingle();
 
             Container.Bind<LootFactory>().AsSingle();
+
+            Container
+                .BindInterfacesAndSelfTo<MainBaseHolderService>()
+                .AsSingle()
+                .NonLazy();
 
             Container.Bind<LootPullingService>().AsSingle().NonLazy();
 
@@ -65,14 +68,14 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 .FromMethod(RegisterGameplayStatesContext)
                 .AsSingle();
 
-            Container.Bind(c => new PreperationInputService());
+            Container.Bind<PreperationInputService>().AsSingle();
 
             Container
                 .Bind<StageProviderService>()
                 .FromMethod(RegisterStageProviderService)
                 .AsSingle();
 
-            Container.Bind(c => new AIBrainsContext());
+            Container.Bind<AIBrainsContext>().AsSingle();
 
             Container.Bind<IInputService>().To<DesktopInput>().AsSingle();
 
@@ -90,13 +93,13 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind(c => new CollidersRegistryService());
+            Container.Bind<CollidersRegistryService>().AsSingle();
 
-            //Container.Bind(c => new GameplayPresentersFactory(c, _args));
+            Container.Bind<GameplayPresentersFactory>().AsSingle();
 
-            Container.Bind<GameplayPopupService>().AsSingle();
+            Container.Bind<GameplayPopupService>().AsSingle(); //InterfacesAndSelfTo?
 
-            Container.Bind<AbilitiesFactory>();
+            Container.Bind<AbilitiesFactory>().AsSingle();
 
             Container.Bind<AbilityDropingRulesService>().AsSingle();
 

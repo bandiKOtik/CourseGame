@@ -40,8 +40,7 @@ namespace Assets.Scripts.Utilities.Factory.UI
 
             GameObject prefab = _assetsLoader.Load<GameObject>(resourcePath);
 
-            GameObject instance = GameObject.Instantiate(prefab);
-            instance.transform.SetParent(parent, false);
+            GameObject instance = GameObject.Instantiate(prefab, parent);
 
             TView view = instance.GetComponent<TView>();
 
