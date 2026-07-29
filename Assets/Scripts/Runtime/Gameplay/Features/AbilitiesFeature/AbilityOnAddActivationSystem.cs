@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Runtime.Gameplay.EntitiesCore;
 using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Systems;
+using UnityEngine;
 
 namespace Assets.Scripts.Runtime.Gameplay.Features.AbilitiesFeature
 {

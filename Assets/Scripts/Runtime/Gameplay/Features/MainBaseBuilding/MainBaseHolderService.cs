@@ -22,6 +22,10 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding
 
         public void Initialize()
         {
+            foreach (var entity in _context.Entities)
+                if (entity.HasComponent<IsMainBase>())
+                    OnEntityAdded(entity);
+
             _context.Added += OnEntityAdded;
         }
 

@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <MainBaseHealth>k__BackingField: 5
   _stageConfigs:
+  - {fileID: 11400000, guid: 90649eab08093cb4c858a9d0e4357d00, type: 2}
   - {fileID: 11400000, guid: 3e909bb775df8504a9ad48f0c5c1ddfe, type: 2}
+  - {fileID: 11400000, guid: d61ce011df16ca5419c7d1bdbcc2c8ec, type: 2}
+  - {fileID: 11400000, guid: 90649eab08093cb4c858a9d0e4357d00, type: 2}
   - {fileID: 11400000, guid: 3e909bb775df8504a9ad48f0c5c1ddfe, type: 2}

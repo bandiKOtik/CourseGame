@@ -53,7 +53,8 @@ namespace Assets.Scripts.Utilities.Factory.UI
 
         public void Release<TView>(TView view) where TView : MonoBehaviour, IView
         {
-            Object.Destroy(view.gameObject);
+            if (view != null)
+                Object.Destroy(view.gameObject);
         }
     }
 }

@@ -32,7 +32,10 @@ namespace Assets.Scripts.Runtime.UI.Gameplay.Experience
 
         public void Initialize()
         {
-            _disposables.Add(_heroHolder.BaseRegistred.Subscribe(OnMainBaseRegistred));
+            if (_heroHolder.MainBase == null)
+                _disposables.Add(_heroHolder.BaseRegistred.Subscribe(OnMainBaseRegistred));
+            else
+                OnMainBaseRegistred(_heroHolder.MainBase);
         }
 
         public void Dispose()

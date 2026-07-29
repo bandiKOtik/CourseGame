@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.Meta.Features.Wallet;
-using Assets.Scripts.Runtime.Gameplay.EntitiesCore.Factory;
 using Assets.Scripts.Runtime.Gameplay.Features.InputManagement;
-using Assets.Scripts.Runtime.Gameplay.Features.TeamsFeature;
 using Assets.Scripts.Utilities.StateMachineCore;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,7 +50,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI.States
 
                 if (Physics.Raycast(ray, out var hit))
                     Debug.Log("Plant mine");
-                    //_factory.CreateContactTrigger(Teams.MainHero, hit.point);
+                //_factory.CreateContactTrigger(Teams.MainHero, hit.point);
             }
         }
     }

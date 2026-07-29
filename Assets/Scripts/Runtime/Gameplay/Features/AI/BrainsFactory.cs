@@ -21,7 +21,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
         private readonly EntitiesLifeContext _lifeContext;
         private readonly IPauseService _pauseService;
         private readonly IInputService _inputService;
-        private readonly StageProviderService _stageProvider;
+        private readonly StageProgress _progress;
         private readonly ConfigsProviderService _configsProvider;
         private readonly WalletService _walletService;
 
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             EntitiesLifeContext entitiesLifeContext,
             IPauseService pauseService,
             IInputService inputService,
-            StageProviderService stageProvider,
+            StageProgress progress,
             ConfigsProviderService configsProvider,
             WalletService walletService)
         {
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             _lifeContext = entitiesLifeContext;
             _pauseService = pauseService;
             _inputService = inputService;
-            _stageProvider = stageProvider;
+            _progress = progress;
             _configsProvider = configsProvider;
             _walletService = walletService;
         }
@@ -85,7 +85,6 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             IReadOnlyDictionary<CurrencyTypes, int> minePrice = config.GetMinePrice();
 
             var setMineState = new InputPlantMineState(
-                //_entitiesFactory,
                 _inputService,
                 _walletService,
                 minePrice);
@@ -95,14 +94,14 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AI
             ReactiveVariable<Vector3> target = new(Input.mousePosition);
 
             ICompositeCondition mineToExplosionCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Uncompleted));
+                .Add(new FuncCondition(() => _progress.CurrentStageResult.Value == StageResults.Uncompleted));
 
             ICompositeCondition explosionToMineCondition = new CompositeCondition()
-                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Completed));
+                .Add(new FuncCondition(() => _progress.CurrentStageResult.Value == StageResults.Completed));
 
             ICompositeCondition toEndgameState = new CompositeCondition()
-                .Add(new FuncCondition(() => _stageProvider.CurrentStageResult.Value == StageResults.Completed))
-                .Add(new FuncCondition(() => _stageProvider.HasNextStage == false));
+                .Add(new FuncCondition(() => _progress.CurrentStageResult.Value == StageResults.Completed))
+                .Add(new FuncCondition(() => _progress.HasNextStage == false));
 
             ICondition toPauseState = new FuncCondition(() => _pauseService.IsPaused);
             ICondition fromPauseState = new FuncCondition(() => _pauseService.IsPaused == false);

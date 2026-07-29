@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Zenject;
 
 namespace Assets.Scripts.Runtime.Gameplay.EntitiesCore
 {

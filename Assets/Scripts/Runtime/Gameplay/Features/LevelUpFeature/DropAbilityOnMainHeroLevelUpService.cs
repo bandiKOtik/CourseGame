@@ -39,13 +39,19 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.LevelUpFeature
 
         public void Initialize()
         {
-            _heroRegistredDisposable = _heroHolder.BaseRegistred.Subscribe(OnRegistred);
+            if (_heroHolder.MainBase == null)
+                _heroRegistredDisposable = _heroHolder.BaseRegistred.Subscribe(OnRegistred);
+            else
+                OnRegistred(_heroHolder.MainBase);
         }
 
         public void Dispose()
         {
-            _heroRegistredDisposable.Dispose();
-            _heroLevelChangedDisposable.Dispose();
+            if (_heroRegistredDisposable != null)
+                _heroRegistredDisposable.Dispose();
+
+            if (_heroLevelChangedDisposable != null)
+                _heroLevelChangedDisposable.Dispose();
         }
 
         private void OnRegistred(Entity hero)

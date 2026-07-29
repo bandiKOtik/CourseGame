@@ -20,7 +20,6 @@ using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Runtime.UI.Core;
 using Assets.Scripts.Runtime.UI.Gameplay;
 using Assets.Scripts.Utilities.Factory.UI;
-using Assets.Scripts.Utilities.SceneManagement;
 using UnityEngine;
 using Zenject;
 
@@ -28,8 +27,6 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 {
     public class GameplayInstaller : MonoInstaller
     {
-        private GameplayInputArgs _args;
-
         public override void InstallBindings()
         {
             Debug.Log("Gameplay installation...");
@@ -47,12 +44,16 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             Container.Bind<LootFactory>().AsSingle();
 
+            // Services
             Container
                 .BindInterfacesAndSelfTo<MainBaseHolderService>()
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<LootPullingService>().AsSingle().NonLazy();
+            Container
+                .BindInterfacesAndSelfTo<LootPullingService>()
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .Bind<DropLootService>()
@@ -64,31 +65,35 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
             Container.Bind<GameplayStatesFactory>().AsSingle();
 
             Container
-                .Bind<GameplayStatesContext>()
+                .BindInterfacesAndSelfTo<GameplayStatesContext>()
                 .FromMethod(RegisterGameplayStatesContext)
                 .AsSingle();
 
             Container.Bind<PreperationInputService>().AsSingle();
 
             Container
-                .Bind<StageProviderService>()
-                .FromMethod(RegisterStageProviderService)
+                .Bind<StageProgress>()
+                .FromMethod(RegisterStageProgress)
                 .AsSingle();
 
-            Container.Bind<AIBrainsContext>().AsSingle();
+            Container
+                .BindInterfacesAndSelfTo<StageProviderService>()
+                .AsSingle();
+
+            Container.BindInterfacesAndSelfTo<AIBrainsContext>().AsSingle();
 
             Container.Bind<IInputService>().To<DesktopInput>().AsSingle();
 
-            Container.Bind<MonoEntitiesFactory>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<MonoEntitiesFactory>().AsSingle().NonLazy();
 
             Container
                 .Bind<GameplayUIRoot>()
-                .FromResource("UI/Gameplay/GameplayUIRoot")
+                .FromComponentInNewPrefabResource("UI/Gameplay/GameplayUIRoot")
                 .AsSingle()
                 .NonLazy();
 
             Container
-                .Bind<GameplayScreenPresenter>()
+                .BindInterfacesAndSelfTo<GameplayScreenPresenter>()
                 .FromMethod(RegisterGameplayScreenPresenter)
                 .AsSingle()
                 .NonLazy();
@@ -97,7 +102,7 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
 
             Container.Bind<GameplayPresentersFactory>().AsSingle();
 
-            Container.Bind<GameplayPopupService>().AsSingle(); //InterfacesAndSelfTo?
+            Container.BindInterfacesAndSelfTo<GameplayPopupService>().AsSingle();
 
             Container.Bind<AbilitiesFactory>().AsSingle();
 
@@ -108,7 +113,10 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 .FromMethod(RegisterAbilityDropingService)
                 .AsSingle();
 
-            Container.Bind<DropAbilityOnMainHeroLevelUpService>().AsSingle().NonLazy();
+            Container
+                .BindInterfacesAndSelfTo<DropAbilityOnMainHeroLevelUpService>()
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .Bind<IPauseService>()
@@ -126,23 +134,30 @@ namespace Assets.Scripts.Infrastructure.DIRegistrations
                 Container.Resolve<LootFactory>());
         }
 
-        private GameplayStatesContext RegisterGameplayStatesContext()
+        private GameplayStatesContext RegisterGameplayStatesContext(InjectContext arg)
         {
-            return new(Container
+            var args = Container.Resolve<GameplayInputArgs>();
+
+            var stateMachine = Container
                 .Resolve<GameplayStatesFactory>()
-                .CreateGameplayStateMachine(_args));
+                .CreateGameplayStateMachine(args);
+
+            return new(stateMachine);
         }
 
-        private StageProviderService RegisterStageProviderService()
+        private StageProgress RegisterStageProgress()
         {
-            return new(
-                Container.Resolve<StagesFactory>(),
-                Container.Resolve<ConfigsProviderService>()
-                    .GetConfig<LevelsListConfig>()
-                    .GetLevelByNumber(_args.LevelNumber));
+            var args = Container.Resolve<GameplayInputArgs>();
+
+            var config = Container
+                .Resolve<ConfigsProviderService>()
+                .GetConfig<LevelsListConfig>()
+                .GetLevelByNumber(args.LevelNumber);
+
+            return new(config);
         }
 
-        private GameplayScreenPresenter RegisterGameplayScreenPresenter()
+        private GameplayScreenPresenter RegisterGameplayScreenPresenter(InjectContext arg)
         {
             GameplayUIRoot root = Container.Resolve<GameplayUIRoot>();
 

@@ -6,25 +6,22 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
 {
     public class StageProviderService : IDisposable
     {
-        private StagesFactory _stagesFactory;
-
-        private LevelConfig _levelConfig;
-        private ReactiveVariable<int> _stageNumber = new();
-        private ReactiveVariable<StageResults> _result = new();
+        private readonly StagesFactory _stagesFactory;
+        private readonly StageProgress _progress;
 
         private IStage _currentStage;
-
         private IDisposable _stageEndedDisposable;
 
-        public StageProviderService(StagesFactory stagesFactory, LevelConfig levelConfig)
+        public StageProviderService(StagesFactory stagesFactory, StageProgress progress)
         {
             _stagesFactory = stagesFactory;
-            _levelConfig = levelConfig;
+            _progress = progress;
         }
 
-        public IReadOnlyVariable<int> CurrentStageNumber => _stageNumber;
-        public IReadOnlyVariable<StageResults> CurrentStageResult => _result;
-        public int StagesCount => _levelConfig.StageConfigs.Count;
+        public IReadOnlyVariable<int> CurrentStageNumber => _progress.CurrentStageNumber;
+        public IReadOnlyVariable<StageResults> CurrentStageResult => _progress.CurrentStageResult;
+        public int StagesCount => _progress.StagesCount;
+        public bool HasNextStage => _progress.HasNextStage;
 
         public void StartCurrent()
         {
@@ -32,11 +29,9 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
             _currentStage.Start();
         }
 
-        private void OnStageCompleted() => _result.Value = StageResults.Completed;
+        private void OnStageCompleted() => _progress.Complete();
 
         public void UpdateCurrent(float deltaTime) => _currentStage.Update(deltaTime);
-
-        public bool HasNextStage => CurrentStageNumber.Value < StagesCount;
 
         public void SwitchToNext()
         {
@@ -46,10 +41,8 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.StagesFeature
             if (_currentStage != null)
                 CleanUpCurrent();
 
-            _stageNumber.Value++;
-            _result.Value = StageResults.Uncompleted;
-
-            _currentStage = _stagesFactory.Create(_levelConfig.StageConfigs[_stageNumber.Value - 1]);
+            _progress.Advance();
+            _currentStage = _stagesFactory.Create(_progress.CurrentStageConfig);
         }
 
         public void CleanUpCurrent() => _currentStage.CleanUp();

@@ -4,9 +4,7 @@ using Assets.Scripts.Runtime.Gameplay.Features.AI;
 using Assets.Scripts.Runtime.Gameplay.Features.MainBaseBuilding;
 using Assets.Scripts.Runtime.Gameplay.States;
 using Assets.Scripts.Runtime.UI.Gameplay;
-using Assets.Scripts.Utilities.SceneManagement;
 using Cysharp.Threading.Tasks;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -48,8 +46,6 @@ namespace Assets.Scripts.Infrastructure.ConfigsManagement.Bootstraps
 
         public override async UniTask Initialize()
         {
-            Debug.Log("Factory: " + _mainBaseFactory == null);
-            Debug.Log("Args: " + _args == null);
             _mainBaseFactory.Create(_args, Vector3.zero);
 
             await UniTask.CompletedTask;

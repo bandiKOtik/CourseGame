@@ -100,8 +100,13 @@ namespace Assets.Scripts.Runtime.UI.Gameplay.HealthDisplay
         {
             info.RemoveReason.Dispose();
 
-            _view.Remove(info.HealthPresenter.Bar);
-            _viewsFactory.Release(info.HealthPresenter.Bar);
+            BarWithText bar = info.HealthPresenter.Bar;
+
+            if (bar != null)
+            {
+                _view.Remove(bar);
+                _viewsFactory.Release(bar);
+            }
 
             info.HealthPresenter.Dispose();
         }

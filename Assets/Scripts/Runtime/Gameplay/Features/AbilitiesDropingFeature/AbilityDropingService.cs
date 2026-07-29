@@ -19,9 +19,10 @@ namespace Assets.Scripts.Runtime.Gameplay.Features.AbilitiesDropingFeature
         public List<AbilityConfig> Drop(int count, Entity entity)
         {
             List<AbilityConfig> avaiableList
-                = new List<AbilityConfig>(_abilitiesContainer
-                .AbilityConfigs
-                .Where(option => _rules.IsAvailable(option, entity)));
+                = new List<AbilityConfig>(
+                    _abilitiesContainer
+                    .AbilityConfigs
+                    .Where(option => _rules.IsAvailable(option, entity)));
 
             List<AbilityConfig> selectedList = new();
 

@@ -401,7 +401,7 @@ MonoBehaviour:
   _mainGroup: {fileID: 5072505334643236970}
   _body: {fileID: 7425151736417124095}
   _antiClicker: {fileID: 6151411964181529707}
-  _animationType: 2
+  _animationType: 1
   _title: {fileID: 610902568655857196}
   _selectAbilityText: {fileID: 1191207947702264386}
   _selectButton: {fileID: 968063290911814912}
